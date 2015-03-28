@@ -1,0 +1,3 @@
+# Spotnet
+
+Decentralized usenet community
