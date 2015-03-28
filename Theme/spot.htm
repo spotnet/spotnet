@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+<HTML>
+
+<!-- 
+
+    [TITLE] = Titel
+    [FROM] = Afzender
+    [TAG] = Tag
+    [STAMP] = Datum
+    [CAT] = Categorie
+    [WEB] = Weblink
+    [SUBCATS] = Subcats
+    [DESC] = Beschrijving
+    [UNIQUE] = Unique ID
+    [MODULUS] = Modulus
+    [FILESIZE] = Omvang
+    [WHITELIST] = True/False
+    [PATH] = Installatie map
+    [FONTSIZE] = Lettergrootte
+
+//-->
+
+<HEAD>
+
+  <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8">
+
+  <STYLE TYPE='text/css'>
+
+	body,td,th,table,div,input,textarea { font: [SN:FONTSIZE]px Verdana; }
+
+	.from { color: black; text-decoration: none; }
+	.from:hover { color: blue; }
+	.category { color: black; text-decoration: none; }
+	.category:hover { color: blue; }
+	.date { color: #C8C8C8; }
+	.comment { color: #C8C8C8; text-decoration: none; }
+	.comment:hover { color: black; }
+	.author { color: #800000; font-weight: bold; text-decoration: none; }
+	.author:hover { color: red; font-weight: bold; text-decoration: none }
+	.trusted { color:  #006600; font-weight: bold; text-decoration: none; }
+	.trusted:hover { color: green; font-weight: bold; text-decoration: none }
+	.untrusted { color: #C8C8C8; text-decoration: line-through; }
+	.untrusted:hover { color: #C8C8C8; }
+
+  </STYLE>
+
+</HEAD>
+
+<BODY BGCOLOR="#F9F9F9" STYLE='cursor:default; margin-left: 20px;' ONDRAGSTART='return false;' HIDEFOCUS='true' LINK='blue' ALINK='blue' VLINK='blue'>
+
+  <IMG ID='DownloadButton' ONFOCUS='this.blur()' TITLE='Downloaden' STYLE='float:right; cursor:hand; margin-right:20px; width: 64px; height:64px;' SRC="[SN:PATH]/Images/download.png">
+  <DIV STYLE='float:left; margin-right: 10px; margin-bottom: 10px; min-width:[SN:IMGX]px; min-height:[SN:IMGY]px;'><IMG ID='SpotImage' SRC="[SN:PATH]/Images/loading.gif" STYLE='width: expression(this.width > 350 ? 350: true);' ONFOCUS='this.blur()'></DIV>
+											     
+  <SPAN ID='Description'>[SN:DESC]</SPAN>
+
+  <BR CLEAR='all'><BR>
+
+  [SN:INFO]
+
+  <BR><HR HEIGHT="2"><BR>
+
+  <SPAN STYLE='margin-top: 10px; visibility:hidden;' ID='Comments'></SPAN>
+
+  <DIV STYLE='text-align: center; margin-top:25px;' ID='CommentsProgress'>
+    <DIV ID='CommentsStatus'>Reacties laden...</DIV><BR>
+    <IMG STYLE='width: 32px; height:32px;' SRC="[SN:PATH]/Images/loading.gif">
+  </DIV>
+
+  <CENTER><SPAN STYLE='margin-top: 50px; display:inline-block; border: 1px solid #C8C8C8;'>
+     <TABLE WIDTH="*" STYLE='margin:10px; margin-bottom:1px; text-align:left;'>
+ 
+          <TR VALIGN="middle">
+            <TD>
+              <DIV STYLE='margin-right:35px;'><B>Afzender:</B></DIV>
+            </TD>
+            <TD><INPUT NAME='Nickname' TYPE="text" STYLE='margin:5px; text-align:left;' VALUE='[SN:NICK]'></TD>
+          </TR>
+
+          <TR VALIGN="top"> 
+            <TD>
+              <DIV><B>Reactie:</B></DIV>
+            </TD>
+            <TD>
+              <TEXTAREA NAME='CommentBody' MAXLENGTH='899' STYLE='margin-left:5px; overflow:auto;' COLS='80' ROWS='6'></TEXTAREA>
+            </TD>
+          </TR>
+
+          <TR>
+            <TD ALIGN="right" COLSPAN="2">
+		<IMG ID='AddComment' ONFOCUS='this.blur()' WIDTH="32" HEIGHT="32" TITLE='Verzenden' STYLE='margin-top: 10px; cursor:hand;' SRC="[SN:PATH]/Images/reply.png">
+	    </TD>
+          </TR>
+
+     </TABLE>
+  </SPAN></CENTER>
+
+  [SN:STATS]
+
+</BODY>
+</HTML>

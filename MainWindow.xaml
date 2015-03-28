@@ -1,0 +1,889 @@
+﻿<Window 
+    x:Class="Spotnet.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:Spotnet.Spotnet"
+    xmlns:dw="clr-namespace:Spotnet.DrWPF.Windows.Controls"
+    FontSize="14"
+    Title="Spotnet"
+    Width="800" Height="600" 
+    WindowStartupLocation="CenterScreen" SizeToContent="Manual" WindowState="Maximized" Icon="/Spotnet;component/spotnet.ico" Cursor="Wait">
+
+    <Window.TaskbarItemInfo>
+        <TaskbarItemInfo ProgressValue="1" ProgressState="None" Description="Spotnet"></TaskbarItemInfo>
+    </Window.TaskbarItemInfo>
+
+    <Window.Background>
+        <LinearGradientBrush EndPoint="1,0.5" StartPoint="0,0.5">
+            <GradientStop Color="#FFEBF3FF" Offset="0"/>
+            <GradientStop Color="#FFBAD7FF" Offset="0.20"/>
+            <GradientStop Color="#FFEBF3FF" Offset="0.90"/>
+        </LinearGradientBrush>
+    </Window.Background>
+    
+    <Window.Resources>
+        
+        <ResourceDictionary>
+
+            <DataTemplate x:Key="tabItemContent">
+                <Grid>
+                    <Frame Height="{Binding Path=ActualHeight, ElementName=container}" HorizontalAlignment="Stretch" Margin="0,0,0,0" Name="Frame1" VerticalAlignment="Stretch" Width="{Binding Path=ActualWidth, ElementName=container}"  /> 
+                </Grid>
+            </DataTemplate>
+
+            <Style x:Key="ListBoxStyle"  TargetType="{x:Type ListBox}">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ListBox}">
+                            <Border Name="Bd"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            SnapsToDevicePixels="true"
+                            Padding="1">
+                                <ScrollViewer Padding="{TemplateBinding Padding}"
+                                        Focusable="false">
+                                    <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                </ScrollViewer>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsEnabled"
+                                    Value="false">
+                                    <Setter TargetName="Bd" Property="Background" Value="White"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="ListBoxItemStyle" TargetType="{x:Type ListBoxItem}">    
+                <Style.Resources>
+                    <!-- Selected and UN-focused -->
+                    <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="{x:Static SystemColors.HighlightColor}"/>
+                    <Storyboard x:Key="MouseOverStoryBoard">
+                        <ColorAnimationUsingKeyFrames AutoReverse="True" BeginTime="00:00:00" Storyboard.TargetName="{x:Null}" Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)">
+                            <SplineColorKeyFrame KeyTime="00:00:00" Value="#FFEBF3FF"/>
+                            <SplineColorKeyFrame KeyTime="00:00:00.5000000" Value="White" />
+                        </ColorAnimationUsingKeyFrames>
+                    </Storyboard>                    
+                </Style.Resources>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Trigger.EnterActions>
+                            <BeginStoryboard Storyboard="{StaticResource MouseOverStoryBoard}"/>
+                        </Trigger.EnterActions>
+                        <Setter Property="Foreground" Value="Black" />
+                        <Setter Property="Background" Value="#FFEBF3FF"/>
+                    </Trigger>
+                    <Trigger Property="IsSelected" Value="true">
+                        <Setter Property="Foreground" Value="White" />
+                    </Trigger>
+                </Style.Triggers>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                            <Border x:Name="Bd"  Cursor="Hand" SnapsToDevicePixels="true" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsSelected" Value="true">
+                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"/>
+                                    <Setter Property="Background" TargetName="Bd">
+                                        <Setter.Value>
+                                            <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+                                                <GradientStop Offset="0" Color="Transparent"/>
+                                                <GradientStop Offset="0.05" Color="{x:Static SystemColors.HighlightColor}"/>
+                                                <GradientStop Offset="0.95" Color="{x:Static SystemColors.HighlightColor}"/>
+                                                <GradientStop Offset="1" Color="Transparent"/>
+                                            </LinearGradientBrush>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Trigger>
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="IsSelected" Value="false"/>
+                                        <Condition Property="ListBox.IsEnabled" Value="false"/>
+                                    </MultiTrigger.Conditions>
+                                    <Setter Property="Foreground" Value="Black"></Setter>
+                                </MultiTrigger>
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="IsSelected" Value="true"/>
+                                        <Condition Property="Selector.IsSelectionActive" Value="false"/>
+                                    </MultiTrigger.Conditions>
+                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"/>
+                                    <Setter Property="Background" TargetName="Bd">
+                                        <Setter.Value>
+                                            <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+                                                <GradientStop Offset="0" Color="Transparent"/>
+                                                <GradientStop Offset="0.1" Color="{x:Static SystemColors.HighlightColor}"/>
+                                                <GradientStop Offset="0.9" Color="{x:Static SystemColors.HighlightColor}"/>
+                                                <GradientStop Offset="1" Color="Transparent"/>
+                                            </LinearGradientBrush>
+                                        </Setter.Value>
+                                    </Setter>
+                                </MultiTrigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="{x:Type ToolBar}" TargetType="{x:Type ToolBar}">
+                <Setter Property="OverridesDefaultStyle" Value="true"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ToolBar}">
+                            <Border CornerRadius="2" BorderThickness="3" >
+                                <ToolBarPanel IsItemsHost="true" Margin="0,0,0,0"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style TargetType="Separator" BasedOn="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}">
+                <Setter Property="Margin" Value="2,0" />
+            </Style>
+           
+            <Style x:Key="TabItemFocusVisual">
+                <Setter Property="Control.Template">
+                    <Setter.Value>
+                        <ControlTemplate>
+                            <Rectangle SnapsToDevicePixels="true" Stroke="Black" StrokeDashArray="1 2" StrokeThickness="1" Margin="3,3,3,1"/>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <SolidColorBrush x:Key="TabControlNormalBorderBrush" Color="#8C8E94"/>
+            <LinearGradientBrush x:Key="TabItemHotBackground" EndPoint="0,1" StartPoint="0,0">
+                <GradientStop Color="#EAF6FD" Offset="0.15"/>
+                <GradientStop Color="#D9F0FC" Offset=".5"/>
+                <GradientStop Color="#BEE6FD" Offset=".5"/>
+                <GradientStop Color="#A7D9F5" Offset="1"/>
+            </LinearGradientBrush>
+            <SolidColorBrush x:Key="TabItemSelectedBackground" Color="#F9F9F9"/>
+            <SolidColorBrush x:Key="TabItemHotBorderBrush" Color="#3C7FB1"/>
+            <SolidColorBrush x:Key="TabItemDisabledBackground" Color="#F4F4F4"/>
+            <SolidColorBrush x:Key="TabItemDisabledBorderBrush" Color="#FFC9C7BA"/>
+
+            <Style TargetType="{x:Type local:CloseableTabItem}" >
+                <Style.Resources>
+                    <LinearGradientBrush x:Key="ButtonNormalBackground" EndPoint="0,1" StartPoint="0,0">
+                        <GradientStop Color="#F3F3F3" Offset="0"/>
+                        <GradientStop Color="#EBEBEB" Offset="0.5"/>
+                        <GradientStop Color="#DDDDDD" Offset="0.5"/>
+                        <GradientStop Color="#CDCDCD" Offset="1"/>
+                    </LinearGradientBrush>
+                    <LinearGradientBrush x:Key="ButtonOverBackground" EndPoint="0,1" StartPoint="0,0">
+                        <GradientStop Color="#FFFAFAFA" Offset="0"/>
+                        <GradientStop Color="#FFE0E0E3" Offset="1"/>
+                    </LinearGradientBrush>
+                    <LinearGradientBrush x:Key="ButtonPressedBackground" EndPoint="0,1" StartPoint="0,0">
+                        <GradientStop Color="#FFE0E0E2" Offset="0"/>
+                        <GradientStop Color="#FFF8F8F8" Offset="1"/>
+                    </LinearGradientBrush>
+                    <SolidColorBrush x:Key="ButtonNormalBorder" Color="#FF969696"/>
+                    <Style x:Key="CloseableTabItemButtonStyle" TargetType="{x:Type Button}">
+                        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                        <Setter Property="Background" Value="{StaticResource ButtonNormalBackground}"/>
+                        <Setter Property="BorderBrush" Value="{StaticResource ButtonNormalBorder}"/>
+                        <Setter Property="BorderThickness" Value="1"/>
+                        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                        <Setter Property="VerticalContentAlignment" Value="Center"/>
+                        <Setter Property="Padding" Value="4"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type Button}">
+                                    <Grid>
+                                        <Border SnapsToDevicePixels="true" x:Name="Chrome" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="2" Opacity="0" />
+                                        <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" RecognizesAccessKey="True"/>
+                                    </Grid>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Opacity" TargetName="Chrome" Value="1"/>
+                                            <Setter Property="Background" TargetName="Chrome" Value="{DynamicResource ButtonOverBackground}" />
+                                        </Trigger>
+                                        <Trigger Property="IsPressed" Value="True">
+                                            <Setter Property="Opacity" TargetName="Chrome" Value="1"/>
+                                            <Setter Property="Background" TargetName="Chrome" Value="{DynamicResource ButtonPressedBackground}" />
+                                        </Trigger>
+                                        <Trigger Property="IsEnabled" Value="false">
+                                            <Setter Property="Foreground" Value="#ADADAD"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Style.Resources>
+                <Setter Property="FocusVisualStyle" Value="{StaticResource TabItemFocusVisual}"/>
+                <Setter Property="Foreground" Value="Black"/>
+                <Setter Property="Padding" Value="6,1,6,1"/>
+                <Setter Property="BorderBrush" Value="{StaticResource TabControlNormalBorderBrush}"/>
+                <Setter Property="Background" Value="{StaticResource ButtonNormalBackground}"/>
+                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type local:CloseableTabItem}">
+                            <Grid SnapsToDevicePixels="true">
+                                <Border x:Name="Bd" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1,1,1,0" >
+                                    <DockPanel x:Name="ContentPanel">
+                                        <Button x:Name="PART_Close" HorizontalAlignment="Center" Margin="3,0,3,0" VerticalAlignment="Center" Width="16" Height="16" DockPanel.Dock="Right" Style="{DynamicResource CloseableTabItemButtonStyle}" ToolTip="Close Tab">
+                                            <Path x:Name="Path" Stretch="Fill" StrokeThickness="0.5" Stroke="#FF333333" Fill="#FF969696" Data="F1 M 2.28484e-007,1.33331L 1.33333,0L 4.00001,2.66669L 6.66667,6.10352e-005L 8,1.33331L 5.33334,4L 8,6.66669L 6.66667,8L 4,5.33331L 1.33333,8L 1.086e-007,6.66669L 2.66667,4L 2.28484e-007,1.33331 Z " HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                                        </Button>
+                                        <ContentPresenter x:Name="Content" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" ContentSource="Header" RecognizesAccessKey="True" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="{TemplateBinding Padding}"/>
+                                    </DockPanel>
+                                </Border>
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" SourceName="PART_Close" Value="True">
+                                    <Setter Property="Fill" TargetName="Path" Value="#FFB83C3D"/>
+                                </Trigger>
+                                <Trigger Property="IsPressed" SourceName="PART_Close" Value="True">
+                                    <Setter Property="Fill" TargetName="Path" Value="#FF9D3838"/>
+                                </Trigger>
+                                <Trigger Property="IsMouseOver" Value="true">
+                                    <Setter Property="Background" TargetName="Bd" Value="{StaticResource TabItemHotBackground}"/>
+                                </Trigger>
+                                <Trigger Property="IsSelected" Value="true">
+                                    <Setter Property="Panel.ZIndex" Value="1"/>
+                                    <Setter Property="Background" TargetName="Bd" Value="{StaticResource TabItemSelectedBackground}"/>
+                                </Trigger>
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="IsSelected" Value="false"/>
+                                        <Condition Property="IsMouseOver" Value="true"/>
+                                    </MultiTrigger.Conditions>
+                                    <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource TabItemHotBorderBrush}"/>
+                                </MultiTrigger>
+                                <Trigger Property="TabStripPlacement" Value="Bottom">
+                                    <Setter Property="BorderThickness" TargetName="Bd" Value="1,0,1,1"/>
+                                </Trigger>
+                                <Trigger Property="TabStripPlacement" Value="Left">
+                                    <Setter Property="BorderThickness" TargetName="Bd" Value="1,1,0,1"/>
+                                </Trigger>
+                                <Trigger Property="TabStripPlacement" Value="Right">
+                                    <Setter Property="BorderThickness" TargetName="Bd" Value="0,1,1,1"/>
+                                </Trigger>
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="IsSelected" Value="true"/>
+                                        <Condition Property="TabStripPlacement" Value="Top"/>
+                                    </MultiTrigger.Conditions>
+                                    <Setter Property="Margin" Value="-2,-2,-2,-1"/>
+                                    <Setter Property="Margin" TargetName="ContentPanel" Value="0,0,0,1"/>
+                                </MultiTrigger>
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="IsSelected" Value="true"/>
+                                        <Condition Property="TabStripPlacement" Value="Bottom"/>
+                                    </MultiTrigger.Conditions>
+                                    <Setter Property="Margin" Value="-2,-1,-2,-2"/>
+                                    <Setter Property="Margin" TargetName="ContentPanel" Value="0,1,0,0"/>
+                                </MultiTrigger>
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="IsSelected" Value="true"/>
+                                        <Condition Property="TabStripPlacement" Value="Left"/>
+                                    </MultiTrigger.Conditions>
+                                    <Setter Property="Margin" Value="-2,-2,-1,-2"/>
+                                    <Setter Property="Margin" TargetName="ContentPanel" Value="0,0,1,0"/>
+                                </MultiTrigger>
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="IsSelected" Value="true"/>
+                                        <Condition Property="TabStripPlacement" Value="Right"/>
+                                    </MultiTrigger.Conditions>
+                                    <Setter Property="Margin" Value="-1,-2,-2,-2"/>
+                                    <Setter Property="Margin" TargetName="ContentPanel" Value="1,0,0,0"/>
+                                </MultiTrigger>
+                                <Trigger Property="IsEnabled" Value="false">
+                                    <Setter Property="Background" TargetName="Bd" Value="{StaticResource TabItemDisabledBackground}"/>
+                                    <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource TabItemDisabledBorderBrush}"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style TargetType="{x:Type local:UnCloseableTabItem}" >
+                <Style.Resources>
+                    <LinearGradientBrush x:Key="ButtonNormalBackground" EndPoint="0,1" StartPoint="0,0">
+                        <GradientStop Color="#F3F3F3" Offset="0"/>
+                        <GradientStop Color="#EBEBEB" Offset="0.5"/>
+                        <GradientStop Color="#DDDDDD" Offset="0.5"/>
+                        <GradientStop Color="#CDCDCD" Offset="1"/>
+                    </LinearGradientBrush>
+                    <LinearGradientBrush x:Key="ButtonOverBackground" EndPoint="0,1" StartPoint="0,0">
+                        <GradientStop Color="#FFFAFAFA" Offset="0"/>
+                        <GradientStop Color="#FFE0E0E3" Offset="1"/>
+                    </LinearGradientBrush>
+                    <LinearGradientBrush x:Key="ButtonPressedBackground" EndPoint="0,1" StartPoint="0,0">
+                        <GradientStop Color="#FFE0E0E2" Offset="0"/>
+                        <GradientStop Color="#FFF8F8F8" Offset="1"/>
+                    </LinearGradientBrush>
+                    <SolidColorBrush x:Key="ButtonNormalBorder" Color="#FF969696"/>
+                    <Style x:Key="UnCloseableTabItemButtonStyle" TargetType="{x:Type Button}">
+                        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                        <Setter Property="Background" Value="{StaticResource ButtonNormalBackground}"/>
+                        <Setter Property="BorderBrush" Value="{StaticResource ButtonNormalBorder}"/>
+                        <Setter Property="BorderThickness" Value="1"/>
+                        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                        <Setter Property="VerticalContentAlignment" Value="Center"/>
+                        <Setter Property="Padding" Value="4"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type Button}">
+                                    <Grid>
+                                        <Border SnapsToDevicePixels="true" x:Name="Chrome" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="2" Opacity="0" />
+                                        <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" RecognizesAccessKey="True"/>
+                                    </Grid>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Opacity" TargetName="Chrome" Value="1"/>
+                                            <Setter Property="Background" TargetName="Chrome" Value="{DynamicResource ButtonOverBackground}" />
+                                        </Trigger>
+                                        <Trigger Property="IsPressed" Value="True">
+                                            <Setter Property="Opacity" TargetName="Chrome" Value="1"/>
+                                            <Setter Property="Background" TargetName="Chrome" Value="{DynamicResource ButtonPressedBackground}" />
+                                        </Trigger>
+                                        <Trigger Property="IsEnabled" Value="false">
+                                            <Setter Property="Foreground" Value="#ADADAD"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Style.Resources>
+                <Setter Property="FocusVisualStyle" Value="{StaticResource TabItemFocusVisual}"/>
+                <Setter Property="Foreground" Value="Black"/>
+                <Setter Property="Padding" Value="6,1,6,1"/>
+                <Setter Property="BorderBrush" Value="{StaticResource TabControlNormalBorderBrush}"/>
+                <Setter Property="Background" Value="{StaticResource ButtonNormalBackground}"/>
+                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type local:UnCloseableTabItem}">
+                            <Grid SnapsToDevicePixels="true">
+                                <Border x:Name="Bd" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1,1,1,0" >
+                                    <DockPanel x:Name="ContentPanel">
+                                        <ContentPresenter x:Name="Content" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" ContentSource="Header" RecognizesAccessKey="True" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="{TemplateBinding Padding}"/>
+                                    </DockPanel>
+                                </Border>
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="true">
+                                    <Setter Property="Background" TargetName="Bd" Value="{StaticResource TabItemHotBackground}"/>
+                                </Trigger>
+                                <Trigger Property="IsSelected" Value="true">
+                                    <Setter Property="Panel.ZIndex" Value="1"/>
+                                    <Setter Property="Background" TargetName="Bd" Value="{StaticResource TabItemSelectedBackground}"/>
+                                </Trigger>
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="IsSelected" Value="false"/>
+                                        <Condition Property="IsMouseOver" Value="true"/>
+                                    </MultiTrigger.Conditions>
+                                    <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource TabItemHotBorderBrush}"/>
+                                </MultiTrigger>
+                                <Trigger Property="TabStripPlacement" Value="Bottom">
+                                    <Setter Property="BorderThickness" TargetName="Bd" Value="1,0,1,1"/>
+                                </Trigger>
+                                <Trigger Property="TabStripPlacement" Value="Left">
+                                    <Setter Property="BorderThickness" TargetName="Bd" Value="1,1,0,1"/>
+                                </Trigger>
+                                <Trigger Property="TabStripPlacement" Value="Right">
+                                    <Setter Property="BorderThickness" TargetName="Bd" Value="0,1,1,1"/>
+                                </Trigger>
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="IsSelected" Value="true"/>
+                                        <Condition Property="TabStripPlacement" Value="Top"/>
+                                    </MultiTrigger.Conditions>
+                                    <Setter Property="Margin" Value="-2,-2,-2,-1"/>
+                                    <Setter Property="Margin" TargetName="ContentPanel" Value="0,0,0,1"/>
+                                </MultiTrigger>
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="IsSelected" Value="true"/>
+                                        <Condition Property="TabStripPlacement" Value="Bottom"/>
+                                    </MultiTrigger.Conditions>
+                                    <Setter Property="Margin" Value="-2,-1,-2,-2"/>
+                                    <Setter Property="Margin" TargetName="ContentPanel" Value="0,1,0,0"/>
+                                </MultiTrigger>
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="IsSelected" Value="true"/>
+                                        <Condition Property="TabStripPlacement" Value="Left"/>
+                                    </MultiTrigger.Conditions>
+                                    <Setter Property="Margin" Value="-2,-2,-1,-2"/>
+                                    <Setter Property="Margin" TargetName="ContentPanel" Value="0,0,1,0"/>
+                                </MultiTrigger>
+                                <MultiTrigger>
+                                    <MultiTrigger.Conditions>
+                                        <Condition Property="IsSelected" Value="true"/>
+                                        <Condition Property="TabStripPlacement" Value="Right"/>
+                                    </MultiTrigger.Conditions>
+                                    <Setter Property="Margin" Value="-1,-2,-2,-2"/>
+                                    <Setter Property="Margin" TargetName="ContentPanel" Value="1,0,0,0"/>
+                                </MultiTrigger>
+                                <Trigger Property="IsEnabled" Value="false">
+                                    <Setter Property="Background" TargetName="Bd" Value="{StaticResource TabItemDisabledBackground}"/>
+                                    <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource TabItemDisabledBorderBrush}"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <Style x:Key="TreeViewItemStyle" TargetType="TreeViewItem">
+                <Style.Resources>
+                    <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="Transparent"/>
+                    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent"/>
+                    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black"/>
+                </Style.Resources>
+                <Setter Property="IsExpanded" Value="{Binding IsExpanded}" />
+        <Setter Property="IsSelected" Value="{Binding IsInitiallySelected, Mode=OneTime}" />
+        <Setter Property="KeyboardNavigation.AcceptsReturn" Value="True" />
+        <Setter Property="dw:VirtualToggleButton.IsVirtualToggleButton" Value="True" />
+        <Setter Property="dw:VirtualToggleButton.IsChecked" Value="{Binding IsChecked}" />        
+        </Style>
+
+
+            <LinearGradientBrush x:Key="NormalBrush" StartPoint="0,0" EndPoint="0,1">
+                <GradientStop Color="#202020" Offset="0.0"/>
+                <GradientStop Color="#444444" Offset="1.0"/>
+            </LinearGradientBrush>
+            <LinearGradientBrush x:Key="NormalBorderBrush" StartPoint="0,0" EndPoint="0,1">
+                <GradientStop Color="#909090" Offset="0.0"/>
+                <GradientStop Color="#303030" Offset="1.0"/>
+            </LinearGradientBrush>
+            <SolidColorBrush x:Key="GlyphBrush" Color="#FFFFFF" />
+            <LinearGradientBrush x:Key="HoverBrush" StartPoint="0,0" EndPoint="0,1">
+                <GradientStop Color="#FFFFFF" Offset="0.0"/>
+                <GradientStop Color="#1589FF" Offset="1.0"/>
+            </LinearGradientBrush>
+            <LinearGradientBrush x:Key="PressedBrush" StartPoint="0,0" EndPoint="0,1">
+                <GradientStop Color="#202020" Offset="0.0"/>
+                <GradientStop Color="#404040" Offset="0.1"/>
+                <GradientStop Color="#707070" Offset="0.9"/>
+                <GradientStop Color="#808080" Offset="1.0"/>
+            </LinearGradientBrush>
+            <SolidColorBrush x:Key="ForegroundBrush" Color="#C0C0C0" />
+            <LinearGradientBrush x:Key="HeaderBrush" StartPoint="0,0" EndPoint="0,1">
+                <GradientStop Color="#357EC7" Offset="0"/>
+                <GradientStop Color="#072561" Offset="1"/>
+            </LinearGradientBrush>
+            <LinearGradientBrush x:Key="OpenHeaderBorderBrush" StartPoint="0,0" EndPoint="0,1">
+                <GradientStop Color="#C0C0C0" Offset="0.0"/>
+                <GradientStop Color="#808080" Offset="1.0"/>
+            </LinearGradientBrush>
+
+            <SolidColorBrush x:Key="GroupBackgroundBrush" Color="#C6DEFF"/>
+            <SolidColorBrush x:Key="OpenGroupBorderBrush" Color="#808080"/>
+            <SolidColorBrush x:Key="DisabledBackgroundBrush" Color="#404040" />
+            <SolidColorBrush x:Key="DisabledBorderBrush" Color="#606060" />
+            <SolidColorBrush x:Key="DisabledForegroundBrush" Color="#808080" />
+
+            <!-- Expander toogle button template -->
+            <ControlTemplate x:Key="ExpanderToggleButton" TargetType="ToggleButton">
+                <Border
+        Name="Border"
+        CornerRadius="20"
+        Margin="2,4" 
+        Background="Transparent"
+        BorderBrush="{StaticResource NormalBorderBrush}"
+        BorderThickness="1"
+        >
+                    <Path
+        Name="Arrow"
+        Fill="{StaticResource GlyphBrush}"
+        HorizontalAlignment="Center"
+        VerticalAlignment="Center"
+        Data="M 0 0 L 4 4 L 8 0 Z"/>
+                </Border>
+                <ControlTemplate.Triggers>
+                    <Trigger Property="ToggleButton.IsMouseOver" Value="true">
+                        <Setter TargetName="Border" Property="Background"
+                    Value="{StaticResource HoverBrush}" />
+                    </Trigger>
+                    <Trigger Property="IsPressed" Value="true">
+                        <Setter TargetName="Border" Property="Background"
+                    Value="{StaticResource PressedBrush}" />
+                    </Trigger>
+                    <Trigger Property="IsChecked" Value="true">
+                        <Setter TargetName="Arrow" Property="Data"
+                    Value="M 0 4 L 4 0 L 8 4 Z" />
+                    </Trigger>
+                    <Trigger Property="IsEnabled" Value="False">
+                        <Setter TargetName="Border" Property="Background"
+                    Value="{StaticResource DisabledBackgroundBrush}" />
+                        <Setter TargetName="Border" Property="BorderBrush"
+                    Value="{StaticResource DisabledBorderBrush}" />
+                        <Setter Property="Foreground"
+                    Value="{StaticResource DisabledForegroundBrush}"/>
+                        <Setter TargetName="Arrow" Property="Fill"
+                    Value="{StaticResource DisabledForegroundBrush}" />
+                    </Trigger>
+                </ControlTemplate.Triggers>
+            </ControlTemplate>
+
+            <!-- Expander style -->
+            <Style TargetType="Expander">
+                <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Expander">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Name="ContentRow" Height="0"/>
+                                </Grid.RowDefinitions>
+                                <Border 
+                Name="Border" 
+                Grid.Row="0" 
+                Background="{StaticResource HeaderBrush}"
+                BorderBrush="{StaticResource NormalBorderBrush}"
+                BorderThickness="1" 
+                CornerRadius="4,4,0,0" >
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="20" />
+                                        </Grid.ColumnDefinitions>
+                                        <ToggleButton
+                    Grid.Column="1"
+                    IsChecked="{Binding Path=IsExpanded,Mode=TwoWay,
+                                        RelativeSource={RelativeSource TemplatedParent}}"
+                    OverridesDefaultStyle="True" 
+                    Template="{StaticResource ExpanderToggleButton}" 
+                    Background="{StaticResource NormalBrush}" />
+                                        <ContentPresenter 
+                    Grid.Column="0"
+                    Margin="4" 
+                    ContentSource="Header" 
+                    RecognizesAccessKey="True" />
+                                    </Grid>
+                                </Border>
+                                <Border 
+                Name="Content" 
+                Grid.Row="1" 
+                Background="{StaticResource GroupBackgroundBrush}"
+                BorderBrush="{StaticResource OpenGroupBorderBrush}" 
+                BorderThickness="1,0,1,1" 
+                CornerRadius="0,0,4,4" >
+                                    <ContentPresenter Margin="4" />
+                                </Border>
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsExpanded" Value="True">
+                                    <Setter TargetName="ContentRow" Property="Height"
+                        Value="{Binding ElementName=Content,Path=Height}" />
+                                    <Setter TargetName="Border" Property="BorderBrush"
+                        Value="{StaticResource OpenHeaderBorderBrush}"/>
+                                </Trigger>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter TargetName="Border" Property="Background"
+                        Value="{StaticResource DisabledBackgroundBrush}" />
+                                    <Setter TargetName="Border" Property="BorderBrush"
+                        Value="{StaticResource DisabledBorderBrush}" />
+                                    <Setter Property="Foreground"
+                        Value="{StaticResource DisabledForegroundBrush}"/>
+                                </Trigger>
+
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            
+            <HierarchicalDataTemplate 
+        x:Key="CheckBoxItemTemplate"
+        ItemsSource="{Binding Children, Mode=OneTime}"
+        >
+        <StackPanel Orientation="Horizontal">
+            <!-- These elements are bound to a FooViewModel object. -->
+            <CheckBox
+            Focusable="False" 
+            Visibility = "{Binding IsVisible}"
+            IsChecked="{Binding IsChecked}" 
+            VerticalAlignment="Center"
+            HorizontalAlignment="Left"
+            Width="{Binding TheMargin}" Margin="0" />
+            <ContentPresenter 
+            Content="{Binding Name, Mode=OneTime}" 
+            Margin="2,0"
+            />
+        </StackPanel>
+        </HierarchicalDataTemplate>
+    </ResourceDictionary>
+    </Window.Resources>
+
+    <DockPanel Name="Dock" Height="Auto" Width="Auto" HorizontalAlignment="Stretch" ClipToBounds="False" LastChildFill="True" >
+
+        <DockPanel Grid.Row="2" DockPanel.Dock="Top" LastChildFill="True" Opacity="1">
+
+            <DockPanel.Background>
+                <SolidColorBrush Color="White" Opacity="0.4"></SolidColorBrush>
+            </DockPanel.Background>
+            
+            <ToolBar Height="33" Name="MainToolBar" DockPanel.Dock="Left" IsHitTestVisible="True" ClipToBounds="False" Visibility="Visible" Padding="0" HorizontalAlignment="Stretch" BorderBrush="{x:Null}" Background="{x:Null}">
+
+                <Menu DockPanel.Dock="Left"  Grid.Column="0" Name="MainMenu" ToolBar.OverflowMode="Never" Height="Auto"  HorizontalAlignment="Stretch" BorderBrush="{x:Null}" FontSize="14" Background="{x:Null}">
+                    
+                <MenuItem Header="_Bestand" Name="MenuItem1" Grid.Column="0">
+
+                    <MenuItem Header="Bijwerken" Name="Bijwerken" IsEnabled="False" >
+                        <MenuItem.Icon>
+                            <Image Source="/Spotnet;component/Images/refresh.ico" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <Separator/>
+                    <MenuItem Header="_Toevoegen" Name="Toevoegen">
+
+                        <MenuItem.Icon>
+                            <Image Source="/Spotnet;component/Images/Addspot.ico" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <Separator/>
+                    <MenuItem Header="Afsluiten" Name="Afsluiten">
+                    <MenuItem.Icon>
+                        <Image Source="/Spotnet;component/Images/close.ico" />
+                    </MenuItem.Icon>
+                </MenuItem>
+
+                </MenuItem>
+
+                <MenuItem Header="Be_werken" Name="MenuItem3" Grid.Column="1">
+
+                        <MenuItem Header="_Provider..." Name="Provider" >
+                            <MenuItem.Icon>
+                                <Image Source="/Spotnet;component/Images/provider.ico"  />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <Separator/>
+                        <MenuItem Header="Downloadmap" Name="Map">
+                            <MenuItem.Icon>
+                                <Image Source="/Spotnet;component/Images/downloads.ico" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Name="DownloadKnop" Header="Downloadknop" >
+                            <MenuItem.Icon>
+                                <Image Source="/Spotnet;component/Images/button.ico" />
+                            </MenuItem.Icon>
+                            <MenuItem Header="Downloaden" Name="ViaSpotnet" IsCheckable="True" />
+                            <MenuItem Header="NZB Openen" Name="ViaStandaard" IsCheckable="True" />
+                            <MenuItem Header="NZB Opslaan" Name="NZBOpslaan" IsCheckable="True" />
+                        </MenuItem>
+                        <Separator/>
+                    <MenuItem Header="_Instellingen" Name="Instellingen">
+                        <MenuItem.Icon>
+                            <Image Source="/Spotnet;component/Images/settings.ico" />
+                        </MenuItem.Icon>
+                            <MenuItem Header="Zoeksuggesties weergeven" Name="ShowSug" IsCheckable="True" />
+                            <MenuItem Header="Bijwerken tijdens opstarten" Name="SetUpdate" IsCheckable="True" />
+                            <MenuItem Header="Reacties automatisch ophalen" Name="ShowCom" IsCheckable="True" />
+                            <MenuItem Header="Minimaliseren naar systeemvak" Name="SystemTray" IsCheckable="True" />
+                            <MenuItem Header="Geopende tabbladen onthouden" Name="SetTabs" IsCheckable="True" />
+                    </MenuItem>
+                </MenuItem>
+
+                <MenuItem Header="Beeld" Name="Beeld" Grid.Column="2">
+
+                    <MenuItem Name="sCol" Header="Kolommen" >
+                        <MenuItem.Icon>
+                            <Image Source="/Spotnet;component/Images/columns.ico" />
+                        </MenuItem.Icon>
+                        <MenuItem Header="xx" IsCheckable="True" />
+                    </MenuItem>
+
+                        <MenuItem Name="SpotsCount" Header="Spots tonen" >
+                        <MenuItem.Icon>
+                            <Image Source="/Spotnet;component/Images/rows.ico" />
+                        </MenuItem.Icon>                       
+
+                        <MenuItem Header="500" Name="Spot500" IsCheckable="True" />
+                        <MenuItem Header="5.000" Name="Spot5000" IsCheckable="True" />
+                        <MenuItem Header="Onbeperkt" Name="SpotsAll" IsCheckable="True" />
+                        
+                    </MenuItem>                    
+                    <MenuItem Name="Lettergrootte" Header="Lettergrootte" >
+                        <MenuItem.Icon>
+                            <Image Source="/Spotnet;component/Images/font2.ico" />
+                        </MenuItem.Icon>
+                        <MenuItem Header="10 punten" Name="Let10" IsCheckable="True" />
+                        <MenuItem Header="12 punten" Name="Let12" IsCheckable="True" />
+                        <MenuItem Header="14 punten" Name="Let14" IsCheckable="True" />
+                        <MenuItem Header="16 punten" Name="Let16" IsCheckable="True" />
+                        <MenuItem Header="18 punten" Name="Let18" IsCheckable="True" />
+                        <MenuItem Header="20 punten" Name="Let20" IsCheckable="True" />
+                    </MenuItem>
+
+                </MenuItem>
+
+                <MenuItem Header="_Help" Name="MenuItem2" Grid.Column="3">
+                    <MenuItem Header="Over..." Name="Over">
+                        <MenuItem.Icon>
+                            <Image Source="/Spotnet;component/Images/about.ico" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+
+                </MenuItem>
+               
+            </Menu>
+
+            </ToolBar>
+
+            <Image Name = "Bij" Width="20" Height="20" Source="/Spotnet;component/Images/refresh2.png" DockPanel.Dock="Right" Margin="5,0,8,0" Opacity="0.8">
+
+            </Image>
+
+            <TextBlock Name="StatusMsg" Width="Auto" Grid.Column="1" HorizontalAlignment="Right" TextAlignment="Right" VerticalAlignment="Center" Text="Spots updaten.." Margin="0,0,10,2" DockPanel.Dock="Right">
+
+            </TextBlock>
+
+        </DockPanel>
+
+        <ScrollViewer Name="stackPanelScrollViewer" VerticalScrollBarVisibility="Auto" DockPanel.Dock="Left">
+            <StackPanel CanVerticallyScroll="True" ClipToBounds="False" Height="Auto" Name="StackPanel2" Width="250" DockPanel.Dock="Left" Orientation="Vertical" VerticalAlignment="Top" CanHorizontallyScroll="False" Margin="5">
+                <Border BorderThickness="0" CornerRadius="5" Padding="1" BorderBrush="Black"  Margin="0,5" >
+                    <Expander Header="Zoeken" Height="Auto" IsExpanded="True" Name="Expander1" Width="Auto" HeaderStringFormat="" Margin="2,0,2,2" Foreground="White">
+                        
+                        <Grid Height="Auto" MaxHeight="700">
+
+                            <Grid.Background>
+                                <LinearGradientBrush>
+                                    <GradientStop Color="#FFC6DEFF" Offset="0"/>
+                                    <GradientStop Color="#FFC6DEFF" Offset="0.7"/>
+                                    <GradientStop Color="#FFB6CEFF" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Grid.Background>
+                            
+                            <RadioButton Content=" Afzender" ToolTip="Zoeken op afzender" IsEnabled="True" Margin="73,11,0,68" Name="RadioButton5" Width="76" HorizontalAlignment="Left" />
+                            <RadioButton Content=" Titel" ToolTip="Zoeken op titel"  IsChecked="True" Margin="10,11,0,68" Name="RadioButton6" Width="66" HorizontalAlignment="Left" />
+                            <RadioButton Content=" Tag" ToolTip="Zoeken op tag"  IsEnabled="True" Margin="162,11,-36,68" Name="RadioButton7" Width="118" />
+                            <ComboBox Margin="10,43,24,41" Name="SearchBox" Width="217" IsEnabled="True"  IsEditable="True"  IsTextSearchEnabled="False" >
+                                <ComboBox.ContextMenu>
+                                    <ContextMenu >
+                                        <MenuItem Command="Copy"/>
+                                        <MenuItem Command="Paste"/>
+                                        <MenuItem Command="Delete" />
+                                        <Separator />
+                                        <MenuItem Header="Suggesties weergeven" Name="SugTonen" IsCheckable="True" />
+                                    </ContextMenu>
+                                </ComboBox.ContextMenu>
+                            </ComboBox>
+
+                            <Image Name="ZoekPlaatje" Margin="10,43,14,41" Source="/Spotnet;component/Images/search.ico" Width="16" Height="16" HorizontalAlignment="Right" VerticalAlignment="Center" Stretch="None" Opacity="0.3">
+                                <Image.RenderTransform>
+                                    <ScaleTransform ScaleX="-1"/>
+                                </Image.RenderTransform>
+                            </Image>
+                            <CheckBox Content="Uitgebreid" ToolTip="Toon resultaten die gedeeltelijk matchen "  IsChecked="True" IsEnabled="True" Margin="10,80,20,5" Name="Uitgebreid" Width="246" />
+                            <CheckBox Content="Filter" ToolTip="Filter de zoekresultaten " IsChecked="False" IsEnabled="True" Margin="1,80,25,5" Name="GebruikFilter" Width="auto" MaxWidth="100" HorizontalContentAlignment="Right" HorizontalAlignment="Right" />
+                        </Grid>
+                    </Expander>
+                </Border>
+                <Border BorderThickness="0" CornerRadius="5" Padding="1" BorderBrush="Black" Margin="0,5" >
+                    <Expander Header="Filters" HeaderStringFormat="" Height="Auto" IsExpanded="True" Name="Expander2" Width="Auto" Margin="2" Foreground="White">
+                        <Grid HorizontalAlignment="Stretch">
+                            <ListBox Name="FilterList" Style="{DynamicResource ListBoxStyle}"  ItemContainerStyle="{DynamicResource ListBoxItemStyle}" HorizontalAlignment="Stretch" Margin="0,0,0,0" Padding="0,10,0,15" VerticalAlignment="Stretch" FontFamily="Verdana" ScrollViewer.HorizontalScrollBarVisibility="Disabled" >
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Margin="20,0,0,00" Orientation="Horizontal" >
+                                            <Image Source="{Binding Image}"  VerticalAlignment="Center"  />
+                                            <TextBlock Padding="10,1,1,1" Text="{Binding DisplayText}" VerticalAlignment="Center" FontSize="{Binding Fontsize}" />
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </Grid>
+                    </Expander>
+                </Border>
+                <Border BorderThickness="0" CornerRadius="5" Padding="1" BorderBrush= "Black" Margin="0,5" >
+                    <Expander Header="Filter toevoegen" Height="Auto" IsExpanded="False" Name="Filters" Width="Auto" Margin="2" Foreground="#FFFAFAFA" BorderThickness="1" >
+                        <Grid Width="Auto" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" >
+                            <TextBox Margin="1,3,1,2" Name="Filterbox" ToolTip="Naam voor de nieuwe filter" VerticalAlignment="Top" ></TextBox>
+                            <Image Name="AddFilter" Margin="10,8,8,10" Source="/Spotnet;component/Images/add.ico" Width="16" Height="16" HorizontalAlignment="Right"  VerticalAlignment="Top" Stretch="None" Opacity="0.5"></Image>
+                            <TreeView Height="Auto" BorderThickness="1" ItemContainerStyle="{StaticResource TreeViewItemStyle}" ItemTemplate="{StaticResource CheckBoxItemTemplate}" ItemsSource="{Binding Mode=OneTime}" Margin="0,34,0,0" Padding="7" Name="tree" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" >
+                            </TreeView>
+                            <Button Content="OK" HorizontalAlignment="Left" Margin="185,8,0,0" Name="btnToevoegen" VerticalAlignment="Top"  IsEnabled="False" Width="40" Height="24" Visibility="Hidden"  />
+                        </Grid>
+                    </Expander>
+                </Border>
+            </StackPanel>
+
+        </ScrollViewer>
+       
+        <TabControl Height="Auto" Name="TabControl1" Width="Auto" DockPanel.Dock="Right" Margin="0,5,0,0" BorderThickness="1">
+
+            <local:UnCloseableTabItem Tag="OverzichtTab" AllowDrop="False" IsSelected="True">
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Height="16" Source="/Spotnet;component/Images/nofilter.ico" VerticalAlignment="Bottom"/>
+                        <TextBlock Text="Overzicht " Margin="4,0,0,0" VerticalAlignment="Center" />
+                    </StackPanel>
+                </TabItem.Header>
+                <DataGrid CanUserAddRows="False" HorizontalAlignment="Stretch" Name="Spots" VerticalAlignment="Stretch" IsReadOnly="True" SelectionMode="Single" Focusable="True" GridLinesVisibility="None" AlternationCount="1" AlternatingRowBackground="#FFEDF1F7" HeadersVisibility="Column" RowDetailsVisibilityMode="Collapsed" AreRowDetailsFrozen="True" ColumnHeaderHeight="NaN" CanUserResizeRows="False" IsTextSearchEnabled="False" AutoGenerateColumns="False" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling" ScrollViewer.IsDeferredScrollingEnabled="True" RowHeaderWidth="0" CanUserSortColumns="True" RowBackground="White">
+                    <DataGrid.CellStyle>
+                        <Style TargetType="DataGridCell">
+                            <Setter Property="BorderThickness" Value="0"/>
+                        </Style>
+                    </DataGrid.CellStyle>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Formaat" MinWidth="80" Binding="{Binding Data.Formaat, Mode=OneWay}" />
+                        <DataGridTextColumn Header="Titel" MinWidth="250"  Width="*" Binding="{Binding Data.Titel, Mode=OneWay}"  />
+                        <DataGridTextColumn Header="Genre" MinWidth="120"  Binding="{Binding Data.Genre, Mode=OneWay}" />
+                        <DataGridTextColumn Header="Afzender" MinWidth="120"  Binding="{Binding Data.Afzender, Mode=OneWay}" />
+                        <DataGridTextColumn Header="Tag" MinWidth="120"  Binding="{Binding Data.Tag, Mode=OneWay}" Visibility="Hidden" />
+                        <DataGridTextColumn Header="Datum" MinWidth="120"  Binding="{Binding Data.Datum, Mode=OneWay}" Visibility="Hidden" />
+                        <DataGridTextColumn Header="Leeftijd" MinWidth="120"  Binding="{Binding Data.Leeftijd, Mode=OneWay}" />
+                        <DataGridTextColumn Header="Omvang" MinWidth="80"  Binding="{Binding Data.Omvang, Mode=OneWay}" Visibility="Hidden" />
+                    </DataGrid.Columns>
+                </DataGrid>
+                    </local:UnCloseableTabItem>
+                    <local:UnCloseableTabItem Tag="DownloadsTab" AllowDrop="False" IsSelected="False" IsEnabled="True">
+                <TabItem.Header>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Height="16" Source="/Spotnet;component/Images/button.ico" VerticalAlignment="Bottom"/>
+                        <TextBlock Text="Downloads " Margin="4,0,0,0" VerticalAlignment="Center" />
+                    </StackPanel>
+                </TabItem.Header>
+                <DataGrid CanUserAddRows="False" HorizontalAlignment="Stretch" Name="Downloads" VerticalAlignment="Stretch" IsReadOnly="True" SelectionMode="Extended" Focusable="True" GridLinesVisibility="None" AlternationCount="1" AlternatingRowBackground="#FFEDF1F7" HeadersVisibility="Column" RowDetailsVisibilityMode="Collapsed" AreRowDetailsFrozen="True" ColumnHeaderHeight="NaN" CanUserResizeRows="False" IsTextSearchEnabled="False" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Standard" ScrollViewer.IsDeferredScrollingEnabled="False" AutoGenerateColumns="False" RowHeaderWidth="0" RowBackground="White">
+                    <DataGrid.CellStyle>
+                        <Style TargetType="DataGridCell">
+                            <Setter Property="BorderThickness" Value="0"/>
+                        </Style>
+                    </DataGrid.CellStyle>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Titel" MinWidth="250" Width="*" Binding="{Binding Path=Titel, Mode=OneWay}" />
+                        <DataGridTemplateColumn Header="Voortgang" CanUserSort="True" MinWidth="100" >
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ProgressBar Margin="2" Minimum="0" Maximum="100" Value="{Binding Path=Perc, Mode=OneWay}" Visibility="{Binding Path=Visibility, Mode=OneWay}" Opacity="{Binding Path=Opacity, Mode=OneWay}" >
+                                    </ProgressBar>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Snelheid" MinWidth="75"  Binding="{Binding Path=Speed, Mode=OneWay}"/>
+                        <DataGridTextColumn Header="Status" MinWidth="100"  Binding="{Binding Path=Status, Mode=OneWay}"/>
+                        <DataGridTextColumn Header="Omvang" MinWidth="100"  Binding="{Binding Path=Omvang, Mode=OneWay}"/>
+                        <DataGridTextColumn Header="Tijd" MinWidth="100"  Binding="{Binding Path=TeGaan, Mode=OneWay}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </local:UnCloseableTabItem>
+        </TabControl>
+    </DockPanel>
+</Window>

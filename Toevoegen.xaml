@@ -1,0 +1,63 @@
+﻿<UserControl x:Class="Toevoegen"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="977" d:DesignWidth="756">
+
+    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" CanContentScroll="True" Height="{Binding Path=ActualHeight, ElementName=container}" Width="{Binding Path=ActualWidth, ElementName=container}" >       
+        <Grid Height="968">
+        <Button Content="Toevoegen" Height="31" HorizontalAlignment="Left" IsDefault="False" IsEnabled="True" Margin="551,891,0,0" Name="Button2" TabIndex="14" VerticalAlignment="Top" Width="124" />
+        <Label Content="NZB" FontWeight="Normal" Height="32" HorizontalAlignment="Left" Margin="22,774,0,0" Name="Label6" VerticalAlignment="Top" Width="107" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="171,779,0,0" Name="txtNZB" TabIndex="10" VerticalAlignment="Top" Width="386" ToolTip="Selecteer een NZB bestand" />
+        <Label Content="Afbeelding" FontWeight="Normal" Height="32" HorizontalAlignment="Left" Margin="22,742,0,0" Name="Label7" VerticalAlignment="Top" Width="107" />
+        <TextBox Height="23" Margin="171,747,0,0" Name="txtImage" TabIndex="8" VerticalAlignment="Top" HorizontalAlignment="Left" Width="386" ToolTip="Link naar een afbeelding van de spot" />
+        <Label Content="Website" FontWeight="Normal" Height="32" HorizontalAlignment="Left" Margin="23,693,0,0" Name="Label8" VerticalAlignment="Top" Width="107" />
+        <TextBox Height="23" Margin="172,698,0,0" Name="txtUrl" TabIndex="7" VerticalAlignment="Top" HorizontalAlignment="Left" Width="503" ToolTip="Website van de spot" />
+        <Label Content="Afzender" FontWeight="Normal" Height="32" HorizontalAlignment="Left" Margin="22,832,0,0" Name="Label2" VerticalAlignment="Top" Width="107" />
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="172,837,0,0" Name="txtFrom" TabIndex="12" VerticalAlignment="Top" Width="191" ToolTip="Vul hier je naam in" />
+        <Label Content="Tag" FontWeight="Normal" Height="32" Margin="418,832,0,0" Name="Label9" VerticalAlignment="Top" HorizontalAlignment="Left" Width="107" />
+        <TextBox Height="23" Margin="481,837,0,0" Name="TxtTag" TabIndex="13" VerticalAlignment="Top" HorizontalAlignment="Left" Width="194" ToolTip="Vul hier eventueel een tag in" />
+        <Button Content="Bladeren" Height="26" IsDefault="False" IsEnabled="True" Margin="576,776,0,0" Name="Button1" TabIndex="11" VerticalAlignment="Top" HorizontalAlignment="Left" Width="99" />
+        <ListBox Height="233" HorizontalAlignment="Left" Margin="28,431,0,0" Name="Cat1" VerticalAlignment="Top" Width="203" IsEnabled="False" TabIndex="4" >
+                <ListBox.Resources>
+                    <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="Transparent"/>
+                    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent"/>
+                </ListBox.Resources>
+            </ListBox>
+
+            <ListBox Height="232" HorizontalAlignment="Left" Margin="252,431,0,0" Name="Cat2" VerticalAlignment="Top" Width="203" IsEnabled="False" TabIndex="5" >
+                <ListBox.Resources>
+                    <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="Transparent"/>
+                    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent"/>
+                </ListBox.Resources>
+            </ListBox>
+            <ListBox Height="233" HorizontalAlignment="Left" Margin="481,431,0,0" Name="Cat3" VerticalAlignment="Top" Width="194" IsEnabled="False" TabIndex="6" >
+                <ListBox.Resources>
+                    <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="Transparent"/>
+                    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent"/>
+                </ListBox.Resources>
+            </ListBox>
+            <Label Content="Bron" FontWeight="Normal" Height="32" HorizontalAlignment="Left" Margin="25,392,0,0" Name="CatLab1" VerticalAlignment="Top" Width="107" Visibility="Visible" />
+        <Label Content="Taal" FontWeight="Normal" Height="32" Margin="252,392,0,0" Name="CatLab2" VerticalAlignment="Top" Visibility="Visible" HorizontalAlignment="Left" Width="107" />
+        <Label Content="Genre" FontWeight="Normal" Height="32" HorizontalAlignment="Left" Margin="478,392,0,0" Name="CatLab3" VerticalAlignment="Top" Width="107" Visibility="Visible" />
+        <Label Content="Titel" FontWeight="Normal" Height="40" HorizontalAlignment="Left" Margin="22,56,0,0" Name="Label3" VerticalAlignment="Top" Width="107" />
+        <Label Content="Beschrijving" FontWeight="Normal" Height="32" HorizontalAlignment="Left" Margin="22,94,0,0" Name="Label4" VerticalAlignment="Top" Width="107" />
+        <Label Content="Type" FontWeight="Normal" Height="32" HorizontalAlignment="Left" Margin="22,18,0,0" Name="Label5" VerticalAlignment="Top" VerticalContentAlignment="Top" Width="107" />
+        <ComboBox Height="24" IsReadOnly="True" Margin="171,21,0,0" Name="CatBox" TabIndex="0" VerticalAlignment="Top" ToolTip="Hoofd categorie" HorizontalAlignment="Left" Width="96">
+            <ComboBoxItem Content="Beeld" Tag="1" />
+            <ComboBoxItem Content="Geluid" Tag="2" />
+            <ComboBoxItem Content="Spellen" Tag="3" />
+            <ComboBoxItem Content="Applicaties" Tag="4" />
+        </ComboBox>
+        <TextBox Height="23" HorizontalAlignment="Left" Margin="171,60,0,0" MaxLength="150" Name="txtTitel" TabIndex="2" VerticalAlignment="Top" Width="504" ToolTip="Vul hier de naam van de spot in" />
+        <TextBox AcceptsReturn="True" Height="238" HorizontalAlignment="Left" Margin="28,132,0,0" Name="txtDesc" TabIndex="3" TextWrapping="Wrap" VerticalAlignment="Top" VerticalScrollBarVisibility="Auto" Width="647" ToolTip="Geef een beschrijving van de spot" />
+        <ComboBox Height="24" IsEnabled="False" IsReadOnly="True" Margin="551,21,0,0" Name="SCatBox" TabIndex="1" VerticalAlignment="Top" HorizontalAlignment="Left" Width="124" />
+        <Label Content="Formaat" FontWeight="Normal" Height="32" Margin="482,18,0,0" Name="Label1" VerticalAlignment="Top" ToolTip="Sub categorie" HorizontalAlignment="Left" Width="67" />
+            <Label Content="Categorie" FontWeight="Normal" Height="32" Margin="278,18,0,0" Name="Label10" VerticalAlignment="Top" VerticalContentAlignment="Top" HorizontalAlignment="Left" Width="81" />
+            <ComboBox Height="24" IsReadOnly="True" Margin="365,21,0,0" Name="Cat2Box" TabIndex="0" ToolTip="Hoofd categorie" VerticalAlignment="Top" HorizontalAlignment="Left" Width="107" IsEnabled="False"></ComboBox>
+            <Button Content="Bladeren" Height="26" IsDefault="False" IsEnabled="True" Margin="576,744,0,0" Name="Button3" TabIndex="9" VerticalAlignment="Top" HorizontalAlignment="Left" Width="99" />
+        </Grid>
+    </ScrollViewer>
+</UserControl>

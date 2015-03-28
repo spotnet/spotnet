@@ -1,0 +1,31 @@
+﻿<UserControl x:Class="AboutControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="281" d:DesignWidth="334">
+
+    <Grid Width="371">
+        <Grid Height="362" Margin="10,10,-71,-72">           
+            <Grid.RowDefinitions>
+                <RowDefinition Height="261*" />
+                <RowDefinition Height="101*" />
+            </Grid.RowDefinitions>
+            <Grid Height="220" HorizontalAlignment="Left" Margin="18,61,0,0" Name="Grid1" VerticalAlignment="Top" Width="268" Grid.RowSpan="2" >
+                <Border BorderBrush="#FF000000" BorderThickness="1,1,1,1"  />
+                <Grid.Background>
+                    <ImageBrush ImageSource="/Spotnet;component/Images/focus.jpg" Stretch="Fill" TileMode="None"  />
+                </Grid.Background>
+            </Grid>
+            <Image Height="126" HorizontalAlignment="Left" Margin="83,6,0,0" Name="Image1" Source="/Spotnet;component/Images/spot.png" Stretch="None" VerticalAlignment="Top" Width="139" Visibility="Hidden" />
+            <Label Content="Spotnet " FontFamily="Verdana" FontSize="26" FontWeight="Bold" Height="51" HorizontalAlignment="Left" Margin="85,128,0,0" Name="Label1" VerticalAlignment="Top" Width="196" />
+            <Label Content="v1.1" FontFamily="Verdana" FontSize="16" FontWeight="Normal" Height="51" HorizontalAlignment="Left" Margin="115,155,0,0" Name="Label2" VerticalAlignment="Top" Width="196" Visibility="Hidden" />
+            <Label Content="Copyleft © 2011" FontFamily="Verdana" FontSize="14" FontWeight="Normal" Height="51" HorizontalAlignment="Left" Margin="80,193,0,0" Name="Label3" VerticalAlignment="Top" Width="196" Visibility="Hidden" />
+            <Label Content="All Rights Reversed." FontFamily="Verdana" FontSize="14" FontWeight="Normal" Height="51" HorizontalAlignment="Left" Margin="72,208,0,0" Name="Label4" VerticalAlignment="Top" Width="196" Visibility="Hidden" />
+            <TextBlock Name="Link" FontFamily="Verdana" FontSize="14" FontWeight="Normal"  Visibility="Hidden" Margin="75,238,0,0" >
+                <Hyperlink Name="Linkje" NavigateUri="none">twitter.com/spotned</Hyperlink>
+            </TextBlock>           
+        </Grid>
+    </Grid>
+</UserControl>
