@@ -1,3 +1,4 @@
 # Spotnet
 
-Decentralized usenet community
+Spotnet is a decentralized community
+This repo contains the reference client
