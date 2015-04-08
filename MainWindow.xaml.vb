@@ -9,6 +9,8 @@ Imports System.Windows.Threading
 Imports System.Windows.Controls.Primitives
 Imports System.Windows.Media.Effects
 Imports System.Security.Cryptography
+
+Imports Spotlib
 Imports DataVirtualization
 
 Namespace Spotnet
@@ -1270,9 +1272,9 @@ Namespace Spotnet
 
                         tk = New MenuItem
 
-						tk.Tag = "report"
-						tk.Header = "Melding versturen"
-						tk.Icon = GetIcon("warning")
+                        tk.Tag = "report"
+                        tk.Header = "Melding versturen"
+                        tk.Icon = GetIcon("warning")
 
                         SpotMenu.Items.Add(tk)
                         SpotMenu.Items.Add(New Separator)
@@ -1637,7 +1639,7 @@ Namespace Spotnet
 
             Try
 
-                If SpotClient.Spots.CreatReport(UploadPhuse, StripNonAlphaNumericCharacters(My.Settings.Nickname), zDesc, My.Settings.ReportGroup, sMsgID, sTitle, zErr) Then
+                If Spotlib.Spots.CreatReport(UploadPhuse, StripNonAlphaNumericCharacters(My.Settings.Nickname), zDesc, My.Settings.ReportGroup, sMsgID, sTitle, zErr) Then
 
                     EndWait(True)
                     MsgBox("Je melding is verzonden, bedankt voor de moeite.", MsgBoxStyle.Information, "Verzonden")
@@ -1654,31 +1656,31 @@ Namespace Spotnet
 
         End Sub
 
-        Private Sub DeleteArticle(ByVal sMsgID As String, ByVal sTitle As String)
+        'Private Sub DeleteArticle(ByVal sMsgID As String, ByVal sTitle As String)
 
-            Dim zErr As String = ""
+        '    Dim zErr As String = ""
 
-            If Len(sMsgID) = 0 Then Exit Sub
+        '    If Len(sMsgID) = 0 Then Exit Sub
 
-            DoWait("Spot verwijderen...")
+        '    DoWait("Spot verwijderen...")
 
-            Try
+        '    Try
 
-                If SpotClient.Spots.DeleteArticle(UploadPhuse, My.Settings.Nickname, sTitle, My.Settings.HeaderGroup, sMsgID, "", zErr) Then
+        '        If Spotlib.Spots.DeleteArticle(UploadPhuse, My.Settings.Nickname, sTitle, My.Settings.HeaderGroup, sMsgID, "", zErr) Then
 
-                    EndWait(True)
-                    Exit Sub
+        '            EndWait(True)
+        '            Exit Sub
 
-                End If
+        '        End If
 
-            Catch ex As Exception
-                zErr = ex.Message
-            End Try
+        '    Catch ex As Exception
+        '        zErr = ex.Message
+        '    End Try
 
-            Foutje(zErr)
-            EndWait(True)
+        '    Foutje(zErr)
+        '    EndWait(True)
 
-        End Sub
+        'End Sub
 
         Private Sub OpenSel()
 
@@ -3914,7 +3916,7 @@ Namespace Spotnet
 
                     Case "delete"
 
-                        DeleteArticle(MakeMsg(SpotSource.GetMessageID("spots", SelectedSpot.ID)), SelectedSpot.Titel)
+                        ''DeleteArticle(MakeMsg(SpotSource.GetMessageID("spots", SelectedSpot.ID)), SelectedSpot.Titel)
 
                         Exit Sub
 
@@ -4237,7 +4239,7 @@ Namespace Spotnet
 
             Try
 
-                eRes = SpotClient.Spots.GetSpot(HeaderPhuse, My.Settings.HeaderGroup, lID, sM, zReturn, xSpot, HeaderSettings(False, False), zErr)
+                eRes = Spotlib.Spots.GetSpot(HeaderPhuse, My.Settings.HeaderGroup, lID, sM, zReturn, xSpot, HeaderSettings(False, False), zErr)
 
                 If eRes Then
                     xRes(1) = zReturn

@@ -5,6 +5,7 @@ Imports System.ComponentModel
 Imports System.Windows.Threading
 
 Imports Spotnet.Spotnet
+Imports Spotlib
 
 Public Class Status
 
@@ -108,7 +109,7 @@ Public Class Status
         Try
 
             Dim Ref As MainWindow = CType(Application.Current.MainWindow, MainWindow)
-            TheHeaders = SpotClient.Spots.FindSpots(HeaderPhuse, Ref.HeaderSettings(True, True))
+            TheHeaders = Spots.FindSpots(HeaderPhuse, Ref.HeaderSettings(True, True))
 
             Return True
 
@@ -177,7 +178,7 @@ Public Class Status
 
                     Dim zErr As String = ""
 
-                    If Not TheSab.StartSab(sModule.getServer(ServerType.Download), False, zErr) Then
+                    If Not TheSab.StartSab(sModule.GetServer(ServerType.Download), False, zErr) Then
                         Foutje("Fout tijdens het starten van SABnzbd: " & zErr)
                         TheSab = Nothing
                     End If
@@ -297,7 +298,7 @@ Public Class Status
         ProgressChanged("Reacties ophalen...", 0)
 
         Dim Ref As MainWindow = CType(Application.Current.MainWindow, MainWindow)
-        TheComments = SpotClient.Spots.FindComments(HeaderPhuse, Ref.CommentSettings(True, False))
+        TheComments = Spots.FindComments(HeaderPhuse, Ref.CommentSettings(True, False))
 
     End Sub
 

@@ -1,5 +1,4 @@
-﻿Imports System.Text
-Imports System.Data.SQLite
+﻿Imports System.Data.SQLite
 Imports System.Data.Common
 Imports DataVirtualization
 

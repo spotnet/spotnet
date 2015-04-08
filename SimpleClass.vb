@@ -1,5 +1,7 @@
 ﻿Imports System.Windows.Interop
 Imports System.Runtime.InteropServices
+
+Imports Spotlib
 Imports DataVirtualization
 
 Friend Class SpotInfo

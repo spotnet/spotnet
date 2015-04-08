@@ -2,6 +2,8 @@
 Imports System.Text
 Imports System.Data.Common
 
+Imports Spotlib
+
 Friend Class SpotSaver
 
     Private Db As SqlDB

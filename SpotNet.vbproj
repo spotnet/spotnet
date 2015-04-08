@@ -65,25 +65,9 @@
     <ApplicationIcon>Images\spotnet.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DataVirtualization, Version=1.8.0.0, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\DataVirtualization\bin\x86\Release\DataVirtualization.dll</HintPath>
-    </Reference>
-    <Reference Include="Phuse, Version=0.9.0.0, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Install\Phuse.dll</HintPath>
-    </Reference>
     <Reference Include="PresentationFramework.Aero" />
-    <Reference Include="SpotClient, Version=1.8.0.0, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\SpotClient\bin\x86\Release\SpotClient.dll</HintPath>
-    </Reference>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data.SQLite, Version=1.0.66.1, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Install\System.Data.SQLite.dll</HintPath>
-    </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
@@ -353,6 +337,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Theme\spot.htm" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\fusenet\src\Fusenet.csproj">
+      <Project>{abcbd5d0-09a6-45c7-8055-bd04da7b3665}</Project>
+      <Name>Fusenet</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\spotlib\Spotlib.vbproj">
+      <Project>{1d530964-2735-482d-90c2-4b3d20c370b2}</Project>
+      <Name>Spotlib</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>
