@@ -1,12 +1,12 @@
 ﻿Imports System.ComponentModel
-Imports Spotbase.Spotbase
+Imports Spotlib
 
 Namespace Spotnet
     Friend Class FooViewModel
         Implements INotifyPropertyChanged
 #Region "Data"
 
-        Public CatLink As SpotCat
+        Public CatLink As Spotlib.SpotCat
 
         Private _isChecked? As Boolean = False
         Private _isVisible? As Boolean = False
@@ -197,11 +197,11 @@ Namespace Spotnet
 
 #End Region
 
-        Private Function GetSubCat(ByVal sName As String, ByVal sTag As String) As SpotCat
+        Private Function GetSubCat(ByVal sName As String, ByVal sTag As String) As Spotlib.SpotCat
 
-            Dim SubCat As New SpotCat
+            Dim SubCat As New Spotlib.SpotCat
 
-            SubCat = New SpotCat
+            SubCat = New Spotlib.SpotCat
 
             SubCat.Name = sName
             SubCat.Tag = sTag
@@ -212,20 +212,20 @@ Namespace Spotnet
 
         Private Function AddCat() As List(Of FooViewModel)
 
-            Dim xSpotCat As SpotCat
-            Dim xSpotCat2 As SpotCat
-            Dim xSpotCat3 As SpotCat
-            Dim NewCat As New SpotCat
+            Dim xSpotCat As Spotlib.SpotCat
+            Dim xSpotCat2 As Spotlib.SpotCat
+            Dim xSpotCat3 As Spotlib.SpotCat
+            Dim NewCat As New Spotlib.SpotCat
             Dim TheList As New List(Of FooViewModel)
 
             With NewCat.Children
 
-                .Add(GetSubCat(Utils.CatDesc(1), "0"), CatDesc(1))
+                .Add(GetSubCat(Utils.CatDesc(1), "0"), Utils.CatDesc(1))
 
-                With CType(.Item(Utils.CatDesc(1)), SpotCat).Children
+                With CType(.Item(Utils.CatDesc(1)), Spotlib.SpotCat).Children
 
                     .Add(GetSubCat("Bron", "0b"), "Bron")
-                    With CType(.Item("Bron"), SpotCat).Children
+                    With CType(.Item("Bron"), Spotlib.SpotCat).Children
                         .Add(GetSubCat("Retail", "b3"))
                         .Add(GetSubCat("Telesync", "b9"))
                         .Add(GetSubCat("R5", "b7"))
@@ -233,7 +233,7 @@ Namespace Spotnet
                     End With
 
                     .Add(GetSubCat("Taal", "0c"), "Taal")
-                    With CType(.Item("Taal"), SpotCat).Children
+                    With CType(.Item("Taal"), Spotlib.SpotCat).Children
                         .Add(GetSubCat("Engels gesproken", "c10"))
                         .Add(GetSubCat("Nederlands gesproken", "c11"))
                         .Add(GetSubCat("Duits gesproken", "c12"))
@@ -249,7 +249,7 @@ Namespace Spotnet
                     End With
 
                     .Add(GetSubCat("Genre", "0d"), "Genre")
-                    With CType(.Item("Genre"), SpotCat).Children
+                    With CType(.Item("Genre"), Spotlib.SpotCat).Children
 
                         .Add(GetSubCat("Actie", "d0"))
                         .Add(GetSubCat("Anime", "d29"))
@@ -285,7 +285,7 @@ Namespace Spotnet
                     End With
 
                     .Add(GetSubCat("Formaat", "0a"), "Formaat")
-                    With CType(.Item("Formaat"), SpotCat).Children
+                    With CType(.Item("Formaat"), Spotlib.SpotCat).Children
 
                         .Add(GetSubCat("MPG", "a2"))
                         .Add(GetSubCat("WMV", "a1"))
@@ -298,12 +298,12 @@ Namespace Spotnet
 
                 End With
 
-                .Add(GetSubCat(Utils.CatDesc(6), "5"), CatDesc(6))
+                .Add(GetSubCat(Utils.CatDesc(6), "5"), Utils.CatDesc(6))
 
-                With CType(.Item(Utils.CatDesc(6)), SpotCat).Children
+                With CType(.Item(Utils.CatDesc(6)), Spotlib.SpotCat).Children
 
                     .Add(GetSubCat("Bron", "5b"), "Bron")
-                    With CType(.Item("Bron"), SpotCat).Children
+                    With CType(.Item("Bron"), Spotlib.SpotCat).Children
                         .Add(GetSubCat("Retail", "b3"))
                         .Add(GetSubCat("Telesync", "b9"))
                         .Add(GetSubCat("R5", "b7"))
@@ -311,7 +311,7 @@ Namespace Spotnet
                     End With
 
                     .Add(GetSubCat("Taal", "5c"), "Taal")
-                    With CType(.Item("Taal"), SpotCat).Children
+                    With CType(.Item("Taal"), Spotlib.SpotCat).Children
                         .Add(GetSubCat("Engels gesproken", "c10"))
                         .Add(GetSubCat("Nederlands gesproken", "c11"))
                         .Add(GetSubCat("Duits gesproken", "c12"))
@@ -327,7 +327,7 @@ Namespace Spotnet
                     End With
 
                     .Add(GetSubCat("Genre", "5d"), "Genre")
-                    With CType(.Item("Genre"), SpotCat).Children
+                    With CType(.Item("Genre"), Spotlib.SpotCat).Children
 
                         .Add(GetSubCat("Actie", "d0"))
                         .Add(GetSubCat("Anime", "d29"))
@@ -362,7 +362,7 @@ Namespace Spotnet
                     End With
 
                     .Add(GetSubCat("Formaat", "5a"), "Formaat")
-                    With CType(.Item("Formaat"), SpotCat).Children
+                    With CType(.Item("Formaat"), Spotlib.SpotCat).Children
 
                         .Add(GetSubCat("MPG", "a2"))
                         .Add(GetSubCat("WMV", "a1"))
@@ -375,12 +375,12 @@ Namespace Spotnet
 
                 End With
 
-                .Add(GetSubCat(Utils.CatDesc(5), "4"), CatDesc(5))
+                .Add(GetSubCat(Utils.CatDesc(5), "4"), Utils.CatDesc(5))
 
-                With CType(.Item(Utils.CatDesc(5)), SpotCat).Children
+                With CType(.Item(Utils.CatDesc(5)), Spotlib.SpotCat).Children
 
                     .Add(GetSubCat("Taal", "4c"), "Taal")
-                    With CType(.Item("Taal"), SpotCat).Children
+                    With CType(.Item("Taal"), Spotlib.SpotCat).Children
 
                         .Add(GetSubCat("Engels", "c4"))
                         .Add(GetSubCat("Nederlands", "c2"))
@@ -391,7 +391,7 @@ Namespace Spotnet
                     End With
 
                     .Add(GetSubCat("Genre", "4d"), "Genre")
-                    With CType(.Item("Genre"), SpotCat).Children
+                    With CType(.Item("Genre"), Spotlib.SpotCat).Children
 
                         .Add(GetSubCat("Avontuur", "d1"))
                         .Add(GetSubCat("Biografie", "d49"))
@@ -438,12 +438,12 @@ Namespace Spotnet
 
                 End With
 
-                .Add(GetSubCat(CatDesc(2), "1"), CatDesc(2))
+                .Add(GetSubCat(Utils.CatDesc(2), "1"), Utils.CatDesc(2))
 
-                With CType(.Item(CatDesc(2)), SpotCat).Children
+                With CType(.Item(Utils.CatDesc(2)), Spotlib.SpotCat).Children
 
                     .Add(GetSubCat("Bron", "1b"), "Bron")
-                    With CType(.Item("Bron"), SpotCat).Children
+                    With CType(.Item("Bron"), Spotlib.SpotCat).Children
 
                         .Add(GetSubCat("CD", "b0"))
                         .Add(GetSubCat("DVD", "b3"))
@@ -454,7 +454,7 @@ Namespace Spotnet
                     End With
 
                     .Add(GetSubCat("Type", "1z"), "Type")
-                    With CType(.Item("Type"), SpotCat).Children
+                    With CType(.Item("Type"), Spotlib.SpotCat).Children
 
                         .Add(GetSubCat("Album", "z0"))
                         .Add(GetSubCat("Liveset", "z1"))
@@ -464,7 +464,7 @@ Namespace Spotnet
                     End With
 
                     .Add(GetSubCat("Genre", "1d"), "Genre")
-                    With CType(.Item("Genre"), SpotCat).Children
+                    With CType(.Item("Genre"), Spotlib.SpotCat).Children
 
                         .Add(GetSubCat("Balkan", "d34"))
                         .Add(GetSubCat("Blues", "d0"))
@@ -503,7 +503,7 @@ Namespace Spotnet
                     End With
 
                     .Add(GetSubCat("Bitrate", "1c"), "Bitrate")
-                    With CType(.Item("Bitrate"), SpotCat).Children
+                    With CType(.Item("Bitrate"), Spotlib.SpotCat).Children
 
                         .Add(GetSubCat("< 96kbit", "c1"))
                         .Add(GetSubCat("96kbit", "c2"))
@@ -519,7 +519,7 @@ Namespace Spotnet
 
                     .Add(GetSubCat("Formaat", "1a"), "Formaat")
 
-                    With CType(.Item("Formaat"), SpotCat).Children
+                    With CType(.Item("Formaat"), Spotlib.SpotCat).Children
 
                         .Add(GetSubCat("MP3", "a0"))
                         .Add(GetSubCat("WMA", "a1"))
@@ -535,12 +535,12 @@ Namespace Spotnet
 
                 End With
 
-                .Add(GetSubCat(CatDesc(3), "2"), CatDesc(3))
+                .Add(GetSubCat(Utils.CatDesc(3), "2"), Utils.CatDesc(3))
 
-                With CType(.Item(CatDesc(3)), SpotCat).Children
+                With CType(.Item(Utils.CatDesc(3)), Spotlib.SpotCat).Children
 
                     .Add(GetSubCat("Genre", "2c"), "Genre")
-                    With CType(.Item("Genre"), SpotCat).Children
+                    With CType(.Item("Genre"), Spotlib.SpotCat).Children
 
                         .Add(GetSubCat("Actie", "c0"))
                         .Add(GetSubCat("Avontuur", "c1"))
@@ -563,7 +563,7 @@ Namespace Spotnet
                     End With
 
                     .Add(GetSubCat("Formaat", "2b"), "Formaat")
-                    With CType(.Item("Formaat"), SpotCat).Children
+                    With CType(.Item("Formaat"), Spotlib.SpotCat).Children
 
                         .Add(GetSubCat("Rip", "b1"))
                         .Add(GetSubCat("DVD", "b2"))
@@ -574,7 +574,7 @@ Namespace Spotnet
                     End With
 
                     .Add(GetSubCat("Platform", "2a"), "Platform")
-                    With CType(.Item("Platform"), SpotCat).Children
+                    With CType(.Item("Platform"), Spotlib.SpotCat).Children
 
                         .Add(GetSubCat("Windows", "a0"))
                         .Add(GetSubCat("Linux", "a2"))
@@ -597,12 +597,12 @@ Namespace Spotnet
                     End With
                 End With
 
-                .Add(GetSubCat(Utils.CatDesc(4), "3"), CatDesc(4))
+                .Add(GetSubCat(Utils.CatDesc(4), "3"), Utils.CatDesc(4))
 
-                With CType(.Item(CatDesc(4)), SpotCat).Children
+                With CType(.Item(Utils.CatDesc(4)), Spotlib.SpotCat).Children
 
                     .Add(GetSubCat("Genre", "3b"), "Genre")
-                    With CType(.Item("Genre"), SpotCat).Children
+                    With CType(.Item("Genre"), Spotlib.SpotCat).Children
                         .Add(GetSubCat("Audio", "b0"))
                         .Add(GetSubCat("Beveiliging", "b23"))
                         .Add(GetSubCat("Communicatie", "b29"))
@@ -619,7 +619,7 @@ Namespace Spotnet
                     End With
 
                     .Add(GetSubCat("Platform", "3a"), "Platform")
-                    With CType(.Item("Platform"), SpotCat).Children
+                    With CType(.Item("Platform"), Spotlib.SpotCat).Children
                         .Add(GetSubCat("Windows", "a0"))
                         .Add(GetSubCat("Linux", "a2"))
                         .Add(GetSubCat("Macintosh", "a1"))
@@ -633,11 +633,11 @@ Namespace Spotnet
 
                 .Add(GetSubCat("Erotiek", "8"), "Erotiek")
 
-                With CType(.Item("Erotiek"), SpotCat).Children
+                With CType(.Item("Erotiek"), Spotlib.SpotCat).Children
 
                     .Add(GetSubCat("Taal", "8c"), "Taal")
 
-                    With CType(.Item("Taal"), SpotCat).Children
+                    With CType(.Item("Taal"), Spotlib.SpotCat).Children
                         .Add(GetSubCat("Engels gesproken", "c10"))
                         .Add(GetSubCat("Nederlands gesproken", "c11"))
                         .Add(GetSubCat("Duits gesproken", "c12"))
@@ -654,7 +654,7 @@ Namespace Spotnet
 
                     .Add(GetSubCat("Genre", "8d"), "Genre")
 
-                    With CType(.Item("Genre"), SpotCat).Children
+                    With CType(.Item("Genre"), Spotlib.SpotCat).Children
                         .Add(GetSubCat("Hetero", "d23"))
                         .Add(GetSubCat("Homo", "d24"))
                         .Add(GetSubCat("Lesbo", "d25"))
@@ -677,7 +677,7 @@ Namespace Spotnet
 
                     .Add(GetSubCat("Formaat", "8a"), "Formaat")
 
-                    With CType(.Item("Formaat"), SpotCat).Children
+                    With CType(.Item("Formaat"), Spotlib.SpotCat).Children
                         .Add(GetSubCat("MPG", "a2"))
                         .Add(GetSubCat("WMV", "a1"))
                         .Add(GetSubCat("DivX", "a0"))
@@ -697,7 +697,7 @@ Namespace Spotnet
             For Each xSpotCat In NewCat.Children
                 TempModel = New FooViewModel(xSpotCat.Name)
                 TempModel.CatLink = xSpotCat
-                TempModel.IsExpanded = xSpotCat.Name = CatDesc(1) ' Hack
+                TempModel.IsExpanded = xSpotCat.Name = Utils.CatDesc(1) ' Hack
                 With TempModel.Children
                     For Each xSpotCat2 In xSpotCat.Children
                         TempModel2 = New FooViewModel(xSpotCat2.Name)

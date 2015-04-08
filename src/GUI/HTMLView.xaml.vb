@@ -8,7 +8,6 @@ Imports System.Drawing.Drawing2D
 
 Imports Spotlib
 Imports Spotnet.Spotnet
-Imports Spotbase.Spotbase
 
 Public Class HTMLView
 
@@ -131,7 +130,7 @@ Public Class HTMLView
             Catch
             End Try
 
-            Dim xSpot As SpotEx = GetSpot()
+            Dim xSpot As Spotlib.SpotEx = GetSpot()
 
             If Not SpotImage Is Nothing Then
 
@@ -213,7 +212,7 @@ Public Class HTMLView
 
     End Sub
 
-    Private Function GetSpot() As SpotEx
+    Private Function GetSpot() As Spotlib.SpotEx
 
         Try
 
@@ -417,7 +416,7 @@ Public Class HTMLView
 
         Try
 
-            Dim HashMsg As String = CreateMsgID(GetSpot.MessageID.Split("@"c)(0).Replace(".", "").Replace("<", ""))
+            Dim HashMsg As String = Utils.CreateMsgID(GetSpot.MessageID.Split("@"c)(0).Replace(".", "").Replace("<", ""))
 
             My.Settings.Nickname = StripNonAlphaNumericCharacters(CStr(_document.GetElementById("Nickname").DomElement.Value))
             My.Settings.Save()
@@ -482,7 +481,7 @@ Public Class HTMLView
 
                 Else
 
-                    sFile = FindNZB(HtmlDecode(.OldInfo.FileName), .OldInfo.Groups.Split("|"c)(0), .Title)
+                    sFile = "" ''Utils.FindNZB(HtmlDecode(.OldInfo.FileName), .OldInfo.Groups.Split("|"c)(0), .Title)
                     Ref.EndWait(True)
 
                 End If
@@ -786,7 +785,7 @@ Public Class HTMLView
 
             Dim sClass As String = "comment"
 
-            Dim GS As SpotEx = GetSpot()
+            Dim GS As Spotlib.SpotEx = GetSpot()
 
             Dim sTooltip As String = ""
 
@@ -1239,7 +1238,7 @@ Failz:
             e.Result = Nothing
             If AskUnload Then Exit Sub
 
-            e.Result = New Actions().DoComments(e.Argument.ToString(), DatabaseFile, New Parameters(), FC)
+            e.Result = Spots.DoComments(e.Argument.ToString(), DatabaseFile, New Spotlib.Parameters(), FC)
 
             If e.Result Is Nothing Then Throw New Exception("DoComments")
 
