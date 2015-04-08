@@ -65,7 +65,16 @@
     <ApplicationIcon>Images\spotnet.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DataVirtualization">
+      <HintPath>Vendor\DataVirtualization.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusenet">
+      <HintPath>Vendor\Fusenet.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationFramework.Aero" />
+    <Reference Include="Spotlib">
+      <HintPath>Vendor\Spotlib.dll</HintPath>
+    </Reference>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -338,16 +347,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Theme\spot.htm" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\fusenet\src\Fusenet.csproj">
-      <Project>{abcbd5d0-09a6-45c7-8055-bd04da7b3665}</Project>
-      <Name>Fusenet</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\spotlib\Spotlib.vbproj">
-      <Project>{1d530964-2735-482d-90c2-4b3d20c370b2}</Project>
-      <Name>Spotlib</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>
