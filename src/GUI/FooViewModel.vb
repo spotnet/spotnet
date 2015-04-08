@@ -1,4 +1,5 @@
 ﻿Imports System.ComponentModel
+Imports Spotbase.Spotbase
 
 Namespace Spotnet
     Friend Class FooViewModel
@@ -219,9 +220,9 @@ Namespace Spotnet
 
             With NewCat.Children
 
-                .Add(GetSubCat(CatDesc(1), "0"), CatDesc(1))
+                .Add(GetSubCat(Utils.CatDesc(1), "0"), CatDesc(1))
 
-                With CType(.Item(CatDesc(1)), SpotCat).Children
+                With CType(.Item(Utils.CatDesc(1)), SpotCat).Children
 
                     .Add(GetSubCat("Bron", "0b"), "Bron")
                     With CType(.Item("Bron"), SpotCat).Children
@@ -297,9 +298,9 @@ Namespace Spotnet
 
                 End With
 
-                .Add(GetSubCat(CatDesc(6), "5"), CatDesc(6))
+                .Add(GetSubCat(Utils.CatDesc(6), "5"), CatDesc(6))
 
-                With CType(.Item(CatDesc(6)), SpotCat).Children
+                With CType(.Item(Utils.CatDesc(6)), SpotCat).Children
 
                     .Add(GetSubCat("Bron", "5b"), "Bron")
                     With CType(.Item("Bron"), SpotCat).Children
@@ -374,9 +375,9 @@ Namespace Spotnet
 
                 End With
 
-                .Add(GetSubCat(CatDesc(5), "4"), CatDesc(5))
+                .Add(GetSubCat(Utils.CatDesc(5), "4"), CatDesc(5))
 
-                With CType(.Item(CatDesc(5)), SpotCat).Children
+                With CType(.Item(Utils.CatDesc(5)), SpotCat).Children
 
                     .Add(GetSubCat("Taal", "4c"), "Taal")
                     With CType(.Item("Taal"), SpotCat).Children
@@ -596,7 +597,7 @@ Namespace Spotnet
                     End With
                 End With
 
-                .Add(GetSubCat(CatDesc(4), "3"), CatDesc(4))
+                .Add(GetSubCat(Utils.CatDesc(4), "3"), CatDesc(4))
 
                 With CType(.Item(CatDesc(4)), SpotCat).Children
 

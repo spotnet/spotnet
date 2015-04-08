@@ -2,13 +2,13 @@
 Imports System.IO
 Imports System.Xml
 Imports System.Drawing
-Imports System.Data.Common
 Imports System.Windows.Threading
 Imports System.ComponentModel
 Imports System.Drawing.Drawing2D
 
 Imports Spotlib
 Imports Spotnet.Spotnet
+Imports Spotbase.Spotbase
 
 Public Class HTMLView
 
@@ -50,9 +50,8 @@ Public Class HTMLView
     Private MenuModulus As String
     Private WithEvents SpotMenu As ContextMenu
 
-    Private FetchedCache As New List(Of Long)
+    Private FC As New FetchCache()
     Private SkipMessages As New HashSet(Of String)
-    Private FetchedCacheHash As New HashSet(Of Long)
 
     Public Sub New()
 
@@ -649,7 +648,7 @@ Public Class HTMLView
 
             Dim NewList As New List(Of Long)
 
-            For Each xArt As Long In FetchedCache
+            For Each xArt As Long In FC.Cache
                 If Not CommentIDCache.Contains(xArt) Then
                     NewList.Add(xArt)
                 End If
@@ -1094,10 +1093,10 @@ Public Class HTMLView
 
             If xComment.MessageID = xMessageID Then
 
-                If Not FetchedCacheHash.Contains(xComment.Article) Then
+                If Not FC.CacheHash.Contains(xComment.Article) Then
                     bDidSome = True
-                    FetchedCache.Add(xComment.Article)
-                    FetchedCacheHash.Add(xComment.Article)
+                    FC.Cache.Add(xComment.Article)
+                    FC.CacheHash.Add(xComment.Article)
                 End If
 
             End If
@@ -1233,66 +1232,6 @@ Failz:
 
     End Function
 
-    Private Function GetComments(ByVal TheDB As SqlDB, ByVal xMsg As String, ByRef xErr As String) As List(Of Long)
-
-        Dim lFnd As Long
-        Dim sErr As String = ""
-        Dim sMessageID As String = ""
-        Dim DR As DbDataReader = Nothing
-
-        Try
-
-            sMessageID = MakeMsg(xMsg, False)
-            Dim AtPos As Integer = sMessageID.IndexOf("@")
-            sMessageID = sMessageID.Substring(0, AtPos)
-
-            DR = TheDB.ExecuteReader("SELECT docid FROM comments WHERE spot MATCH '" & sMessageID.Replace("'"c, "") & "' ORDER BY docid ASC", sErr)
-
-            If DR Is Nothing Then Throw New Exception("Datareader not available: " & sErr)
-
-            With DR
-                While .Read
-
-                    If IsDBNull(.Item(0)) Then Continue While
-
-                    lFnd = CLng(.Item(0))
-
-                    If lFnd > 0 Then
-
-                        If Not FetchedCacheHash.Contains(lFnd) Then
-                            FetchedCache.Add(lFnd)
-                            FetchedCacheHash.Add(lFnd)
-                        End If
-
-                    End If
-
-                End While
-            End With
-
-            DR.Close()
-            TheDB.Close()
-
-            Return FetchedCache
-
-        Catch ex As Exception
-
-            Try
-                DR.Close()
-            Catch
-            End Try
-
-            Try
-                TheDB.Close()
-            Catch
-            End Try
-
-            xErr = "GetComments: " & ex.Message
-            Return Nothing
-
-        End Try
-
-    End Function
-
     Private Sub CommentStarter_DoWork(ByVal sender As Object, ByVal e As System.ComponentModel.DoWorkEventArgs) Handles CommentStarter.DoWork
 
         Try
@@ -1300,20 +1239,9 @@ Failz:
             e.Result = Nothing
             If AskUnload Then Exit Sub
 
-            Dim zErr As String = ""
-            Dim Db As SqlDB = New SqlDB
+            e.Result = New Actions().DoComments(e.Argument.ToString(), DatabaseFile, New Parameters(), FC)
 
-            If Not Db.Connect(DatabaseFile, True) Then
-                Throw New Exception("Db.Connect")
-            End If
-
-            If Not Db.ExecuteNonQuery("PRAGMA temp_store = MEMORY;", "") = 0 Then Throw New Exception("PRAGMA temp_store")
-            If Not Db.ExecuteNonQuery("PRAGMA cache_size = " & CStr(My.Settings.DatabaseCache), "") = 0 Then Throw New Exception("PRAGMA cache_size")
-
-            Dim TheList As List(Of Long) = GetComments(Db, CType(e.Argument, String), zErr)
-            If TheList Is Nothing Then Throw New Exception(zErr)
-
-            e.Result = TheList
+            If e.Result Is Nothing Then Throw New Exception("DoComments")
 
         Catch ex As Exception
 

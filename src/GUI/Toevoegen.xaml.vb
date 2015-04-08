@@ -6,6 +6,7 @@ Imports System.ComponentModel
 Imports System.Windows.Media.Imaging
 Imports Spotnet.Spotnet
 Imports System.Windows.Threading
+Imports Spotbase.Spotbase
 
 Public Class Toevoegen
 
@@ -149,7 +150,7 @@ Public Class Toevoegen
 
         Dim Ref As MainWindow = CType(Application.Current.MainWindow, MainWindow)
 
-        Return Spotlib.Spots.CreateSpot(UploadPhuse, My.Settings.HeaderGroup, txtTitel.Text, txtDesc.Text, CByte(CatBox.SelectedIndex + 1), GetSubCats(CByte(CatBox.SelectedIndex), True), AddHttp(txtUrl.Text.Trim), "nl", SizeX, SizeY, txtNZB.Text, txtFrom.Text, TxtTag.Text, My.Settings.NZBGroup, GetKey, CreateMsgID, Rez, GetAvatar, False, Ref.HeaderSettings(False, False), zErr)
+        Return Spotlib.Spots.CreateSpot(UploadPhuse, My.Settings.HeaderGroup, txtTitel.Text, txtDesc.Text, CByte(CatBox.SelectedIndex + 1), GetSubCats(CByte(CatBox.SelectedIndex), True), AddHttp(txtUrl.Text.Trim), "nl", SizeX, SizeY, txtNZB.Text, txtFrom.Text, TxtTag.Text, My.Settings.NZBGroup, GetKey, Utils.CreateMsgID, Rez, GetAvatar, False, Ref.HeaderSettings(False, False), zErr)
 
     End Function
 

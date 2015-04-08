@@ -6,6 +6,7 @@ Imports System.Security.Cryptography
 Imports System.Text.RegularExpressions
 
 Imports Spotlib
+Imports Spotbase.Spotbase
 
 Friend Class SpotParser
 
@@ -20,7 +21,7 @@ Friend Class SpotParser
 
         End If
 
-        Return SpotHTM.Replace("[SN:NICK]", StripNonAlphaNumericCharacters(My.Settings.Nickname)).Replace("[SN:AVATAR]", GetAvatar(xSpot.User.Avatar, xSpot.User.Modulus)).Replace("[SN:FONTSIZE]", CStr(FontSize)).Replace("[SN:FILESIZE]", CStr(xSpot.Filesize)).Replace("[SN:STAMP]", CStr(xSpot.Stamp)).Replace("[SN:MODULUS]", xSpot.User.Modulus).Replace("[SN:CAT]", HtmlEncode(CatDesc(xSpot.Category))).Replace("[SN:PATH]", SettingsFolder.Replace(Chr(34), Chr(34) & Chr(34))).Replace("[SN:TAG]", HtmlEncode(StripNonAlphaNumericCharacters(xSpot.Tag))).Replace("[SN:FROM]", HtmlEncode(StripNonAlphaNumericCharacters(xSpot.Poster))).Replace("[SN:UNIQUE]", sIIF(xSpot.User.ValidSignature, MakeUnique(xSpot.User.Modulus), "Onbekend")).Replace("[SN:WHITELIST]", sIIF(xSpot.User.ValidSignature And WhiteList.Contains(xSpot.User.Modulus), "True", "False")).Replace("[SN:WEB]", SafeHref(xSpot.Web).Replace("[SN:", "[SN:]")).Replace("[SN:SUBCATS]", HtmlEncode(xSpot.SubCats).Replace("[SN:", "[SN:]")).Replace("[SN:TITLE]", HtmlEncode(xSpot.Title).Replace("[SN:", "[SN:]")).Replace("[SN:STATS]", "").Replace("[SN:IMGX]", CStr(xSpot.ImageWidth)).Replace("[SN:IMGY]", CStr(xSpot.ImageHeight)).Replace("[SN:INFO]", MakeTable(xSpot)).Replace("[SN:DESC]", MakeDesc(xSpot))
+        Return SpotHTM.Replace("[SN:NICK]", StripNonAlphaNumericCharacters(My.Settings.Nickname)).Replace("[SN:AVATAR]", GetAvatar(xSpot.User.Avatar, xSpot.User.Modulus)).Replace("[SN:FONTSIZE]", CStr(FontSize)).Replace("[SN:FILESIZE]", CStr(xSpot.Filesize)).Replace("[SN:STAMP]", CStr(xSpot.Stamp)).Replace("[SN:MODULUS]", xSpot.User.Modulus).Replace("[SN:CAT]", HtmlEncode(Utils.CatDesc(xSpot.Category))).Replace("[SN:PATH]", SettingsFolder.Replace(Chr(34), Chr(34) & Chr(34))).Replace("[SN:TAG]", HtmlEncode(StripNonAlphaNumericCharacters(xSpot.Tag))).Replace("[SN:FROM]", HtmlEncode(StripNonAlphaNumericCharacters(xSpot.Poster))).Replace("[SN:UNIQUE]", sIIF(xSpot.User.ValidSignature, MakeUnique(xSpot.User.Modulus), "Onbekend")).Replace("[SN:WHITELIST]", sIIF(xSpot.User.ValidSignature And WhiteList.Contains(xSpot.User.Modulus), "True", "False")).Replace("[SN:WEB]", SafeHref(xSpot.Web).Replace("[SN:", "[SN:]")).Replace("[SN:SUBCATS]", HtmlEncode(xSpot.SubCats).Replace("[SN:", "[SN:]")).Replace("[SN:TITLE]", HtmlEncode(xSpot.Title).Replace("[SN:", "[SN:]")).Replace("[SN:STATS]", "").Replace("[SN:IMGX]", CStr(xSpot.ImageWidth)).Replace("[SN:IMGY]", CStr(xSpot.ImageHeight)).Replace("[SN:INFO]", MakeTable(xSpot)).Replace("[SN:DESC]", MakeDesc(xSpot))
 
     End Function
 
@@ -189,7 +190,7 @@ Friend Class SpotParser
 
         If TheCats.Count > 0 Then
             sApp = vbNullString
-            xRet.Append("<TR><TD><b>" & TranslateCatDesc(hCat, sCat) & "</b>&nbsp;&nbsp;&nbsp;</TD><TD>")
+            xRet.Append("<TR><TD><b>" & Utils.TranslateCatDesc(hCat, sCat) & "</b>&nbsp;&nbsp;&nbsp;</TD><TD>")
             For Each sG As String In TheCats.Keys
                 If hCat = 1 Or hCat = 6 Then
                     xRet.Append(sApp & CreateClassLink("query:" & URLEncode(TheCats.Item(sG) & "_" & "cats MATCH '" & StripNonAlphaNumericCharacters("1" & sG) & " OR " & StripNonAlphaNumericCharacters("6" & sG) & "'"), TheCats.Item(sG), "category", "Zoeken") & "</TD></TR>")
