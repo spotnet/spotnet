@@ -11,13 +11,13 @@ Imports System.Windows
 
 ' Review the values of the assembly attributes
 
-<Assembly: AssemblyTitle("Spotnet")> 
-<Assembly: AssemblyDescription("Spotnet")> 
+<Assembly: AssemblyTitle("Spotnet")>
+<Assembly: AssemblyDescription("Decentralized community")>
 <Assembly: AssemblyCompany("")> 
 <Assembly: AssemblyProduct("Spotnet")> 
 <Assembly: AssemblyCopyright("All Rights Reversed")> 
-<Assembly: AssemblyTrademark("")> 
-<Assembly: Guid("F04150C5-2406-49E8-9EA0-B846AC0B3954")> 
+<Assembly: AssemblyTrademark("")>
+<Assembly: Guid("ABC150C5-2406-49E8-9EA0-B846AC0B3954")>
 <Assembly: ComVisible(False)> 
 
 'In order to begin building localizable applications, set 
@@ -51,5 +51,5 @@ Imports System.Windows
 ' by using the '*' as shown below:
 ' <Assembly: AssemblyVersion("1.0.*")> 
 
-<Assembly: AssemblyVersion("1.8.1.0")> 
-<Assembly: AssemblyFileVersion("1.8.1.0")> 
+<Assembly: AssemblyVersion("1.9.0.0")>
+<Assembly: AssemblyFileVersion("1.9.0.0")>
