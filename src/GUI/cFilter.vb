@@ -10,13 +10,13 @@ Friend Class cFilter
         Dim LF As New List(Of Spotnet.FilterCat)
         Dim lMarg As Long = 50
 
-        LF.Add(CreateFilter(0, Utils.CatDesc(1), "cat = 1", "\Images\video2.ico"))
-        LF.Add(CreateFilter(0, Utils.CatDesc(6), "cat = 6", "\Images\series2.ico"))
-        LF.Add(CreateFilter(0, Utils.CatDesc(5), "cat = 5", "\Images\books2.ico"))
-        LF.Add(CreateFilter(0, Utils.CatDesc(2), "cat = 2", "\Images\audio2.ico"))
-        LF.Add(CreateFilter(0, Utils.CatDesc(3), "cat = 3", "\Images\games2.ico"))
-        LF.Add(CreateFilter(0, Utils.CatDesc(4), "cat = 4", "\Images\applications2.ico"))
-        LF.Add(CreateFilter(0, Utils.CatDesc(9), "cat = 9", "\Images\x2.ico"))
+        LF.Add(CreateFilter(0, Spotz.CatDesc(1), "cat = 1", "\Images\video2.ico"))
+        LF.Add(CreateFilter(0, Spotz.CatDesc(6), "cat = 6", "\Images\series2.ico"))
+        LF.Add(CreateFilter(0, Spotz.CatDesc(5), "cat = 5", "\Images\books2.ico"))
+        LF.Add(CreateFilter(0, Spotz.CatDesc(2), "cat = 2", "\Images\audio2.ico"))
+        LF.Add(CreateFilter(0, Spotz.CatDesc(3), "cat = 3", "\Images\games2.ico"))
+        LF.Add(CreateFilter(0, Spotz.CatDesc(4), "cat = 4", "\Images\applications2.ico"))
+        LF.Add(CreateFilter(0, Spotz.CatDesc(9), "cat = 9", "\Images\x2.ico"))
 
         LF.Add(CreateFilter(22, "Nieuw", "rowid > [SN:NEW]", "1.ico", "2.ico", False))
         LF.Add(CreateFilter(22, "Vandaag", "date > ( [SN:DATE] - 86400 )", "1.ico", "2.ico", False))
@@ -35,17 +35,17 @@ Friend Class cFilter
 
         Try
 
-            If Not System.IO.File.Exists(SettingsFolder() & "\" & sfName) Then
+            If Not System.IO.File.Exists(Tools.SettingsFolder() & "\" & sfName) Then
                 DefaultFilters("")
             End If
 
             doc.XmlResolver = Nothing
-            doc.Load(SettingsFolder() & "\" & sfName)
+            doc.Load(Tools.SettingsFolder() & "\" & sfName)
             root = doc.DocumentElement
 
             If (root.ChildNodes.Count) < 1 Then
                 DefaultFilters("")
-                doc.Load(SettingsFolder() & "\" & sfName)
+                doc.Load(Tools.SettingsFolder() & "\" & sfName)
                 root = doc.DocumentElement
             End If
 
@@ -69,13 +69,13 @@ Friend Class cFilter
 
                     If Len(.sImage) > 0 Then
                         If Not .sImage.Contains(":") Then
-                            .sImage = SettingsFolder() & .sImage
+                            .sImage = Tools.SettingsFolder() & .sImage
                         End If
                     End If
 
                     If Len(.sSelected) > 0 Then
                         If Not .sSelected.Contains(":") Then
-                            .sSelected = SettingsFolder() & .sSelected
+                            .sSelected = Tools.SettingsFolder() & .sSelected
                         End If
                     End If
 
@@ -99,12 +99,12 @@ Friend Class cFilter
 
                     If Len(.sImage) = 0 And Len(.sName) > 0 Then
                         If .sQuery.ToLower.Contains("tag match '") Or .sQuery.ToLower.Contains("sender match '") Then
-                            .sImage = SettingsFolder() & "\Images\people2.ico"
+                            .sImage = Tools.SettingsFolder() & "\Images\people2.ico"
                         Else
                             If .sQuery.ToLower.Contains("tag like") Or .sQuery.ToLower.Contains("tag = '") Then
-                                .sImage = SettingsFolder() & "\Images\tag2.ico"
+                                .sImage = Tools.SettingsFolder() & "\Images\tag2.ico"
                             Else
-                                .sImage = SettingsFolder() & "\Images\custom2.ico"
+                                .sImage = Tools.SettingsFolder() & "\Images\custom2.ico"
                             End If
                         End If
                     End If
@@ -134,8 +134,8 @@ Friend Class cFilter
 
         If Not FilterExist(fName) Then Exit Sub
 
-        If System.IO.File.Exists(SettingsFolder() & "\" & sfName) Then
-            doc.Load(SettingsFolder() & "\" & sfName)
+        If System.IO.File.Exists(Tools.SettingsFolder() & "\" & sfName) Then
+            doc.Load(Tools.SettingsFolder() & "\" & sfName)
         Else
             Exit Sub
         End If
@@ -155,11 +155,11 @@ Friend Class cFilter
             End If
         Next
 
-        If FileExists(SettingsFolder() & "\" & sfName) Then
-            System.IO.File.SetAttributes(SettingsFolder() & "\" & sfName, IO.FileAttributes.Normal)
+        If Utils.FileExists(Tools.SettingsFolder() & "\" & sfName) Then
+            System.IO.File.SetAttributes(Tools.SettingsFolder() & "\" & sfName, IO.FileAttributes.Normal)
         End If
 
-        doc.Save(SettingsFolder() & "\" & sfName)
+        doc.Save(Tools.SettingsFolder() & "\" & sfName)
 
     End Sub
 
@@ -171,8 +171,8 @@ Friend Class cFilter
 
         If Not FilterExist(fName) Then Exit Sub
 
-        If System.IO.File.Exists(SettingsFolder() & "\" & sfName) Then
-            doc.Load(SettingsFolder() & "\" & sfName)
+        If System.IO.File.Exists(Tools.SettingsFolder() & "\" & sfName) Then
+            doc.Load(Tools.SettingsFolder() & "\" & sfName)
         Else
             Exit Sub
         End If
@@ -194,11 +194,11 @@ Friend Class cFilter
             End If
         Next
 
-        If FileExists(SettingsFolder() & "\" & sfName) Then
-            System.IO.File.SetAttributes(SettingsFolder() & "\" & sfName, IO.FileAttributes.Normal)
+        If Utils.FileExists(Tools.SettingsFolder() & "\" & sfName) Then
+            System.IO.File.SetAttributes(Tools.SettingsFolder() & "\" & sfName, IO.FileAttributes.Normal)
         End If
 
-        doc.Save(SettingsFolder() & "\" & sfName)
+        doc.Save(Tools.SettingsFolder() & "\" & sfName)
 
     End Sub
 
@@ -256,31 +256,31 @@ Friend Class cFilter
             End If
         Next
 
-        If System.IO.File.Exists(SettingsFolder() & "\" & sfName) And (Not bClean) Then
-            doc.Load(SettingsFolder() & "\" & sfName)
+        If System.IO.File.Exists(Tools.SettingsFolder() & "\" & sfName) And (Not bClean) Then
+            doc.Load(Tools.SettingsFolder() & "\" & sfName)
             root = doc.DocumentElement
         Else
-            root = doc.CreateElement(Spotname)
+            root = doc.CreateElement(Spotz.Spotname)
         End If
 
         For Each ZZ As Spotnet.FilterCat In zFilter
             Dim child As Xml.XmlElement = doc.CreateElement("Filter")
             child.SetAttribute("Name", ZZ.Name)
             If Not ZZ.Visible Then child.SetAttribute("Visible", "false")
-            If Len(ZZ.NormalImage) > 0 Then child.SetAttribute("Image", ZZ.NormalImage.Replace(SettingsFolder, ""))
-            If Len(ZZ.SelectedImage) > 0 Then child.SetAttribute("SelectedImage", ZZ.SelectedImage.Replace(SettingsFolder, ""))
+            If Len(ZZ.NormalImage) > 0 Then child.SetAttribute("Image", ZZ.NormalImage.Replace(Tools.SettingsFolder, ""))
+            If Len(ZZ.SelectedImage) > 0 Then child.SetAttribute("SelectedImage", ZZ.SelectedImage.Replace(Tools.SettingsFolder, ""))
             If Len(ZZ.Margin) > 0 And ZZ.Margin <> "0,0,0,0" And ZZ.Margin <> "0" Then child.SetAttribute("Margin", ZZ.Margin)
-            child.InnerXml = "<![CDATA[" & sIIF(Len(Trim$(ZZ.Query)) = 0, " ", ZZ.Query) & "]]>"
+            child.InnerXml = "<![CDATA[" & Utils.sIIF(Len(Trim$(ZZ.Query)) = 0, " ", ZZ.Query) & "]]>"
             root.AppendChild(child)
         Next
 
         doc.AppendChild(root)
 
-        If FileExists(SettingsFolder() & "\" & sfName) Then
-            System.IO.File.SetAttributes(SettingsFolder() & "\" & sfName, IO.FileAttributes.Normal)
+        If Utils.FileExists(Tools.SettingsFolder() & "\" & sfName) Then
+            System.IO.File.SetAttributes(Tools.SettingsFolder() & "\" & sfName, IO.FileAttributes.Normal)
         End If
 
-        doc.Save(SettingsFolder() & "\" & sfName)
+        doc.Save(Tools.SettingsFolder() & "\" & sfName)
 
         Return True
 

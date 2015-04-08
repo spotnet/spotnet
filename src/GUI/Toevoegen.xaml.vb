@@ -23,7 +23,7 @@ Public Class Toevoegen
         SCatBox.Items.Clear()
         SCatBox.IsEnabled = False
 
-        Label1.Content = Utils.TranslateCatDesc(CatBox.SelectedIndex + 1, "a0")
+        Label1.Content = Spotz.TranslateCatDesc(CatBox.SelectedIndex + 1, "a0")
 
         Select Case CatBox.SelectedIndex
 
@@ -86,8 +86,8 @@ Public Class Toevoegen
         Try
             If DoPost(zErr) Then
                 MsgBox("Je spot is succesvol toegevoegd." & vbCrLf & vbCrLf & "Het kan even duren voor hij in de database verschijnt.", MsgBoxStyle.Information, "Bedankt")
-                My.Settings.Nickname = StripNonAlphaNumericCharacters(txtFrom.Text)
-                My.Settings.Tagname = StripNonAlphaNumericCharacters(TxtTag.Text)
+                My.Settings.Nickname = Utils.StripChars(txtFrom.Text)
+                My.Settings.Tagname = Utils.StripChars(TxtTag.Text)
                 My.Settings.Save()
                 Dim xx As Spotnet.CloseableTabItem
                 xx = CType(Me.Parent, Spotnet.CloseableTabItem)
@@ -98,7 +98,7 @@ Public Class Toevoegen
             zErr = ex.Message
         End Try
 
-        Foutje(zErr)
+        Tools.Foutje(zErr)
 
         Me.IsEnabled = True
 
@@ -138,19 +138,19 @@ Public Class Toevoegen
 
         If Not CheckValues(zErr) Then Return False
 
-        If Not FileExists(Trim$(txtImage.Text)) Then
-            If Not CheckPlaatje(AddHttp(Trim$(txtImage.Text)), Rez, SizeX, SizeY) Then zErr = ("Kan afbeelding niet vinden? Controleer of de URL correct is!") : Return False
+        If Not Utils.FileExists(Trim$(txtImage.Text)) Then
+            If Not CheckPlaatje(Utils.AddHttp(Trim$(txtImage.Text)), Rez, SizeX, SizeY) Then zErr = ("Kan afbeelding niet vinden? Controleer of de URL correct is!") : Return False
         Else
             If Not CheckPlaatjeLocal(Trim$(txtImage.Text), Rez, SizeX, SizeY) Then zErr = ("Kan afbeelding niet toevoegen!") : Return False
         End If
 
         If Len(Trim(txtUrl.Text)) > 0 Then
-            If Not CheckUrl(AddHttp(Trim$(txtUrl.Text))) Then zErr = ("Kan de website niet vinden? Controleer of de URL correct is!") : Return False
+            If Not CheckUrl(Utils.AddHttp(Trim$(txtUrl.Text))) Then zErr = ("Kan de website niet vinden? Controleer of de URL correct is!") : Return False
         End If
 
         Dim Ref As MainWindow = CType(Application.Current.MainWindow, MainWindow)
 
-        Return Spotlib.Spots.CreateSpot(UploadPhuse, My.Settings.HeaderGroup, txtTitel.Text, txtDesc.Text, CByte(CatBox.SelectedIndex + 1), GetSubCats(CByte(CatBox.SelectedIndex), True), AddHttp(txtUrl.Text.Trim), "nl", SizeX, SizeY, txtNZB.Text, txtFrom.Text, TxtTag.Text, My.Settings.NZBGroup, GetKey, Utils.CreateMsgID, Rez, GetAvatar, False, Ref.HeaderSettings(False, False), zErr)
+        Return Spotlib.Spots.CreateSpot(Ref.Fuze.UploadPhuse, My.Settings.HeaderGroup, txtTitel.Text, txtDesc.Text, CByte(CatBox.SelectedIndex + 1), GetSubCats(CByte(CatBox.SelectedIndex), True), Utils.AddHttp(txtUrl.Text.Trim), "nl", SizeX, SizeY, txtNZB.Text, txtFrom.Text, TxtTag.Text, My.Settings.NZBGroup, Spotz.GetKey, Spotz.CreateMsgID, Rez, Tools.GetAvatar, False, Ref.HeaderSettings(False, False), zErr)
 
     End Function
 
@@ -274,11 +274,11 @@ Public Class Toevoegen
 
                 If hCat = 1 And hType = 2 And ii = 1 Then
 
-                    zAdd = Utils.TranslateCat(5, Zx(ii) & i, True)
+                    zAdd = Spotz.TranslateCat(5, Zx(ii) & i, True)
 
                 Else
 
-                    zAdd = Utils.TranslateCat(hCat, Zx(ii) & i, True)
+                    zAdd = Spotz.TranslateCat(hCat, Zx(ii) & i, True)
 
                 End If
 
@@ -317,7 +317,7 @@ Public Class Toevoegen
         Else
             Cat1.IsEnabled = True
             Cat1.Visibility = Windows.Visibility.Visible
-            CatLab1.Content = Utils.TranslateCatDesc(hCat, "b0")
+            CatLab1.Content = Spotz.TranslateCatDesc(hCat, "b0")
             CatLab1.Visibility = Windows.Visibility.Visible
         End If
 
@@ -327,7 +327,7 @@ Public Class Toevoegen
         Else
             Cat2.IsEnabled = True
             Cat2.Visibility = Windows.Visibility.Visible
-            CatLab2.Content = Utils.TranslateCatDesc(hCat, "c0")
+            CatLab2.Content = Spotz.TranslateCatDesc(hCat, "c0")
             CatLab2.Visibility = Windows.Visibility.Visible
         End If
 
@@ -337,7 +337,7 @@ Public Class Toevoegen
         Else
             Cat3.IsEnabled = True
             Cat3.Visibility = Windows.Visibility.Visible
-            CatLab3.Content = Utils.TranslateCatDesc(hCat, "d0")
+            CatLab3.Content = Spotz.TranslateCatDesc(hCat, "d0")
             CatLab3.Visibility = Windows.Visibility.Visible
         End If
 
@@ -523,7 +523,7 @@ Public Class Toevoegen
 
             Dim fileReader As New WebClient()
 
-            If Not HasHttp(sUrl) Then Return False
+            If Not Utils.HasHttp(sUrl) Then Return False
 
             Rez = fileReader.DownloadData(sUrl)
 
@@ -563,7 +563,7 @@ Public Class Toevoegen
 
         Try
 
-            If Not FileExists(sUrl) Then Return False
+            If Not Utils.FileExists(sUrl) Then Return False
 
             Dim oMS As New FileStream(sUrl, FileMode.Open, FileAccess.Read)
             Dim PL2 As BitmapFrame
@@ -595,7 +595,7 @@ Public Class Toevoegen
 
         Try
 
-            If Not HasHttp(sUrl) Then Return False
+            If Not Utils.HasHttp(sUrl) Then Return False
 
             Dim url As New System.Uri(sUrl)
             Dim req As System.Net.WebRequest
@@ -651,8 +651,8 @@ Public Class Toevoegen
 
     Private Sub TxtTag_TextChanged(ByVal sender As Object, ByVal e As System.Windows.Controls.TextChangedEventArgs) Handles TxtTag.TextChanged
 
-        If TxtTag.Text <> StripNonAlphaNumericCharacters(TxtTag.Text) Then
-            TxtTag.Text = StripNonAlphaNumericCharacters(TxtTag.Text)
+        If TxtTag.Text <> Utils.StripChars(TxtTag.Text) Then
+            TxtTag.Text = Utils.StripChars(TxtTag.Text)
             TxtTag.SelectionStart = TxtTag.Text.Length
         End If
 
@@ -668,8 +668,8 @@ Public Class Toevoegen
 
     Private Sub txtFrom_TextChanged(ByVal sender As Object, ByVal e As System.Windows.Controls.TextChangedEventArgs) Handles txtFrom.TextChanged
 
-        If txtFrom.Text <> StripNonAlphaNumericCharacters(txtFrom.Text) Then
-            txtFrom.Text = StripNonAlphaNumericCharacters(txtFrom.Text)
+        If txtFrom.Text <> Utils.StripChars(txtFrom.Text) Then
+            txtFrom.Text = Utils.StripChars(txtFrom.Text)
             txtFrom.SelectionStart = txtFrom.Text.Length
         End If
 
@@ -677,8 +677,8 @@ Public Class Toevoegen
 
     Private Sub Toevoegen_Initialized(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Initialized
 
-        txtFrom.Text = StripNonAlphaNumericCharacters(My.Settings.Nickname)
-        TxtTag.Text = StripNonAlphaNumericCharacters(My.Settings.Tagname)
+        txtFrom.Text = Utils.StripChars(My.Settings.Nickname)
+        TxtTag.Text = Utils.StripChars(My.Settings.Tagname)
 
     End Sub
 
@@ -689,7 +689,7 @@ Public Class Toevoegen
         SCatBox.Items.Clear()
         SCatBox.IsEnabled = True
 
-        Label1.Content = Utils.TranslateCatDesc(CatBox.SelectedIndex + 1, "a0")
+        Label1.Content = Spotz.TranslateCatDesc(CatBox.SelectedIndex + 1, "a0")
 
         Dim iStart As Integer = 0
         Dim iStop As Integer = 100
@@ -709,7 +709,7 @@ Public Class Toevoegen
                 End If
             End If
 
-            Dim sCat As String = Utils.TranslateCat(CatBox.SelectedIndex + 1, "a" & i, True)
+            Dim sCat As String = Spotz.TranslateCat(CatBox.SelectedIndex + 1, "a" & i, True)
 
             If Not sCat Is Nothing Then
                 If Len(sCat) > 0 Then

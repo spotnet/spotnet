@@ -84,7 +84,7 @@ Public Class Status
 
             If Not DidOnce Then
                 DidOnce = True
-                Foutje("Progress_Changed:: " & ex.Message)
+                Tools.Foutje("Progress_Changed:: " & ex.Message)
             End If
 
         End Try
@@ -106,7 +106,7 @@ Public Class Status
         Try
 
             Dim Ref As MainWindow = CType(Application.Current.MainWindow, MainWindow)
-            TheHeaders = Spots.FindSpots(HeaderPhuse, Ref.HeaderSettings(True, True))
+            TheHeaders = Spots.FindSpots(Ref.Fuze.HeaderPhuse, Ref.HeaderSettings(True, True))
 
             Return True
 
@@ -142,7 +142,7 @@ Public Class Status
             End If
 
         Catch ex As Exception
-            Foutje("Status_Closing:: " & ex.Message)
+            Tools.Foutje("Status_Closing:: " & ex.Message)
 
         End Try
 
@@ -174,9 +174,10 @@ Public Class Status
                 Else
 
                     Dim zErr As String = ""
+                    Dim Ref As MainWindow = CType(Application.Current.MainWindow, MainWindow)
 
-                    If Not TheSab.StartSab(sModule.GetServer(ServerType.Download), False, zErr) Then
-                        Foutje("Fout tijdens het starten van SABnzbd: " & zErr)
+                    If Not TheSab.StartSab(Ref.Fuze.GetServer(ServerType.Download), False, zErr) Then
+                        Tools.Foutje("Fout tijdens het starten van SABnzbd: " & zErr)
                         TheSab = Nothing
                     End If
 
@@ -190,7 +191,7 @@ Public Class Status
 
         Catch ex As Exception
 
-            Foutje("Status_Loaded:: " & ex.Message)
+            Tools.Foutje("Status_Loaded:: " & ex.Message)
 
             MayUnload = True
             Me.Close()
@@ -235,7 +236,7 @@ Public Class Status
 
             If xReturn.Cancelled Or (Not xReturn.Error Is Nothing) Then
 
-                If xReturn.Error.Message <> CancelMSG Then
+                If xReturn.Error.Message <> Spotz.CancelMSG Then
 
                     ProgressChanged(xReturn.Error.Message, -1)
                     DoError(xReturn.Error.Message)
@@ -295,7 +296,7 @@ Public Class Status
         ProgressChanged("Reacties ophalen...", 0)
 
         Dim Ref As MainWindow = CType(Application.Current.MainWindow, MainWindow)
-        TheComments = Spots.FindComments(HeaderPhuse, Ref.CommentSettings(True, False))
+        TheComments = Spots.FindComments(Ref.Fuze.HeaderPhuse, Ref.CommentSettings(True, False))
 
     End Sub
 
@@ -314,7 +315,7 @@ Public Class Status
             AddHandler Saver.ProgressChanged, AddressOf SaveProgressChanged
 
             If Saver.Connect(Ret.DbFile, zError) Then
-                If Saver.InsertSpots(New Spotlib.Parameters(), Ret.Spots, Ret.Deletes, SaveRes, zError) Then
+                If Saver.InsertSpots(Ret.Spots, Ret.Deletes, SaveRes, New WorkParams(), zError) Then
                     e.Result = SaveRes
                     Exit Sub
                 End If
@@ -368,7 +369,7 @@ Public Class Status
 
             If xReturn.Cancelled Or (Not xReturn.Error Is Nothing) Then
 
-                If xReturn.Error.Message <> CancelMSG Then
+                If xReturn.Error.Message <> Spotz.CancelMSG Then
 
                     ProgressChanged(xReturn.Error.Message, -1)
                     DoError(xReturn.Error.Message)
@@ -433,7 +434,7 @@ Public Class Status
             AddHandler Saver.ProgressChanged, AddressOf SaveProgressChanged
 
             If Saver.Connect(Ret.DbFile, zError) Then
-                If Saver.AddComments(New Spotlib.Parameters(), Ret.Comments, SaveRes, zError) Then
+                If Saver.AddComments(Ret.Comments, SaveRes, New WorkParams, zError) Then
                     e.Result = SaveRes
                     Exit Sub
                 End If

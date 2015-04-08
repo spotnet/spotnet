@@ -2,6 +2,7 @@
 Imports System.Collections.ObjectModel
 
 Imports Spotnet.Spotnet
+Imports Spotlib
 
 Friend Class SabItems
     Inherits ObservableCollection(Of SabItem)
@@ -212,13 +213,13 @@ Friend Class SabItem
     Public Property Speed As String
 
         Set(ByVal value As String)
-            Foutje("Unsupported")
+            Tools.Foutje("Unsupported")
         End Set
 
         Get
 
             If IsDownloading Then
-                If m_Speed > 0 Then Return ConvertSize(CLng(m_Speed * 1000)) & "/s"
+                If m_Speed > 0 Then Return Utils.ConvertSize(CLng(m_Speed * 1000)) & "/s"
             End If
 
             Return ""

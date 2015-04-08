@@ -95,7 +95,7 @@
                 Return (Not bErr)
 
             Catch ex As Exception
-                Foutje("CloseMe: " & ex.Message)
+                Tools.Foutje("CloseMe: " & ex.Message)
                 Return False
 
             End Try

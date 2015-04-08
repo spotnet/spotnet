@@ -1,6 +1,7 @@
 ﻿Imports System.Xml
 Imports System.Configuration
 Imports System.Collections.Specialized
+Imports Spotlib
 
 Friend Class PortableSettingsProvider
     Inherits SettingsProvider
@@ -13,7 +14,7 @@ Friend Class PortableSettingsProvider
 
     Public Overrides Property ApplicationName() As String
         Get
-            Return Spotname
+            Return Spotz.Spotname
         End Get
         Set(ByVal value As String)
             'Do nothing
@@ -22,7 +23,7 @@ Friend Class PortableSettingsProvider
 
     Overridable Function GetAppSettingsPath() As String
 
-        Return SettingsFolder()
+        Return Tools.SettingsFolder()
 
     End Function
 

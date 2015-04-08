@@ -12,7 +12,7 @@ Friend Class cHistory
             If zHis.Length > 0 Then
                 If Not History.Contains(zHis) Then
 
-                    Dim SK As New StreamWriter(SettingsFolder() & sFile, True, System.Text.Encoding.UTF8)
+                    Dim SK As New StreamWriter(Tools.SettingsFolder() & sFile, True, System.Text.Encoding.UTF8)
                     SK.WriteLine(zHis)
                     SK.Close()
 
@@ -36,7 +36,7 @@ Friend Class cHistory
 
         Try
 
-            System.IO.File.Delete(SettingsFolder() & sFile)
+            System.IO.File.Delete(Tools.SettingsFolder() & sFile)
             Return True
 
         Catch ex As Exception
@@ -49,9 +49,9 @@ Friend Class cHistory
 
     Private Sub LH()
 
-        If System.IO.File.Exists(SettingsFolder() & sFile) Then
+        If System.IO.File.Exists(Tools.SettingsFolder() & sFile) Then
 
-            Dim SK As New StreamReader(SettingsFolder() & sFile, System.Text.Encoding.UTF8)
+            Dim SK As New StreamReader(Tools.SettingsFolder() & sFile, System.Text.Encoding.UTF8)
 
             Dim zS As String = ""
 
@@ -76,7 +76,7 @@ Friend Class cHistory
 
             If History.Count > 1000 Then
 
-                Dim SK As New StreamWriter(SettingsFolder() & sFile, False, System.Text.Encoding.UTF8)
+                Dim SK As New StreamWriter(Tools.SettingsFolder() & sFile, False, System.Text.Encoding.UTF8)
 
                 Dim cI As Long = 1
 

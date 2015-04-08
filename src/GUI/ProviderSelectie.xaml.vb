@@ -3,6 +3,7 @@ Imports System.Windows.Threading
 
 Imports Phuse
 Imports Spotlib
+Imports Spotnet.Spotnet
 
 Public Class ProviderSelectie
 
@@ -79,8 +80,10 @@ Public Class ProviderSelectie
                 End If
             Next
 
-            Dim LZ As ServerInfo = ServersDB.oDown
-            Dim LZ9 As ServerInfo = ServersDB.oHeader
+            Dim Ref As MainWindow = CType(Application.Current.MainWindow, MainWindow)
+
+            Dim LZ As ServerInfo = Ref.Fuze.ServersDB.oDown
+            Dim LZ9 As ServerInfo = Ref.Fuze.ServersDB.oHeader
 
             TextBox1.Text = LZ.Server
 
@@ -127,7 +130,7 @@ Public Class ProviderSelectie
             End If
 
         Catch ex As Exception
-            Foutje(ex.Message)
+            Tools.Foutje(ex.Message)
             Me.Close()
             Exit Sub
         End Try
@@ -237,8 +240,8 @@ Public Class ProviderSelectie
         End If
 
         NC.Server = CIsServer
-        NU.Server = sIIF(Len(CIUploadServer) > 0, CIUploadServer, CIsServer)
-        ND.Server = sIIF(Len(CIDownloadServer) > 0, CIDownloadServer, CIsServer)
+        NU.Server = Utils.sIIF(Len(CIUploadServer) > 0, CIUploadServer, CIsServer)
+        ND.Server = Utils.sIIF(Len(CIDownloadServer) > 0, CIDownloadServer, CIsServer)
 
         NC.Port = CType(RemoveStrings(ComboBox1.Text), Integer)
         NU.Port = NC.Port
@@ -274,15 +277,17 @@ Public Class ProviderSelectie
             NU.Port = 119
         End If
 
-        ClearPhuses()
+        Dim Ref As MainWindow = CType(Application.Current.MainWindow, MainWindow)
 
-        Dim TestPhuse As Phuse.Engine = CreatePhuse(ND)
+        Ref.Fuze.ClearPhuses()
+
+        Dim TestPhuse As Phuse.Engine = Ref.Fuze.CreatePhuse(ND)
 
         If Spots.TestConnection(TestPhuse, My.Settings.HeaderGroup, sError) Then
 
             If ND.Server <> NC.Server Then
                 TestPhuse.Close()
-                TestPhuse = CreatePhuse(NC)
+                TestPhuse = Ref.Fuze.CreatePhuse(NC)
             End If
 
             If Spots.TestConnection(TestPhuse, My.Settings.HeaderGroup, sError) Then
@@ -292,13 +297,15 @@ Public Class ProviderSelectie
                 TestPhuse.Close()
                 TestPhuse = Nothing
 
-                ClearPhuses()
+                Dim Fuze As ServerList = Ref.Fuze
 
-                ServersDB.oUp = NU
-                ServersDB.oDown = ND
-                ServersDB.oHeader = NC
+                Fuze.ClearPhuses()
 
-                ServersDB.SaveServers()
+                Fuze.ServersDB.oUp = NU
+                Fuze.ServersDB.oDown = ND
+                Fuze.ServersDB.oHeader = NC
+
+                Fuze.ServersDB.SaveServers()
 
                 Me.Cursor = Nothing
                 Mouse.OverrideCursor = Nothing
@@ -317,7 +324,7 @@ Public Class ProviderSelectie
         Me.Cursor = Nothing
         Mouse.OverrideCursor = Nothing
 
-        Foutje(sError)
+        Tools.Foutje(sError)
         Button2.IsEnabled = True
         ProviderBox.IsEnabled = True
         EnableVal(True)

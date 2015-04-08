@@ -6,6 +6,7 @@ Imports System.ComponentModel
 Imports System.Windows.Threading
 
 Imports Spotnet.Spotnet
+Imports Spotlib
 
 Friend Class SabHelper
 
@@ -17,13 +18,13 @@ Friend Class SabHelper
 
     Public Event ProgressChanged(ByVal lVal As Integer)
 
-    Public Function GetSabIni(ByVal Srv As ServerInfo) As String
+    Public Function GetSabIni(ByVal Srv As ServerInfo, ByRef Fuze As ServerList) As String
 
         Dim objReader As StreamWriter
 
-        If Not FileExists(SettingsFolder() & "\sabnzbd.ini") Then
+        If Not Utils.FileExists(Tools.SettingsFolder() & "\sabnzbd.ini") Then
             Try
-                objReader = New StreamWriter(SettingsFolder() & "\sabnzbd.ini", False, LatinEnc)
+                objReader = New StreamWriter(Tools.SettingsFolder() & "\sabnzbd.ini", False, Utils.LatinEnc)
                 objReader.Write(My.Resources.sabnzbd.ToString())
                 objReader.Close()
             Catch Ex As Exception
@@ -31,7 +32,7 @@ Friend Class SabHelper
             End Try
         End If
 
-        Dim zIni As String = GetFileContents(SettingsFolder() & "\sabnzbd.ini")
+        Dim zIni As String = Utils.GetFileContents(Tools.SettingsFolder() & "\sabnzbd.ini")
 
         If Len(zIni) = 0 Then Return vbNullString
         zIni = zIni.Replace("[HOST]", CStr(My.Settings.SabHost)).Replace("[PORT]", CStr(My.Settings.SabPort))
@@ -41,12 +42,12 @@ Friend Class SabHelper
         For XH As Integer = 0 To UBound(xIni)
 
             If xIni(XH).Contains("[ROOT]") Then
-                xIni(XH) = xIni(XH).Replace("[ROOT]", "'''" & DownDir())
+                xIni(XH) = xIni(XH).Replace("[ROOT]", "'''" & Tools.DownDir())
                 xIni(XH) += "'''"
             End If
 
             If xIni(XH).Contains("[ROOT2]") Then
-                xIni(XH) = xIni(XH).Replace("[ROOT2]", "'''" & SettingsFolder())
+                xIni(XH) = xIni(XH).Replace("[ROOT2]", "'''" & Tools.SettingsFolder())
                 xIni(XH) += "'''"
             End If
 
@@ -60,20 +61,20 @@ Friend Class SabHelper
 
         If Not zIni.ToLower.Contains("[servers]") Then
 
-            LastServer = Srv.Server.ToLower & ":" & Srv.Port
+            Fuze.LastServer = Srv.Server.ToLower & ":" & Srv.Port
 
-            zIni += "[servers]" & vbCrLf & _
-            "[[" & LastServer & "]]" & vbCrLf & _
-            "username = '''" & Srv.Username & "'''" & vbCrLf & _
-            "enable = 1" & vbCrLf & _
-            "name = " & LastServer & vbCrLf & _
-            "fillserver = 0" & vbCrLf & _
-            "connections = " & Srv.Connections & vbCrLf & _
-            "ssl = " & sIIF(Srv.SSL, "1", "0") & vbCrLf & _
-            "host = " & Srv.Server.ToLower & vbCrLf & _
-            "timeout = 120" & vbCrLf & _
-            "password = '''" & Srv.Password & "'''" & vbCrLf & _
-            "optional = 0" & vbCrLf & _
+            zIni += "[servers]" & vbCrLf &
+            "[[" & Fuze.LastServer & "]]" & vbCrLf &
+            "username = '''" & Srv.Username & "'''" & vbCrLf &
+            "enable = 1" & vbCrLf &
+            "name = " & Fuze.LastServer & vbCrLf &
+            "fillserver = 0" & vbCrLf &
+            "connections = " & Srv.Connections & vbCrLf &
+            "ssl = " & Utils.sIIF(Srv.SSL, "1", "0") & vbCrLf &
+            "host = " & Srv.Server.ToLower & vbCrLf &
+            "timeout = 120" & vbCrLf &
+            "password = '''" & Srv.Password & "'''" & vbCrLf &
+            "optional = 0" & vbCrLf &
             "port = " & Srv.Port & vbCrLf
 
         End If
@@ -81,7 +82,7 @@ Friend Class SabHelper
         Dim sFile As String = System.IO.Path.GetTempFileName & ".ini"
 
         Try
-            objReader = New StreamWriter(sFile, False, LatinEnc)
+            objReader = New StreamWriter(sFile, False, Utils.LatinEnc)
             objReader.Write(zIni)
             objReader.Close()
         Catch Ex As Exception
@@ -105,11 +106,11 @@ Friend Class SabHelper
             oWeb = New System.Net.WebClient
             oWeb.Headers.Add("Content-Type", "application/x-www-form-urlencoded")
 
-            bytArguments = MakeLatin(zPostData)
+            bytArguments = Utils.MakeLatin(zPostData)
 
             Try
 
-                sReturn = GetLatin(oWeb.UploadData(GetSabURL() & sCmd & "?_dc=" & CStr(zR.Next(0, 999999)) & "&session=xxx", "POST", bytArguments))
+                sReturn = Utils.GetLatin(oWeb.UploadData(GetSabURL() & sCmd & "?_dc=" & CStr(zR.Next(0, 999999)) & "&session=xxx", "POST", bytArguments))
 
             Catch ex As Exception
 
@@ -136,25 +137,25 @@ Friend Class SabHelper
         If External() Then Return True
 
         Dim sReq As String
-        sReq = "download_dir=" & URLEncode(DownDir() & "\Incompleet") & "&download_free=&complete_dir=" & URLEncode(DownDir()) & "&dirscan_dir=&dirscan_speed=5&script_dir=&email_dir=&cache_dir=" & URLEncode(SettingsFolder() & "\cache") & "&log_dir=" & URLEncode(SettingsFolder() & "\logs") & "&nzb_backup_dir="
+        sReq = "download_dir=" & Utils.URLEncode(Tools.DownDir() & "\Incompleet") & "&download_free=&complete_dir=" & Utils.URLEncode(Tools.DownDir()) & "&dirscan_dir=&dirscan_speed=5&script_dir=&email_dir=&cache_dir=" & Utils.URLEncode(Tools.SettingsFolder() & "\cache") & "&log_dir=" & Utils.URLEncode(Tools.SettingsFolder() & "\logs") & "&nzb_backup_dir="
 
         Return PostData("config/directories/saveDirectories", sReq, sError).ToLower.Contains("javascript:submitconfig(")
 
     End Function
 
-    Public Function UpdateSetting(ByVal Srv As ServerInfo, ByRef sError As String) As Boolean
+    Public Function UpdateSetting(ByVal Srv As ServerInfo, ByRef Fuze As ServerList, ByRef sError As String) As Boolean
 
         If External() Then Return True
-        If LastServer.Length = 0 Then Return True
+        If Fuze.LastServer.Length = 0 Then Return True
 
         Dim sReq As String
         Dim sHost As String = Srv.Server
 
-        sReq = "host=" & URLEncode(sHost.ToLower) & "&port=" & CStr(Srv.Port) & "&username=" & URLEncode(Srv.Username) & "&password=" & URLEncode(Srv.Password) & "&timeout=120&connections=" & Srv.Connections & "&server=" & URLEncode(LastServer) & "&ssl=" & sIIF(Srv.SSL, "1", "0") & "&enable=1" '' 
+        sReq = "host=" & Utils.URLEncode(sHost.ToLower) & "&port=" & CStr(Srv.Port) & "&username=" & Utils.URLEncode(Srv.Username) & "&password=" & Utils.URLEncode(Srv.Password) & "&timeout=120&connections=" & Srv.Connections & "&server=" & Utils.URLEncode(Fuze.LastServer) & "&ssl=" & Utils.sIIF(Srv.SSL, "1", "0") & "&enable=1" '' 
 
         If Not PostData("config/server/saveServer", sReq, sError).ToLower.Contains("javascript:testserver(") Then Return False
 
-        LastServer = sHost.ToLower & ":" & Srv.Port
+        Fuze.LastServer = sHost.ToLower & ":" & Srv.Port
         Return True
 
     End Function
@@ -200,7 +201,7 @@ Friend Class SabHelper
 
             If Not SabStarted Then Return False
 
-            sTitle = Trim(MakeFilename(sTitle))
+            sTitle = Trim(Utils.MakeFilename(sTitle))
 
             If Len(sTitle) = 0 Then sTitle = "Leeg"
             If Len(sTitle) > 140 Then sTitle = Microsoft.VisualBasic.Left(sTitle, 140)
@@ -208,7 +209,7 @@ Friend Class SabHelper
             Dim zR As New Random
             Dim sName As String = sTitle & "." & CStr(zR.Next(0, 999999)) & ".nzb"
 
-            xUrl = GetSabURL() & "sabnzbd/api?mode=addfile&name=" & URLEncode(sName) & "&nzbname=" & URLEncode(sTitle) & GetAuth()
+            xUrl = GetSabURL() & "sabnzbd/api?mode=addfile&name=" & Utils.URLEncode(sName) & "&nzbname=" & Utils.URLEncode(sTitle) & GetAuth()
 
             Dim WebRequest As Net.HttpWebRequest = CType(Net.HttpWebRequest.Create(xUrl), Net.HttpWebRequest)
 
@@ -279,7 +280,7 @@ Friend Class SabHelper
 
             If Not SabStarted Then Return False
 
-            zXML = GetSabCMD("mode=" & sIIF(Not sHistory, "queue", "history") & "&name=" & sCmd & "&value=" & sID, zError)
+            zXML = GetSabCMD("mode=" & Utils.sIIF(Not sHistory, "queue", "history") & "&name=" & sCmd & "&value=" & sID, zError)
 
             If Len(zXML) = 0 Then Return False
             If zXML.Trim.ToLower <> "ok" Then zError = zXML : Return False
@@ -439,21 +440,21 @@ Friend Class SabHelper
                 If DoSwitchCmd(x3.ID, PrevItem(OldIndex), zErr) Then
                     SabCol.RemoveID(x3.ID)
                 Else
-                    Foutje(zErr)
+                    Tools.Foutje(zErr)
                 End If
             Case "DOWN"
                 If DoSwitchCmd(x3.ID, NextItem(OldIndex), zErr) Then
                     SabCol.RemoveID(x3.ID)
                 Else
-                    Foutje(zErr)
+                    Tools.Foutje(zErr)
                 End If
             Case "PAUSE"
                 If Not DoQueueCmd(x3.ID, "pause", x3.IsHistory, zErr) Then
-                    Foutje(zErr)
+                    Tools.Foutje(zErr)
                 End If
             Case "RESUME"
                 If Not DoQueueCmd(x3.ID, "resume", x3.IsHistory, zErr) Then
-                    Foutje(zErr)
+                    Tools.Foutje(zErr)
                 End If
             Case "DELETE"
 
@@ -482,7 +483,7 @@ Friend Class SabHelper
                     If Not x4.IsHistory Then
                         If Not x4.IsPaused Then
                             If Not DoQueueCmd(x4.ID, "pause", x4.IsHistory, zErr) Then
-                                Foutje(zErr)
+                                Tools.Foutje(zErr)
                             End If
                         End If
                     End If
@@ -492,7 +493,7 @@ Friend Class SabHelper
                     If Not x4.IsHistory Then
                         If x4.IsPaused Then
                             If Not DoQueueCmd(x4.ID, "resume", x4.IsHistory, zErr) Then
-                                Foutje(zErr)
+                                Tools.Foutje(zErr)
                             End If
                         End If
                     End If
@@ -514,19 +515,19 @@ Friend Class SabHelper
         Dim zErr As String = ""
 
         If Not DoQueueCmd(x4.ID, "delete", x4.IsHistory, zErr) Then
-            Foutje(zErr)
+            Tools.Foutje(zErr)
         End If
 
         If My.Computer.Keyboard.ShiftKeyDown Or My.Settings.RemoveDownloads Then
 
             If x4.IsHistory Then
                 If x4.Location.Length > 0 Then
-                    If Not DirectoryExists(x4.Location) Then
-                        If FileExists(x4.Location) Then
+                    If Not Utils.DirectoryExists(x4.Location) Then
+                        If Utils.FileExists(x4.Location) Then
                             x4.Location = Path.GetDirectoryName(x4.Location)
                         End If
                     End If
-                    If DirectoryExists(x4.Location) Then
+                    If Utils.DirectoryExists(x4.Location) Then
                         My.Computer.FileSystem.DeleteDirectory(x4.Location, FileIO.UIOption.OnlyErrorDialogs, FileIO.RecycleOption.SendToRecycleBin)
                     End If
                 Else
@@ -555,12 +556,12 @@ Friend Class SabHelper
 
         If zSend.IsHistory Then
             If zSend.Location.Length > 0 Then
-                If Not DirectoryExists(zSend.Location) Then
-                    If FileExists(zSend.Location) Then
+                If Not Utils.DirectoryExists(zSend.Location) Then
+                    If Utils.FileExists(zSend.Location) Then
                         zSend.Location = Path.GetDirectoryName(zSend.Location)
                     End If
                 End If
-                If DirectoryExists(zSend.Location) Then
+                If Utils.DirectoryExists(zSend.Location) Then
                     Return True
                 End If
             End If
@@ -586,7 +587,7 @@ Friend Class SabHelper
             .Header = "Openen"
             .Tag = "OPEN"
             .IsEnabled = CanOpen(zSend)
-            .Icon = GetIcon("open")
+            .Icon = Common.GetIcon("open")
             If Not .IsEnabled Then .Opacity = 0.5
             .AddHandler(MenuItem.ClickEvent, New RoutedEventHandler(AddressOf DoOpen))
         End With
@@ -596,7 +597,7 @@ Friend Class SabHelper
             .Header = "Omhoog"
             .Tag = "UP"
             .IsEnabled = (zSend.Index > 0) And (Not zSend.IsHistory)
-            .Icon = GetIcon("up")
+            .Icon = Common.GetIcon("up")
             If Not .IsEnabled Then .Opacity = 0.5
             .AddHandler(MenuItem.ClickEvent, New RoutedEventHandler(AddressOf DoOpen))
         End With
@@ -606,7 +607,7 @@ Friend Class SabHelper
             .Header = "Omlaag"
             .Tag = "DOWN"
             .IsEnabled = (zSend.Index < HighestIndex()) And (Not zSend.IsHistory)
-            .Icon = GetIcon("down")
+            .Icon = Common.GetIcon("down")
             If Not .IsEnabled Then .Opacity = 0.5
             .AddHandler(MenuItem.ClickEvent, New RoutedEventHandler(AddressOf DoOpen))
         End With
@@ -616,11 +617,11 @@ Friend Class SabHelper
             If Not zSend.IsPaused Then
                 .Header = "Pauzeren"
                 .Tag = "PAUSE"
-                .Icon = GetIcon("pause")
+                .Icon = Common.GetIcon("pause")
             Else
                 .Header = "Hervatten"
                 .Tag = "RESUME"
-                .Icon = GetIcon("resume")
+                .Icon = Common.GetIcon("resume")
             End If
             .IsEnabled = (Not zSend.IsHistory)
             If Not .IsEnabled Then .Opacity = 0.5
@@ -631,7 +632,7 @@ Friend Class SabHelper
         With mDelete
             .Header = "Verwijderen"
             .Tag = "DELETE"
-            .Icon = GetIcon("delete")
+            .Icon = Common.GetIcon("delete")
             If Not .IsEnabled Then .Opacity = 0.5
             .AddHandler(MenuItem.ClickEvent, New RoutedEventHandler(AddressOf DoOpen))
         End With
@@ -680,7 +681,7 @@ Friend Class SabHelper
         With mDelete
             .Header = "Verwijderen"
             .Tag = "DELETE"
-            .Icon = GetIcon("delete")
+            .Icon = Common.GetIcon("delete")
             If Not .IsEnabled Then .Opacity = 0.5
             .AddHandler(MenuItem.ClickEvent, New RoutedEventHandler(AddressOf DoOpenMulti))
         End With
@@ -690,7 +691,7 @@ Friend Class SabHelper
             .Header = "Pauzeren"
             .Tag = "PAUSE"
             .IsEnabled = ShowPause
-            .Icon = GetIcon("pause")
+            .Icon = Common.GetIcon("pause")
             If Not .IsEnabled Then .Opacity = 0.5
             .AddHandler(MenuItem.ClickEvent, New RoutedEventHandler(AddressOf DoOpenMulti))
         End With
@@ -700,7 +701,7 @@ Friend Class SabHelper
             .Header = "Hervatten"
             .Tag = "RESUME"
             .IsEnabled = ShowResume
-            .Icon = GetIcon("resume")
+            .Icon = Common.GetIcon("resume")
             If Not .IsEnabled Then .Opacity = 0.5
             .AddHandler(MenuItem.ClickEvent, New RoutedEventHandler(AddressOf DoOpenMulti))
         End With
@@ -810,7 +811,7 @@ Friend Class SabHelper
 
         Try
 
-            Dim SabPath As String = AppPath()
+            Dim SabPath As String = Tools.AppPath()
 
             For Each clsProcess As Process In Process.GetProcesses()
                 If Not clsProcess Is Nothing Then
@@ -875,14 +876,14 @@ Friend Class SabHelper
 
     End Function
 
-    Public Function LoadSab(ByVal Srv As ServerInfo, Optional ByRef zError As String = "") As Boolean
+    Public Function LoadSab(ByVal Srv As ServerInfo, ByRef Fuze As ServerList, Optional ByRef zError As String = "") As Boolean
 
         If SabStarted Then Return True
         If IsProcessRunning() Then Return True
 
         Try
 
-            Dim IniFile As String = GetSabIni(Srv)
+            Dim IniFile As String = GetSabIni(Srv, Fuze)
 
             If Len(IniFile) = 0 Then
                 zError = "Kan SAB ini file niet aanmaken?"
@@ -891,7 +892,7 @@ Friend Class SabHelper
 
             Dim pStart As New System.Diagnostics.Process
             Dim startInfo As System.Diagnostics.ProcessStartInfo
-            Dim SabPath As String = AppPath()
+            Dim SabPath As String = Tools.AppPath()
 
             startInfo = New System.Diagnostics.ProcessStartInfo(SabPath & "\SABnzbd.exe")
 
@@ -929,7 +930,9 @@ Friend Class SabHelper
 
             If Not External() Then
 
-                If Not LoadSab(Srv, zError) Then Return False
+                Dim Ref As MainWindow = CType(Application.Current.MainWindow, MainWindow)
+
+                If Not LoadSab(Srv, Ref.Fuze, zError) Then Return False
 
             End If
 
@@ -939,7 +942,7 @@ Friend Class SabHelper
                 Dim xDelay As Integer = 100
 
                 Do While Not IsSabRunning(xDelay)
-                    Wait(xDelay)
+                    Utils.Wait(xDelay)
                     xDelay = xDelay + 30
                     System.Windows.Forms.Application.DoEvents()
                     If DateDiff("s", xStart, Now) > 11 Then
@@ -1001,7 +1004,7 @@ Friend Class SabHelper
 
             If Not DidOnce Then
                 DidOnce = True
-                Foutje("Sab.DoUpdate: " & ex.Message)
+                Tools.Foutje("Sab.DoUpdate: " & ex.Message)
             End If
 
         End Try
@@ -1089,14 +1092,14 @@ Friend Class SabHelper
 
         Select Case My.Settings.SabPort
             Case 8090
-                ''
+            ''
             Case Else
                 Return True
         End Select
 
         Select Case My.Settings.SabHost.ToLower.Trim
             Case "localhost", "localhost.", "127.0.0.1", "0.0.0.0"
-                ''
+            ''
             Case Else
                 Return True
         End Select
@@ -1169,7 +1172,7 @@ Friend Class SabHelper
 
             If Not DidOnce Then
                 DidOnce = True
-                Foutje("UpdateSab: " & ex.Message)
+                Tools.Foutje("UpdateSab: " & ex.Message)
             End If
 
             Return False
