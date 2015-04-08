@@ -1,6 +1,4 @@
-﻿Imports System.IO
-
-Friend Class cFilter
+﻿Friend Class cFilter
 
     Private Const sfName As String = "filters.xml"
     Friend FilterOverview As New List(Of Spotnet.FilterCat)

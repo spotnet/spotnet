@@ -88,63 +88,64 @@
       <DependentUpon>Application.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="AboutControl.xaml.vb">
+    <Compile Include="GUI\AboutControl.xaml.vb">
       <DependentUpon>AboutControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="cEncPass.vb" />
-    <Compile Include="cHistory.vb" />
-    <Compile Include="cServers.vb" />
-    <Compile Include="cTabs.vb" />
-    <Compile Include="PortableSettingsProvider.vb" />
-    <Compile Include="ProviderSelectie.xaml.vb">
+    <Compile Include="My Project\AssemblyInfo.vb" />
+    <Compile Include="Utils\cEncPass.vb" />
+    <Compile Include="GUI\cHistory.vb" />
+    <Compile Include="Utils\cServers.vb" />
+    <Compile Include="GUI\cTabs.vb" />
+    <Compile Include="Utils\Settings.vb" />
+    <Compile Include="GUI\ProviderSelectie.xaml.vb">
       <DependentUpon>ProviderSelectie.xaml</DependentUpon>
     </Compile>
-    <Compile Include="SabHelper.vb" />
-    <Compile Include="SabItem.vb" />
-    <Compile Include="sModule.vb" />
-    <Compile Include="HTMLView.xaml.vb">
+    <Compile Include="Sab\SabHelper.vb" />
+    <Compile Include="Sab\SabItem.vb" />
+    <Compile Include="Utils\sModule.vb" />
+    <Compile Include="GUI\HTMLView.xaml.vb">
       <DependentUpon>HTMLView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="SimpleClass.vb" />
-    <Compile Include="SpotParser.vb" />
-    <Compile Include="SpotProvider.vb" />
-    <Compile Include="SpotSaver.vb" />
-    <Compile Include="SqlDb.vb" />
-    <Compile Include="Status.xaml.vb">
+    <Compile Include="Utils\SimpleClass.vb" />
+    <Compile Include="Db\SpotParser.vb" />
+    <Compile Include="Db\SpotProvider.vb" />
+    <Compile Include="Db\SpotSaver.vb" />
+    <Compile Include="Db\SqlDb.vb" />
+    <Compile Include="GUI\Status.xaml.vb">
       <DependentUpon>Status.xaml</DependentUpon>
     </Compile>
-    <Page Include="AboutControl.xaml">
+    <Page Include="GUI\AboutControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="HTMLView.xaml">
+    <Page Include="GUI\HTMLView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainWindow.xaml">
+    <Page Include="GUI\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="cFilter.vb" />
-    <Compile Include="FooViewModel.vb" />
-    <Compile Include="TabClass.vb" />
-    <Compile Include="Toevoegen.xaml.vb">
+    <Compile Include="GUI\cFilter.vb" />
+    <Compile Include="GUI\FooViewModel.vb" />
+    <Compile Include="GUI\TabClass.vb" />
+    <Compile Include="GUI\Toevoegen.xaml.vb">
       <DependentUpon>Toevoegen.xaml</DependentUpon>
     </Compile>
-    <Compile Include="VirtualToggleButton.vb" />
-    <Compile Include="MainWindow.xaml.vb">
+    <Compile Include="GUI\VirtualToggleButton.vb" />
+    <Compile Include="GUI\MainWindow.xaml.vb">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="ProviderSelectie.xaml">
+    <Page Include="GUI\ProviderSelectie.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Status.xaml">
+    <Page Include="GUI\Status.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Toevoegen.xaml">
+    <Page Include="GUI\Toevoegen.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

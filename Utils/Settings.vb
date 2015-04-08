@@ -1,13 +1,6 @@
-﻿Imports System
-Imports System.Collections
-Imports System.Collections.Generic
-Imports System.Text
+﻿Imports System.Xml
 Imports System.Configuration
-Imports System.Configuration.Provider
-Imports System.Windows.Forms
 Imports System.Collections.Specialized
-Imports Microsoft.Win32
-Imports System.Xml
 
 Friend Class PortableSettingsProvider
     Inherits SettingsProvider

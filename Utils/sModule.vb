@@ -4,6 +4,7 @@ Imports System.Text
 Imports System.Threading
 Imports System.Security.Cryptography
 Imports System.Windows.Media.Imaging
+
 Imports System.Data.Common
 
 Friend Module sModule
