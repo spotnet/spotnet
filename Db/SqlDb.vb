@@ -1,7 +1,7 @@
-﻿Imports System.Data.Common
+﻿Imports System.Text
+
+Imports System.Data.Common
 Imports System.Data.SQLite
-Imports System.Threading.Thread
-Imports System.Text
 
 Friend Class SqlDB
 

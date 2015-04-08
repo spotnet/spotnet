@@ -2,14 +2,13 @@
 Imports System.IO
 Imports System.Xml
 Imports System.Drawing
-Imports Spotnet.Spotnet
+Imports System.Data.Common
 Imports System.Windows.Threading
 Imports System.ComponentModel
-Imports System.Windows.Interop
-Imports System.Data.Common
-Imports System.Security.Cryptography
-Imports System.Threading
 Imports System.Drawing.Drawing2D
+
+Imports Spotlib
+Imports Spotnet.Spotnet
 
 Public Class HTMLView
 
@@ -424,7 +423,7 @@ Public Class HTMLView
             My.Settings.Nickname = StripNonAlphaNumericCharacters(CStr(_document.GetElementById("Nickname").DomElement.Value))
             My.Settings.Save()
 
-            If SpotClient.Spots.CreateComment(UploadPhuse, CStr(_document.GetElementById("Nickname").DomElement.Value), CStr(_document.GetElementById("CommentBody").DomElement.Value), My.Settings.ReplyGroup, GetSpot.MessageID, GetSpot.Title, GetAvatar, GetKey, HashMsg, zErr) Then
+            If Spotlib.Spots.CreateComment(UploadPhuse, CStr(_document.GetElementById("Nickname").DomElement.Value), CStr(_document.GetElementById("CommentBody").DomElement.Value), My.Settings.ReplyGroup, GetSpot.MessageID, GetSpot.Title, GetAvatar, GetKey, HashMsg, zErr) Then
 
                 LastBody = CStr(_document.GetElementById("CommentBody").DomElement.Value)
                 LastTime = Now
@@ -659,7 +658,7 @@ Public Class HTMLView
             If NewList.Count > 0 Then
                 FetchNewComments = bCheckNewComments
                 Dim Ref As MainWindow = CType(Application.Current.MainWindow, MainWindow)
-                CommentLoader = SpotClient.Spots.GetComments(sModule.HeaderPhuse, NewList, Ref.CommentSettings(False, False))
+                CommentLoader = Spots.GetComments(sModule.HeaderPhuse, NewList, Ref.CommentSettings(False, False))
             Else
                 If bCheckNewComments Then
                     CheckNewComments()
@@ -1147,7 +1146,7 @@ Public Class HTMLView
 
         Dim zxOut As String = ""
 
-        If Not SpotClient.Spots.GetNZB(DownloadPhuse, My.Settings.NZBGroup, TheParts, zxOut, zErr) Then GoTo Failz
+        If Not Spots.GetNZB(DownloadPhuse, My.Settings.NZBGroup, TheParts, zxOut, zErr) Then GoTo Failz
 
         Dim m_xmld As XmlDocument
 
@@ -1208,7 +1207,7 @@ Failz:
         End If
 
         Dim zxOut() As Byte = Nothing
-        If Not SpotClient.Spots.GetImage(DownloadPhuse, My.Settings.NZBGroup, TheParts, zxOut, zErr) Then Return vbNullString
+        If Not Spots.GetImage(DownloadPhuse, My.Settings.NZBGroup, TheParts, zxOut, zErr) Then Return vbNullString
 
         Dim TmpFile As String = (System.IO.Path.GetTempFileName)
         Dim objReader As StreamWriter
@@ -1357,7 +1356,7 @@ Failz:
             cSet.Position = CacheXoverID
         End If
 
-        CommentUpdater = SpotClient.Spots.FindComments(HeaderPhuse, cSet)
+        CommentUpdater = Spots.FindComments(HeaderPhuse, cSet)
 
     End Sub
 

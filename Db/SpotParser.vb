@@ -1,11 +1,11 @@
 ﻿Imports System.IO
-Imports System.Windows.Forms
-Imports System.Security.Cryptography
 Imports System.Text
-Imports System.Text.RegularExpressions
-Imports System.Windows.Media.Imaging
 Imports System.Drawing
 Imports System.Drawing.Imaging
+Imports System.Security.Cryptography
+Imports System.Text.RegularExpressions
+
+Imports Spotlib
 
 Friend Class SpotParser
 

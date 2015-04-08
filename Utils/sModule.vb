@@ -1,12 +1,10 @@
-﻿Imports System.Globalization
+﻿Imports System.IO
+Imports System.Xml
 Imports System.Text
 Imports System.Threading
-Imports System.IO
-Imports System.Net
-Imports System.Xml
 Imports System.Security.Cryptography
 Imports System.Windows.Media.Imaging
-Imports Microsoft.VisualBasic.ApplicationServices
+
 Imports System.Data.Common
 
 Friend Module sModule
@@ -1731,7 +1729,7 @@ Friend Module sModule
     Public Function FindNZB(ByVal sName As String, ByVal sNewsGroup As String, ByVal sTitle As String) As String
 
         Dim ssNzb As String = ""
-        ssNzb = SpotClient.Spots.FindNZB(sName, 600, sNewsGroup, 999, True, False)
+        ''ssNzb = Spots.FindNZB(sName, 600, sNewsGroup, 999, True, False)
 
         If (Len(ssNzb) = 0) Then
 

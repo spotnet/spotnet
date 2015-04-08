@@ -1,6 +1,9 @@
 ﻿Imports System.Text.RegularExpressions
 Imports System.Windows.Threading
 
+Imports Phuse
+Imports Spotlib
+
 Public Class ProviderSelectie
 
     Public bSuc As Boolean
@@ -275,14 +278,14 @@ Public Class ProviderSelectie
 
         Dim TestPhuse As Phuse.Engine = CreatePhuse(ND)
 
-        If SpotClient.Spots.TestConnection(TestPhuse, My.Settings.HeaderGroup, sError) Then
+        If Spots.TestConnection(TestPhuse, My.Settings.HeaderGroup, sError) Then
 
             If ND.Server <> NC.Server Then
                 TestPhuse.Close()
                 TestPhuse = CreatePhuse(NC)
             End If
 
-            If SpotClient.Spots.TestConnection(TestPhuse, My.Settings.HeaderGroup, sError) Then
+            If Spots.TestConnection(TestPhuse, My.Settings.HeaderGroup, sError) Then
 
                 bSuc = True
 
