@@ -24,7 +24,7 @@
             <Label Content="Copyleft © 2011" FontFamily="Verdana" FontSize="14" FontWeight="Normal" Height="51" HorizontalAlignment="Left" Margin="80,193,0,0" Name="Label3" VerticalAlignment="Top" Width="196" Visibility="Hidden" />
             <Label Content="All Rights Reversed." FontFamily="Verdana" FontSize="14" FontWeight="Normal" Height="51" HorizontalAlignment="Left" Margin="72,208,0,0" Name="Label4" VerticalAlignment="Top" Width="196" Visibility="Hidden" />
             <TextBlock Name="Link" FontFamily="Verdana" FontSize="14" FontWeight="Normal"  Visibility="Hidden" Margin="75,238,0,0" >
-                <Hyperlink Name="Linkje" NavigateUri="none">twitter.com/spotned</Hyperlink>
+                <Hyperlink Name="Linkje" NavigateUri="none">github.com/spotnet/spotnet</Hyperlink>
             </TextBlock>           
         </Grid>
     </Grid>
