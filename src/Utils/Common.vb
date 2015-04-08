@@ -6,11 +6,10 @@ Imports System.Security.Cryptography
 Imports System.Windows.Media.Imaging
 
 Imports Spotlib
-Imports Spotbase.Spotbase
 
 Friend Class SpotInfo
 
-    Public Spot As SpotEx
+    Public Spot As Spotlib.SpotEx
     Public TabLoaded As Boolean
 
 End Class
@@ -1007,7 +1006,7 @@ Friend Module sModule
                 FindCat = "d"c
         End Select
 
-        Return TranslateCat(lCat, FindCat & zCat)
+        Return Utils.TranslateCat(lCat, FindCat & zCat)
 
     End Function
 

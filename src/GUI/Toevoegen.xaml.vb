@@ -6,7 +6,7 @@ Imports System.ComponentModel
 Imports System.Windows.Media.Imaging
 Imports Spotnet.Spotnet
 Imports System.Windows.Threading
-Imports Spotbase.Spotbase
+Imports Spotlib
 
 Public Class Toevoegen
 
@@ -23,7 +23,7 @@ Public Class Toevoegen
         SCatBox.Items.Clear()
         SCatBox.IsEnabled = False
 
-        Label1.Content = TranslateCatDesc(CatBox.SelectedIndex + 1, "a0")
+        Label1.Content = Utils.TranslateCatDesc(CatBox.SelectedIndex + 1, "a0")
 
         Select Case CatBox.SelectedIndex
 
@@ -274,11 +274,11 @@ Public Class Toevoegen
 
                 If hCat = 1 And hType = 2 And ii = 1 Then
 
-                    zAdd = TranslateCat(5, Zx(ii) & i, True)
+                    zAdd = Utils.TranslateCat(5, Zx(ii) & i, True)
 
                 Else
 
-                    zAdd = TranslateCat(hCat, Zx(ii) & i, True)
+                    zAdd = Utils.TranslateCat(hCat, Zx(ii) & i, True)
 
                 End If
 
@@ -317,7 +317,7 @@ Public Class Toevoegen
         Else
             Cat1.IsEnabled = True
             Cat1.Visibility = Windows.Visibility.Visible
-            CatLab1.Content = TranslateCatDesc(hCat, "b0")
+            CatLab1.Content = Utils.TranslateCatDesc(hCat, "b0")
             CatLab1.Visibility = Windows.Visibility.Visible
         End If
 
@@ -327,7 +327,7 @@ Public Class Toevoegen
         Else
             Cat2.IsEnabled = True
             Cat2.Visibility = Windows.Visibility.Visible
-            CatLab2.Content = TranslateCatDesc(hCat, "c0")
+            CatLab2.Content = Utils.TranslateCatDesc(hCat, "c0")
             CatLab2.Visibility = Windows.Visibility.Visible
         End If
 
@@ -337,7 +337,7 @@ Public Class Toevoegen
         Else
             Cat3.IsEnabled = True
             Cat3.Visibility = Windows.Visibility.Visible
-            CatLab3.Content = TranslateCatDesc(hCat, "d0")
+            CatLab3.Content = Utils.TranslateCatDesc(hCat, "d0")
             CatLab3.Visibility = Windows.Visibility.Visible
         End If
 
@@ -689,7 +689,7 @@ Public Class Toevoegen
         SCatBox.Items.Clear()
         SCatBox.IsEnabled = True
 
-        Label1.Content = TranslateCatDesc(CatBox.SelectedIndex + 1, "a0")
+        Label1.Content = Utils.TranslateCatDesc(CatBox.SelectedIndex + 1, "a0")
 
         Dim iStart As Integer = 0
         Dim iStop As Integer = 100
@@ -709,7 +709,7 @@ Public Class Toevoegen
                 End If
             End If
 
-            Dim sCat As String = TranslateCat(CatBox.SelectedIndex + 1, "a" & i, True)
+            Dim sCat As String = Utils.TranslateCat(CatBox.SelectedIndex + 1, "a" & i, True)
 
             If Not sCat Is Nothing Then
                 If Len(sCat) > 0 Then

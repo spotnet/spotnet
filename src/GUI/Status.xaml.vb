@@ -1,12 +1,8 @@
-﻿Imports System.IO
-Imports System.Text
-Imports System.Threading
-Imports System.ComponentModel
+﻿Imports System.ComponentModel
 Imports System.Windows.Threading
 
 Imports Spotlib
 Imports Spotnet.Spotnet
-Imports Spotbase.Spotbase
 
 Public Class Status
 
@@ -27,8 +23,8 @@ Public Class Status
     Private WithEvents TheHeaders As Headers
     Private WithEvents TheComments As Comments
 
-    Friend HeaderResults As rSaveSpots = Nothing
-    Friend CommentResults As rSaveComments = Nothing
+    Friend HeaderResults As Spotlib.rSaveSpots = Nothing
+    Friend CommentResults As Spotlib.rSaveComments = Nothing
 
     Private WithEvents xSaveSpots As BackgroundWorker
     Private WithEvents xSaveComments As BackgroundWorker
@@ -310,7 +306,7 @@ Public Class Status
         Try
 
             Dim Saver As New Storage
-            Dim SaveRes As rSaveSpots = Nothing
+            Dim SaveRes As Spotlib.rSaveSpots = Nothing
             Dim Ret As SpotsCompletedEventArgs = CType(e.Argument, SpotsCompletedEventArgs)
 
             e.Result = Nothing
@@ -318,7 +314,7 @@ Public Class Status
             AddHandler Saver.ProgressChanged, AddressOf SaveProgressChanged
 
             If Saver.Connect(Ret.DbFile, zError) Then
-                If Saver.InsertSpots(New Parameters(), Ret.Spots, Ret.Deletes, SaveRes, zError) Then
+                If Saver.InsertSpots(New Spotlib.Parameters(), Ret.Spots, Ret.Deletes, SaveRes, zError) Then
                     e.Result = SaveRes
                     Exit Sub
                 End If
@@ -340,7 +336,7 @@ Public Class Status
 
             xSaveSpots = Nothing
 
-            Dim SaveRes As rSaveSpots = CType(e.Result, rSaveSpots)
+            Dim SaveRes As Spotlib.rSaveSpots = CType(e.Result, Spotlib.rSaveSpots)
 
             If SaveRes Is Nothing Then
 
@@ -428,8 +424,8 @@ Public Class Status
 
         Try
 
-            Dim Saver As New Storage
-            Dim SaveRes As rSaveComments = Nothing
+            Dim Saver As New Spotlib.Storage
+            Dim SaveRes As Spotlib.rSaveComments = Nothing
             Dim Ret As CommentsCompletedEventArgs = CType(e.Argument, CommentsCompletedEventArgs)
 
             e.Result = Nothing
@@ -437,7 +433,7 @@ Public Class Status
             AddHandler Saver.ProgressChanged, AddressOf SaveProgressChanged
 
             If Saver.Connect(Ret.DbFile, zError) Then
-                If Saver.AddComments(New Parameters(), Ret.Comments, SaveRes, zError) Then
+                If Saver.AddComments(New Spotlib.Parameters(), Ret.Comments, SaveRes, zError) Then
                     e.Result = SaveRes
                     Exit Sub
                 End If
@@ -459,7 +455,7 @@ Public Class Status
 
             xSaveComments = Nothing
 
-            Dim SaveRes As rSaveComments = CType(e.Result, rSaveComments)
+            Dim SaveRes As Spotlib.rSaveComments = CType(e.Result, Spotlib.rSaveComments)
 
             If SaveRes Is Nothing Then
                 DoError(LastError)

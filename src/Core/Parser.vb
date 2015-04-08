@@ -6,11 +6,10 @@ Imports System.Security.Cryptography
 Imports System.Text.RegularExpressions
 
 Imports Spotlib
-Imports Spotbase.Spotbase
 
 Friend Class SpotParser
 
-    Friend Shared Function ParseSpot(ByVal xSpot As SpotEx, ByVal FontSize As Byte) As String
+    Friend Shared Function ParseSpot(ByVal xSpot As Spotlib.SpotEx, ByVal FontSize As Byte) As String
 
         Static SpotHTM As String = Nothing
 
@@ -147,7 +146,7 @@ Friend Class SpotParser
 
     End Function
 
-    Friend Shared Function MakeTable(ByVal xSpot As SpotEx) As String
+    Friend Shared Function MakeTable(ByVal xSpot As Spotlib.SpotEx) As String
 
         Dim xTable As New StringBuilder
 
@@ -242,7 +241,7 @@ Friend Class SpotParser
         For i = 0 To UBound(zCat)
             If Len(zCat(i)) > 0 Then
 
-                zAdd = TranslateCat(hCat, zCat(i))
+                zAdd = Utils.TranslateCat(hCat, zCat(i))
 
                 If Len(zAdd) = 0 Then Continue For
 
@@ -358,7 +357,7 @@ Friend Class SpotParser
 
         zGroups += sBr & OutPoster & sOutTags
 
-        Dim TransCat As String = CatDesc(hCat, TypeCat)
+        Dim TransCat As String = Utils.CatDesc(hCat, TypeCat)
         Dim sSort As String = "<TR><TD><b>Categorie&nbsp;&nbsp;&nbsp;</b></TD><TD>" & CreateClassLink("query:" & URLEncode(TransCat & "_" & "cat = " & CStr(hCat)), TransCat, "category", "Zoeken") & "</TD></TR>"
 
         Dim sOutZ As String = MakeCats(hCat, "z"c, iCatZ, sColor, sColor2)

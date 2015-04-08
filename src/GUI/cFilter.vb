@@ -1,4 +1,4 @@
-﻿Imports Spotbase.Spotbase
+﻿Imports Spotlib
 
 Friend Class cFilter
 

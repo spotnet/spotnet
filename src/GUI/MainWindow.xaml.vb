@@ -12,7 +12,6 @@ Imports System.Security.Cryptography
 
 Imports Spotlib
 Imports DataVirtualization
-Imports Spotbase.Spotbase
 
 Namespace Spotnet
 
@@ -816,7 +815,7 @@ Namespace Spotnet
 
                 SpotSource.Close()
 
-                If Not SpotSource.Connect(GetDBFilename("dbs"), New Parameters(), zErr) Then
+                If Not SpotSource.Connect(GetDBFilename("dbs"), New Spotlib.Parameters(), zErr) Then
                     Return False
                 End If
 
@@ -975,7 +974,7 @@ Namespace Spotnet
 
                 If (Len(Trim$(ServersDB.oDown.Server)) > 0) Then
 
-                    If Not SpotSource.Connect(GetDBFilename("dbs"), New Parameters(), sErr) Then
+                    If Not SpotSource.Connect(GetDBFilename("dbs"), New Spotlib.Parameters(), sErr) Then
 
                         If SpotSource.Corrupted Then
                             Try
@@ -1110,11 +1109,11 @@ Namespace Spotnet
 
         End Sub
 
-        Private Function UpdateDB(ByRef sErr As String, ByRef rReturn As rSaveSpots) As Boolean
+        Private Function UpdateDB(ByRef sErr As String, ByRef rReturn As Spotlib.rSaveSpots) As Boolean
 
             Dim StatusEvents As Status
-            Dim rSpot As rSaveSpots = Nothing
-            Dim rComment As rSaveComments = Nothing
+            Dim rSpot As Spotlib.rSaveSpots = Nothing
+            Dim rComment As Spotlib.rSaveComments = Nothing
 
             Try
 
@@ -1480,7 +1479,7 @@ Namespace Spotnet
 
                     Dim DK As New SpotInfo
 
-                    DK.Spot = New SpotEx
+                    DK.Spot = New Spotlib.SpotEx
                     DK.Spot.Title = sTitle
                     DK.Spot.MessageID = MakeMsg(sLoc, False)
                     DK.TabLoaded = False
@@ -1546,7 +1545,7 @@ Namespace Spotnet
 
         End Sub
 
-        Private Sub OpenSpot2(ByVal xSpot As SpotEx, ByRef ExTab As CloseableTabItem)
+        Private Sub OpenSpot2(ByVal xSpot As Spotlib.SpotEx, ByRef ExTab As CloseableTabItem)
 
             Dim zx As New HTMLView
             Dim newTab As CloseableTabItem
@@ -4128,7 +4127,7 @@ Namespace Spotnet
 
         End Sub
 
-        Friend Function HeaderSettings(ByVal bIncludeLast As Boolean, ByVal bUpdateLists As Boolean) As NNTPSettings
+        Friend Function HeaderSettings(ByVal bIncludeLast As Boolean, ByVal bUpdateLists As Boolean) As Spotlib.NNTPSettings
 
             Try
 
@@ -4137,7 +4136,7 @@ Namespace Spotnet
                     UpdateBlacklist()
                 End If
 
-                Dim SS As New NNTPSettings
+                Dim SS As New Spotlib.NNTPSettings
 
                 SS.BlackList = BlackList()
                 SS.WhiteList = WhiteList()
@@ -4164,7 +4163,7 @@ Namespace Spotnet
 
         End Function
 
-        Friend Function CommentSettings(ByVal bIncludeLast As Boolean, ByVal bUpdateLists As Boolean) As NNTPSettings
+        Friend Function CommentSettings(ByVal bIncludeLast As Boolean, ByVal bUpdateLists As Boolean) As Spotlib.NNTPSettings
 
             Try
 
@@ -4173,7 +4172,7 @@ Namespace Spotnet
                     UpdateBlacklist()
                 End If
 
-                Dim SS As New NNTPSettings
+                Dim SS As New Spotlib.NNTPSettings
 
                 SS.BlackList = BlackList()
                 SS.WhiteList = WhiteList()
@@ -4232,7 +4231,7 @@ Namespace Spotnet
             Dim xRes(4) As Object
             Dim eRes As Boolean = False
             Dim zReturn As String = ""
-            Dim xSpot As SpotEx = Nothing
+            Dim xSpot As Spotlib.SpotEx = Nothing
             Dim lID As Long = CLng(xObj(2))
             Dim sM As String = CStr(xObj(0))
 
@@ -4265,7 +4264,7 @@ Namespace Spotnet
 
             Dim x0 As Boolean = CBool(xRes(0))
             Dim x1 As String = CStr(xRes(1))
-            Dim x2 As SpotEx = CType(xRes(2), SpotEx)
+            Dim x2 As Spotlib.SpotEx = CType(xRes(2), Spotlib.SpotEx)
             Dim x3 As CloseableTabItem = CType(xRes(3), CloseableTabItem)
             Dim x4 As String = CStr(xRes(4))
 
