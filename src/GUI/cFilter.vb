@@ -1,4 +1,6 @@
-﻿Friend Class cFilter
+﻿Imports Spotbase.Spotbase
+
+Friend Class cFilter
 
     Private Const sfName As String = "filters.xml"
     Friend FilterOverview As New List(Of Spotnet.FilterCat)
@@ -8,13 +10,13 @@
         Dim LF As New List(Of Spotnet.FilterCat)
         Dim lMarg As Long = 50
 
-        LF.Add(CreateFilter(0, CatDesc(1), "cat = 1", "\Images\video2.ico"))
-        LF.Add(CreateFilter(0, CatDesc(6), "cat = 6", "\Images\series2.ico"))
-        LF.Add(CreateFilter(0, CatDesc(5), "cat = 5", "\Images\books2.ico"))
-        LF.Add(CreateFilter(0, CatDesc(2), "cat = 2", "\Images\audio2.ico"))
-        LF.Add(CreateFilter(0, CatDesc(3), "cat = 3", "\Images\games2.ico"))
-        LF.Add(CreateFilter(0, CatDesc(4), "cat = 4", "\Images\applications2.ico"))
-        LF.Add(CreateFilter(0, CatDesc(9), "cat = 9", "\Images\x2.ico"))
+        LF.Add(CreateFilter(0, Utils.CatDesc(1), "cat = 1", "\Images\video2.ico"))
+        LF.Add(CreateFilter(0, Utils.CatDesc(6), "cat = 6", "\Images\series2.ico"))
+        LF.Add(CreateFilter(0, Utils.CatDesc(5), "cat = 5", "\Images\books2.ico"))
+        LF.Add(CreateFilter(0, Utils.CatDesc(2), "cat = 2", "\Images\audio2.ico"))
+        LF.Add(CreateFilter(0, Utils.CatDesc(3), "cat = 3", "\Images\games2.ico"))
+        LF.Add(CreateFilter(0, Utils.CatDesc(4), "cat = 4", "\Images\applications2.ico"))
+        LF.Add(CreateFilter(0, Utils.CatDesc(9), "cat = 9", "\Images\x2.ico"))
 
         LF.Add(CreateFilter(22, "Nieuw", "rowid > [SN:NEW]", "1.ico", "2.ico", False))
         LF.Add(CreateFilter(22, "Vandaag", "date > ( [SN:DATE] - 86400 )", "1.ico", "2.ico", False))

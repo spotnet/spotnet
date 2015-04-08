@@ -5,8 +5,73 @@ Imports System.Threading
 Imports System.Security.Cryptography
 Imports System.Windows.Media.Imaging
 
-Imports System.Data.Common
+Imports Spotlib
+Imports Spotbase.Spotbase
 
+Friend Class SpotInfo
+
+    Public Spot As SpotEx
+    Public TabLoaded As Boolean
+
+End Class
+
+Friend Class UrlInfo
+
+    Public URL As String
+    Public Title As String
+    Public TabLoaded As Boolean
+
+End Class
+
+Public Enum ServerType
+    Headers
+    Upload
+    Download
+End Enum
+
+Public Class ServerInfo
+
+    Public Port As Integer = 119
+    Public SSL As Boolean = False
+    Public Username As String = ""
+    Public Password As String = ""
+    Public Server As String = ""
+    Public Connections As Integer = 1
+
+End Class
+
+Public Class ListItem
+
+    Public Key As String
+    Public Name As String
+
+    Public Sub New(ByVal sKey As String, ByVal sName As String)
+
+        Key = sKey
+        Name = sName
+
+    End Sub
+
+End Class
+
+Public Class ProviderItem
+
+    Public Name As String = ""
+    Public Address As String = ""
+    Public Port As Long
+
+    Public Overrides Function ToString() As String
+        Return Name
+    End Function
+
+End Class
+
+Friend Class SabSlots
+
+    Public DataSlots As List(Of String())
+    Public HistorySlots As List(Of String())
+
+End Class
 Friend Module sModule
 
     Friend LastServer As String = ""
@@ -25,7 +90,6 @@ Friend Module sModule
     Private uPhuse As Phuse.Engine = Nothing
 
     Friend ReadOnly EPOCH As Date = New Date(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)
-
     Private Declare Function SHGetKnownFolderPath Lib "shell32" (ByRef knownFolder As Guid, ByVal flags As UInteger, ByVal htoken As IntPtr, ByRef path As IntPtr) As Integer
 
     Private Enum convTo
@@ -203,14 +267,14 @@ Friend Module sModule
             Select Case aCode
 
                 Case 48 To 57, 65 To 90, 97 To 122
-                    ' don't touch alphanumeric chars
+                ' don't touch alphanumeric chars
 
                 Case 32
                     ' replace space with "+"
                     Mid$(xURLEncode, i, 1) = "+"
 
                 Case 42, 46, 47, 58, 95 ' / : . - _
-                    ' sla over
+                ' sla over
 
                 Case Else
 
@@ -284,643 +348,6 @@ Friend Module sModule
         Loop
 
         URLDecode = TempAns
-
-    End Function
-
-    Friend Function CatDesc(ByVal hCat As Byte, Optional ByVal zCat As Byte = 0) As String
-
-        Select Case hCat
-
-            Case 1
-
-                If zCat < 2 Then Return "Films"
-
-                Select Case zCat
-
-                    Case 2
-                        Return "Series"
-
-                    Case 3
-                        Return "Boeken"
-
-                    Case 4
-                        Return "Erotiek"
-
-                End Select
-
-            Case 2
-
-                If zCat < 2 Then Return "Muziek"
-
-                Select Case zCat
-
-                    Case 2
-                        Return "Liveset"
-
-                    Case 3
-                        Return "Podcast"
-
-                    Case 4
-                        Return "Audiobook"
-
-                End Select
-
-            Case 3
-                Return "Spellen"
-
-            Case 4
-                Return "Applicaties"
-
-            Case 5
-                Return "Boeken"
-
-            Case 6
-                Return "Series"
-
-            Case 9
-                Return "Erotiek"
-
-        End Select
-
-        Return "Fout"
-
-    End Function
-
-    Public Function TranslateCat(ByVal hCat As Long, ByVal sCat As String, Optional ByVal bStrict As Boolean = False) As String
-
-        If sCat.Length < 2 Then Return ""
-
-        Select Case hCat
-
-            Case 2
-
-                Select Case sCat.Substring(0, 1)
-
-                    Case "a"
-
-                        Select Case CInt(sCat.Substring(1))
-                            Case 0 : Return "MP3"
-                            Case 1 : Return "WMA"
-                            Case 2 : Return "WAV"
-                            Case 3 : Return "OGG"
-                            Case 4 : Return "EAC"
-                            Case 5 : Return "DTS"
-                            Case 6 : Return "AAC"
-                            Case 7 : Return "APE"
-                            Case 8 : Return "FLAC"
-                            Case Else : Return ""
-                        End Select
-
-                    Case "b"
-
-                        Select Case CInt(sCat.Substring(1))
-                            Case 0 : Return "CD"
-                            Case 1 : Return "Radio"
-                            Case 3 : Return "DVD"
-                            Case 5 : Return "Vinyl"
-                            Case 2 : Return sIIF(bStrict, "", "Compilatie")
-                            Case 4 : Return "" ''"Anders"
-                            Case 6 : Return "Stream"
-                            Case Else : Return ""
-                        End Select
-
-                    Case "c"
-
-                        Select Case CInt(sCat.Substring(1))
-                            Case 1 : Return "< 96kbit"
-                            Case 2 : Return "96kbit"
-                            Case 3 : Return "128kbit"
-                            Case 4 : Return "160kbit"
-                            Case 5 : Return "192kbit"
-                            Case 6 : Return "256kbit"
-                            Case 7 : Return "320kbit"
-                            Case 8 : Return "Lossless"
-                            Case 0 : Return "Variabel"
-                            Case 9 : Return "" ''"Anders"
-                            Case Else : Return ""
-                        End Select
-
-                    Case "d"
-                        Select Case CInt(sCat.Substring(1))
-                            Case 0 : Return "Blues"
-                            Case 1 : Return "Compilatie"
-                            Case 2 : Return "Cabaret"
-                            Case 3 : Return "Dance"
-                            Case 4 : Return "Diversen"
-                            Case 5 : Return "Hardstyle"
-                            Case 6 : Return "Wereld"
-                            Case 7 : Return "Jazz"
-                            Case 8 : Return "Jeugd"
-                            Case 9 : Return "Klassiek"
-                            Case 10 : Return sIIF(bStrict, "", "Kleinkunst")
-                            Case 11 : Return "Hollands"
-                            Case 12 : Return sIIF(bStrict, "", "New Age")
-                            Case 13 : Return "Pop"
-                            Case 14 : Return "RnB"
-                            Case 15 : Return "Hiphop"
-                            Case 16 : Return "Reggae"
-                            Case 17 : Return "Religieus"
-                            Case 18 : Return "Rock"
-                            Case 19 : Return "Soundtrack"
-                            Case 20 : Return "" ''"Anders"
-                            Case 21 : Return sIIF(bStrict, "", "Hardstyle")
-                            Case 22 : Return sIIF(bStrict, "", "Aziatisch")
-                            Case 23 : Return "Disco"
-                            Case 24 : Return "Classics"
-                            Case 25 : Return "Metal"
-                            Case 26 : Return "Country"
-                            Case 27 : Return "Dubstep"
-                            Case 28 : Return sIIF(bStrict, "", "Nederhop")
-                            Case 29 : Return "DnB"
-                            Case 30 : Return "Electro"
-                            Case 31 : Return "Folk"
-                            Case 32 : Return "Soul"
-                            Case 33 : Return "Trance"
-                            Case 34 : Return "Balkan"
-                            Case 35 : Return "Techno"
-                            Case 36 : Return "Ambient"
-                            Case 37 : Return "Latin"
-                            Case 38 : Return "Live"
-                            Case Else : Return ""
-                        End Select
-
-                    Case "z"
-
-                        Select Case CInt(sCat.Substring(1))
-                            Case 0 : Return "Album"
-                            Case 1 : Return "Liveset"
-                            Case 2 : Return "Podcast"
-                            Case 3 : Return "Luisterboek"
-                            Case Else : Return ""
-                        End Select
-
-                    Case Else
-
-                        Return ""
-
-                End Select
-
-            Case 3
-
-                Select Case sCat.Substring(0, 1)
-
-                    Case "a"
-
-                        Select Case CInt(sCat.Substring(1))
-                            Case 0 : Return "Windows"
-                            Case 1 : Return "Macintosh"
-                            Case 2 : Return "Linux"
-                            Case 3 : Return "Playstation"
-                            Case 4 : Return "Playstation 2"
-                            Case 5 : Return "PSP"
-                            Case 6 : Return "XBox"
-                            Case 7 : Return "XBox 360"
-                            Case 8 : Return "Gameboy Advance"
-                            Case 9 : Return "Gamecube"
-                            Case 10 : Return "Nintendo DS"
-                            Case 11 : Return "Nintendo Wii"
-                            Case 12 : Return "Playstation 3"
-                            Case 13 : Return "Windows Phone"
-                            Case 14 : Return "iOs"
-                            Case 15 : Return "Android"
-                            Case 16 : Return sIIF(bStrict, "", "Nintendo 3DS")
-                            Case Else : Return ""
-                        End Select
-
-                    Case "b"
-
-                        Select Case CInt(sCat.Substring(1))
-                            Case 1 : Return "Rip"
-                            Case 0 : Return sIIF(bStrict, "", "ISO")
-                            Case 2 : Return "Retail"
-                            Case 3 : Return "DLC"
-                            Case 4 : Return "" ''"Anders"
-                            Case 5 : Return "Patch"
-                            Case 6 : Return "Crack"
-                            Case Else : Return ""
-                        End Select
-
-                    Case "c"
-
-                        Select Case CInt(sCat.Substring(1))
-                            Case 0 : Return "Actie"
-                            Case 1 : Return "Avontuur"
-                            Case 2 : Return "Strategie"
-                            Case 3 : Return "Rollenspel"
-                            Case 4 : Return "Simulatie"
-                            Case 5 : Return "Race"
-                            Case 6 : Return "Vliegen"
-                            Case 7 : Return "Shooter"
-                            Case 8 : Return "Platform"
-                            Case 9 : Return "Sport"
-                            Case 10 : Return "Jeugd"
-                            Case 11 : Return "Puzzel"
-                            Case 12 : Return "" ''"Anders"
-                            Case 13 : Return "Bordspel"
-                            Case 14 : Return "Kaarten"
-                            Case 15 : Return "Educatie"
-                            Case 16 : Return "Muziek"
-                            Case 17 : Return "Party"
-                            Case Else : Return ""
-                        End Select
-
-                    Case Else
-
-                        Return ""
-
-                End Select
-
-            Case 4
-
-                Select Case sCat.Substring(0, 1)
-
-                    Case "a"
-
-                        Select Case CInt(sCat.Substring(1))
-                            Case 0 : Return "Windows"
-                            Case 1 : Return "Macintosh"
-                            Case 2 : Return "Linux"
-                            Case 3 : Return "OS/2"
-                            Case 4 : Return "Windows Phone"
-                            Case 5 : Return "Navigatie"
-                            Case 6 : Return "iOs"
-                            Case 7 : Return "Android"
-                            Case Else : Return ""
-                        End Select
-
-                    Case "b"
-                        Select Case CInt(sCat.Substring(1))
-                            Case 0 : Return "Audio"
-                            Case 1 : Return "Video"
-                            Case 2 : Return "Grafisch"
-                            Case 3 : Return sIIF(bStrict, "", "CD/DVD Tools")
-                            Case 4 : Return sIIF(bStrict, "", "Media spelers")
-                            Case 5 : Return sIIF(bStrict, "", "Rippers & Encoders")
-                            Case 6 : Return sIIF(bStrict, "", "Plugins")
-                            Case 7 : Return sIIF(bStrict, "", "Database tools")
-                            Case 8 : Return sIIF(bStrict, "", "Email software")
-                            Case 9 : Return "Foto"
-                            Case 10 : Return sIIF(bStrict, "", "Screensavers")
-                            Case 11 : Return sIIF(bStrict, "", "Skin software")
-                            Case 12 : Return sIIF(bStrict, "", "Drivers")
-                            Case 13 : Return sIIF(bStrict, "", "Browsers")
-                            Case 14 : Return sIIF(bStrict, "", "Download managers")
-                            Case 15 : Return "Download"
-                            Case 16 : Return sIIF(bStrict, "", "Usenet software")
-                            Case 17 : Return sIIF(bStrict, "", "RSS Readers")
-                            Case 18 : Return sIIF(bStrict, "", "FTP software")
-                            Case 19 : Return sIIF(bStrict, "", "Firewalls")
-                            Case 20 : Return sIIF(bStrict, "", "Antivirus software")
-                            Case 21 : Return sIIF(bStrict, "", "Antispyware software")
-                            Case 22 : Return sIIF(bStrict, "", "Optimalisatiesoftware")
-                            Case 23 : Return "Beveiliging"
-                            Case 24 : Return "Systeem"
-                            Case 25 : Return "" ''"Anders"
-                            Case 26 : Return "Educatief"
-                            Case 27 : Return "Kantoor"
-                            Case 28 : Return "Internet"
-                            Case 29 : Return "Communicatie"
-                            Case 30 : Return "Ontwikkel"
-                            Case 31 : Return "Spotnet"
-                            Case Else : Return ""
-                        End Select
-
-                    Case Else
-
-                        Return ""
-
-                End Select
-
-            Case Else
-
-                Select Case sCat.Substring(0, 1)
-
-                    Case "a"
-
-                        Select Case CInt(sCat.Substring(1))
-                            Case 0 : Return "DivX"
-                            Case 1 : Return "WMV"
-                            Case 2 : Return "MPG"
-                            Case 3 : Return "DVD5"
-                            Case 4 : Return sIIF(bStrict, "", "HD Overig")
-                            Case 5 : Return "ePub"
-                            Case 6 : Return "Bluray"
-                            Case 7 : Return sIIF(bStrict, "", "HD-DVD")
-                            Case 8 : Return sIIF(bStrict, "", "WMV HD")
-                            Case 9 : Return "x264"
-                            Case 10 : Return "DVD9"
-                            Case Else : Return ""
-                        End Select
-
-                    Case "b"
-
-                        Select Case CInt(sCat.Substring(1))
-                            Case 4 : Return sIIF(bStrict, "", "TV")
-                            Case 1 : Return sIIF(bStrict, "", "(S)VCD")
-                            Case 6 : Return sIIF(bStrict, "", "Satelliet")
-                            Case 2 : Return sIIF(bStrict, "", "Promo")
-                            Case 3 : Return "Retail"
-                            Case 7 : Return "R5"
-                            Case 0 : Return "Cam"
-                            Case 8 : Return sIIF(bStrict, "", "Telecine")
-                            Case 9 : Return "Telesync"
-                            Case 5 : Return "" '' "Anders"
-                            Case 10 : Return "Scan"
-                            Case Else : Return ""
-                        End Select
-
-                    Case "c"
-
-                        Select Case CInt(sCat.Substring(1))
-                            Case 0 : Return "Geen ondertitels"
-                            Case 3 : Return "Engels ondertiteld (extern)"
-                            Case 4 : Return sIIF(hCat <> 5, "Engels ondertiteld (ingebakken)", "Engels geschreven")
-                            Case 7 : Return "Engels ondertiteld (instelbaar)"
-                            Case 1 : Return "Nederlands ondertiteld (extern)"
-                            Case 2 : Return sIIF(hCat <> 5, "Nederlands ondertiteld (ingebakken)", "Nederlands geschreven")
-                            Case 6 : Return "Nederlands ondertiteld (instelbaar)"
-                            Case 10 : Return "Engels gesproken"
-                            Case 11 : Return "Nederlands gesproken"
-                            Case 12 : Return sIIF(hCat <> 5, "Duits gesproken", "Duits geschreven")
-                            Case 13 : Return sIIF(hCat <> 5, "Frans gesproken", "Frans geschreven")
-                            Case 14 : Return sIIF(hCat <> 5, "Spaans gesproken", "Spaans geschreven")
-                            Case 5 : Return ""  '' "Anders"
-                            Case Else : Return ""
-                        End Select
-
-                    Case "d"
-
-                        Select Case CInt(sCat.Substring(1))
-
-                            Case 0 : Return "Actie"
-                            Case 29 : Return "Anime"
-                            Case 2 : Return "Animatie"
-                            Case 28 : Return "Aziatisch"
-                            Case 1 : Return "Avontuur"
-                            Case 3 : Return "Cabaret"
-                            Case 32 : Return "Cartoon"
-                            Case 6 : Return "Documentaire"
-                            Case 7 : Return "Drama"
-                            Case 8 : Return "Familie"
-                            Case 9 : Return "Fantasie"
-                            Case 10 : Return "Filmhuis"
-                            Case 12 : Return "Horror"
-                            Case 33 : Return "Jeugd"
-                            Case 4 : Return "Komedie"
-                            Case 19 : Return "Kort"
-                            Case 5 : Return "Misdaad"
-                            Case 13 : Return "Muziek"
-                            Case 14 : Return "Musical"
-                            Case 15 : Return "Mysterie"
-                            Case 21 : Return "Oorlog"
-                            Case 16 : Return "Romantiek"
-                            Case 17 : Return "Science Fiction"
-                            Case 18 : Return "Sport"
-                            Case 11 : Return sIIF(bStrict, "", "Televisie")
-                            Case 20 : Return "Thriller"
-                            Case 22 : Return "Western"
-
-                            Case 23 : Return "Hetero"
-                            Case 24 : Return "Homo"
-                            Case 25 : Return "Lesbo"
-                            Case 26 : Return "Bi"
-
-                            Case 27 : Return "" '' "Anders"
-
-                            Case 30 : Return "Cover"
-                            Case 43 : Return "Dagblad"
-                            Case 44 : Return "Tijdschrift"
-                            Case 31 : Return "Stripboek"
-
-                            Case 34 : Return "Zakelijk"
-                            Case 35 : Return "Computer"
-                            Case 36 : Return "Hobby"
-                            Case 37 : Return "Koken"
-                            Case 38 : Return "Knutselen"
-                            Case 39 : Return "Handwerk"
-                            Case 40 : Return "Gezondheid"
-                            Case 41 : Return "Historie"
-                            Case 42 : Return "Psychologie"
-                            Case 45 : Return "Wetenschap"
-                            Case 46 : Return "Vrouw"
-                            Case 47 : Return "Religie"
-                            Case 48 : Return "Roman"
-                            Case 49 : Return "Biografie"
-                            Case 50 : Return "Detective"
-                            Case 51 : Return "Dieren"
-                            Case 52 : Return ""
-                            Case 53 : Return "Reizen"
-                            Case 54 : Return "Waargebeurd"
-                            Case 55 : Return "Non-fictie"
-                            Case 57 : Return "Poezie"
-                            Case 58 : Return "Sprookje"
-
-                            Case 75 : Return sIIF(bStrict, "", "Hetero")
-                            Case 74 : Return sIIF(bStrict, "", "Homo")
-                            Case 73 : Return sIIF(bStrict, "", "Lesbo")
-                            Case 72 : Return sIIF(bStrict, "", "Bi")
-
-                            Case 76 : Return "Amateur"
-                            Case 77 : Return "Groep"
-                            Case 78 : Return "POV"
-                            Case 79 : Return "Solo"
-                            Case 80 : Return "Jong"
-                            Case 81 : Return "Soft"
-                            Case 82 : Return "Fetisj"
-                            Case 83 : Return "Oud"
-                            Case 84 : Return "BBW"
-                            Case 85 : Return "SM"
-                            Case 86 : Return "Hard"
-                            Case 87 : Return "Donker"
-                            Case 88 : Return "Hentai"
-                            Case 89 : Return "Buiten"
-
-                            Case Else : Return ""
-
-                        End Select
-
-                    Case "z"
-
-                        Select Case CInt(sCat.Substring(1))
-                            Case 0 : Return "Film"
-                            Case 1 : Return "Serie"
-                            Case 2 : Return "Boek"
-                            Case 3 : Return "Erotiek"
-                            Case Else : Return ""
-                        End Select
-
-                    Case Else
-
-                        Return ""
-
-                End Select
-
-        End Select
-
-    End Function
-
-    Public Function TranslateCatDesc(ByVal hCat As Long, ByVal sCat As String) As String
-
-        Select Case hCat
-            Case 2
-                Select Case sCat.Substring(0, 1)
-                    Case "a" : Return "Formaat"
-                    Case "b" : Return "Bron"
-                    Case "c" : Return "Bitrate"
-                    Case "d" : Return "Genre"
-                    Case "z" : Return "Categorie"
-                    Case Else : Return ""
-                End Select
-            Case 3
-                Select Case sCat.Substring(0, 1)
-                    Case "a" : Return "Platform"
-                    Case "b" : Return "Formaat"
-                    Case "c" : Return "Genre"
-                    Case "z" : Return "Categorie"
-                    Case Else : Return ""
-                End Select
-            Case 4
-                Select Case sCat.Substring(0, 1)
-                    Case "a" : Return "Platform"
-                    Case "b" : Return "Genre"
-                    Case "z" : Return "Categorie"
-                    Case Else : Return ""
-                End Select
-            Case Else
-                Select Case sCat.Substring(0, 1)
-                    Case "a" : Return "Formaat"
-                    Case "b" : Return "Bron"
-                    Case "c" : Return "Taal"
-                    Case "d" : Return "Genre"
-                    Case "z" : Return "Categorie"
-                    Case Else : Return ""
-                End Select
-        End Select
-
-    End Function
-
-    Public Function TranslateCatShort(ByVal hCat As Integer, ByVal sCat As Integer) As String
-
-        Select Case hCat
-
-            Case 2
-
-                Select Case sCat
-                    Case 0
-                        Return "MP3"
-                    Case 1
-                        Return "WMA"
-                    Case 2
-                        Return "WAV"
-                    Case 3
-                        Return "OGG"
-                    Case 4
-                        Return "EAC"
-                    Case 5
-                        Return "DTS"
-                    Case 6
-                        Return "AAC"
-                    Case 7
-                        Return "APE"
-                    Case 8
-                        Return "FLAC"
-                    Case Else
-                        Return ""
-                End Select
-
-
-            Case 3
-
-                Select Case sCat
-                    Case 0
-                        Return "Win"
-                    Case 1
-                        Return "Mac"
-                    Case 2
-                        Return "Linux"
-                    Case 3
-                        Return "PSX"
-                    Case 4
-                        Return "PS2"
-                    Case 5
-                        Return "PSP"
-                    Case 6
-                        Return "XBox"
-                    Case 7
-                        Return "360"
-                    Case 8
-                        Return "GBA"
-                    Case 9
-                        Return "GC"
-                    Case 10
-                        Return "NDS"
-                    Case 11
-                        Return "Wii"
-                    Case 12
-                        Return "PS3"
-                    Case 13
-                        Return "WP7"
-                    Case 14
-                        Return "iOs"
-                    Case 15
-                        Return "Android"
-                    Case Else
-                        Return ""
-                End Select
-
-            Case 4
-
-                Select Case sCat
-                    Case 0
-                        Return "Win"
-                    Case 1
-                        Return "Mac"
-                    Case 2
-                        Return "Linux"
-                    Case 3
-                        Return "OS2"
-                    Case 4
-                        Return "WP7"
-                    Case 5
-                        Return "Navi"
-                    Case 6
-                        Return "iOs"
-                    Case 7
-                        Return "Android"
-                    Case Else
-                        Return ""
-                End Select
-
-            Case Else
-
-                Select Case sCat
-                    Case 0
-                        Return "DivX"
-                    Case 1
-                        Return "WMV"
-                    Case 2
-                        Return "MPG"
-                    Case 3
-                        Return "DVD5"
-                    Case 4
-                        Return "HD"
-                    Case 5
-                        Return "ePub"
-                    Case 6
-                        Return "Bluray"
-                    Case 7
-                        Return "HD"
-                    Case 8
-                        Return "HD"
-                    Case 9
-                        Return "x264"
-                    Case 10
-                        Return "DVD9"
-                    Case Else
-                        Return ""
-                End Select
-
-        End Select
 
     End Function
 
@@ -1584,111 +1011,6 @@ Friend Module sModule
 
     End Function
 
-    Public Function TranslateInfo(ByVal hCat As Integer, ByVal sCats As String) As Byte
-
-        Dim FindCat As Char
-        Dim xInd As Byte = 0
-        Dim SubCat As Long = 0
-        Dim lPos As Integer = -1
-        Dim sFind As String = ""
-        Dim sRet As String = ""
-        Dim MaxCat As Byte = 100
-
-        Static bCat0(MaxCat) As Boolean
-        Static bCat1(MaxCat) As Boolean
-        Static bCat2(MaxCat) As Boolean
-        Static bCat3(MaxCat) As Boolean
-
-        Static DidOnce As Boolean = False
-
-        If Not DidOnce Then
-
-            For i As Byte = 0 To MaxCat
-                sRet = TranslateCat(1, "d" & i)
-                bCat0(i) = (Len(sRet) > 0)
-            Next
-
-            For i As Byte = 0 To MaxCat
-                sRet = TranslateCat(2, "d" & i)
-                bCat1(i) = (Len(sRet) > 0)
-            Next
-
-            For i As Byte = 0 To MaxCat
-                sRet = TranslateCat(3, "c" & i)
-                bCat2(i) = (Len(sRet) > 0)
-            Next
-
-            For i As Byte = 0 To MaxCat
-                sRet = TranslateCat(4, "b" & i)
-                bCat3(i) = (Len(sRet) > 0)
-            Next
-
-            DidOnce = True
-
-        End If
-
-        Try
-
-            Select Case hCat
-                Case 3
-                    FindCat = "c"c
-                Case 4
-                    FindCat = "b"c
-                Case Else
-                    FindCat = "d"c
-            End Select
-
-            Do
-
-                lPos = sCats.IndexOf(FindCat, lPos + 1)
-
-                If lPos = -1 Then Exit Do
-
-                xInd = CByte(Val(sCats.Substring(lPos + 1, 2)))
-
-                If xInd > MaxCat Then Continue Do
-
-                If hCat = 6 And xInd = 11 Then Continue Do
-
-                If hCat = 9 Then
-
-                    Select Case xInd
-
-                        Case 23, 24, 25, 26, 72, 73, 74, 75
-
-                            If sCats.IndexOf(FindCat, lPos + 1) > -1 Then Continue Do
-
-                    End Select
-
-                End If
-
-                Select Case hCat
-
-                    Case 1
-                        If Not bCat1(xInd) Then Continue Do
-
-                    Case 2
-                        If Not bCat2(xInd) Then Continue Do
-
-                    Case 3
-                        If Not bCat3(xInd) Then Continue Do
-
-                    Case Else
-                        If Not bCat0(xInd) Then Continue Do
-
-                End Select
-
-                Return xInd
-
-            Loop
-
-        Catch ex As Exception
-        End Try
-
-        Return 99
-
-    End Function
-
     Friend Function CreateHeader(ByVal sTitle As String, ByVal sIcon As String, Optional ByVal ISX As ImageSource = Nothing) As StackPanel
 
         Dim KL As New StackPanel
@@ -1726,68 +1048,6 @@ Friend Module sModule
 
     End Function
 
-    Public Function FindNZB(ByVal sName As String, ByVal sNewsGroup As String, ByVal sTitle As String) As String
-
-        Dim ssNzb As String = ""
-        ''ssNzb = Spots.FindNZB(sName, 600, sNewsGroup, 999, True, False)
-
-        If (Len(ssNzb) = 0) Then
-
-            MsgBox("Kan NZB niet vinden, klik de bestandsnaam om handmatig te zoeken.", CType(MsgBoxStyle.Information + MsgBoxStyle.OkOnly, MsgBoxStyle), "NZB niet gevonden!")
-            Return vbNullString
-
-        Else
-
-            Dim TmpFile As String
-            Dim objReader As StreamWriter
-
-            Dim sFile As String = Trim(MakeFilename(sTitle))
-
-            If sFile.Length > 0 Then
-                TmpFile = (System.IO.Path.GetTempPath & sFile & ".nzb")
-            Else
-                TmpFile = (System.IO.Path.GetTempFileName & ".nzb")
-            End If
-
-            Try
-                objReader = New StreamWriter(TmpFile, False, LatinEnc)
-                objReader.Write(ssNzb)
-                objReader.Close()
-            Catch Ex As Exception
-                Foutje("Fout tijdens het schrijven.")
-                Return vbNullString
-            End Try
-
-            Return TmpFile
-
-        End If
-
-        Return vbNullString
-
-    End Function
-
-    Friend Function CreateMsgID(Optional ByVal sPrefix As String = "") As String
-
-        Dim ZL(7) As Byte
-        Dim ZK As New Random
-        Dim sDomain As String = "spot.net"
-
-        ZK.NextBytes(ZL)
-
-        Dim Span As TimeSpan = (DateTime.UtcNow - EPOCH)
-        Dim CurDate As Integer = CInt(Span.TotalSeconds)
-
-        Dim sRandom As String = Convert.ToBase64String(ZL) & Convert.ToBase64String(BitConverter.GetBytes(CurDate))
-        sRandom = sRandom.Replace("/", "s").Replace("+", "p").Replace("=", "")
-
-        If Len(sPrefix) = 0 Then
-            Return CreateHash("<" & sRandom, "@" & sDomain & ">")
-        Else
-            Return CreateHash("<" & sPrefix.Replace(".", "") & ".0." & sRandom & ".", "@" & sDomain & ">")
-        End If
-
-    End Function
-
     Friend Function GetCrc() As CRC32
 
         Static CC As CRC32 = Nothing
@@ -1811,32 +1071,32 @@ Friend Module sModule
 
     End Sub
 
-    Public ReadOnly Property LastPosition(ByVal db As SqlDB, ByVal sTable As String) As Long
+    'Public ReadOnly Property LastPosition(ByVal db As SqlDB, ByVal sTable As String) As Long
 
-        Get
+    '    Get
 
-            Dim sErr As String = ""
+    '        Dim sErr As String = ""
 
-            Try
+    '        Try
 
-                Dim dbCmd As DbCommand = db.CreateCommand
-                dbCmd.CommandText = "SELECT MAX(rowid) FROM " & sTable
+    '            Dim dbCmd As DbCommand = db.CreateCommand
+    '            dbCmd.CommandText = "SELECT MAX(rowid) FROM " & sTable
 
-                Dim tObj As Object = dbCmd.ExecuteScalar()
+    '            Dim tObj As Object = dbCmd.ExecuteScalar()
 
-                If IsDBNull(tObj) Then Return -1
+    '            If IsDBNull(tObj) Then Return -1
 
-                Return CType(tObj, Long)
+    '            Return CType(tObj, Long)
 
-            Catch ex As Exception
+    '        Catch ex As Exception
 
-                Throw New Exception("LastPosition: " & ex.Message)
+    '            Throw New Exception("LastPosition: " & ex.Message)
 
-            End Try
+    '        End Try
 
-        End Get
+    '    End Get
 
-    End Property
+    'End Property
 
     Friend Function BlackList() As HashSet(Of String)
 

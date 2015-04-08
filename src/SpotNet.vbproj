@@ -72,19 +72,19 @@
       <HintPath>Vendor\Fusenet.dll</HintPath>
     </Reference>
     <Reference Include="PresentationFramework.Aero" />
+    <Reference Include="Spotbase, Version=1.9.0.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Vendor\Spotbase.dll</HintPath>
+    </Reference>
     <Reference Include="Spotlib">
       <HintPath>Vendor\Spotlib.dll</HintPath>
     </Reference>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data.SQLite">
-      <HintPath>Vendor\System.Data.SQLite.dll</HintPath>
-    </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="System" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
@@ -106,7 +106,7 @@
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="Utils\cEncPass.vb" />
     <Compile Include="GUI\cHistory.vb" />
-    <Compile Include="Utils\cServers.vb" />
+    <Compile Include="Core\Servers.vb" />
     <Compile Include="GUI\cTabs.vb" />
     <Compile Include="Utils\Settings.vb" />
     <Compile Include="GUI\ProviderSelectie.xaml.vb">
@@ -114,18 +114,15 @@
     </Compile>
     <Compile Include="Sab\SabHelper.vb" />
     <Compile Include="Sab\SabItem.vb" />
-    <Compile Include="Utils\sModule.vb" />
+    <Compile Include="Utils\Common.vb" />
     <Compile Include="GUI\HTMLView.xaml.vb">
       <DependentUpon>HTMLView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Utils\SimpleClass.vb" />
-    <Compile Include="Db\SpotParser.vb" />
-    <Compile Include="Db\SpotProvider.vb" />
-    <Compile Include="Db\SpotSaver.vb" />
-    <Compile Include="Db\SqlDb.vb" />
+    <Compile Include="Core\Parser.vb" />
     <Compile Include="GUI\Status.xaml.vb">
       <DependentUpon>Status.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Utils\Utils.vb" />
     <Page Include="GUI\AboutControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

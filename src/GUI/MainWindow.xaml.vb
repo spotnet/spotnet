@@ -12,6 +12,7 @@ Imports System.Security.Cryptography
 
 Imports Spotlib
 Imports DataVirtualization
+Imports Spotbase.Spotbase
 
 Namespace Spotnet
 
@@ -815,7 +816,7 @@ Namespace Spotnet
 
                 SpotSource.Close()
 
-                If Not SpotSource.Connect(GetDBFilename("dbs"), zErr) Then
+                If Not SpotSource.Connect(GetDBFilename("dbs"), New Parameters(), zErr) Then
                     Return False
                 End If
 
@@ -974,7 +975,7 @@ Namespace Spotnet
 
                 If (Len(Trim$(ServersDB.oDown.Server)) > 0) Then
 
-                    If Not SpotSource.Connect(GetDBFilename("dbs"), sErr) Then
+                    If Not SpotSource.Connect(GetDBFilename("dbs"), New Parameters(), sErr) Then
 
                         If SpotSource.Corrupted Then
                             Try
@@ -4184,7 +4185,7 @@ Namespace Spotnet
 
                         If FileExists(GetDBFilename("dbc")) Then
 
-                            Dim cDb As New SqlDB
+                            Dim cDb As New Database
 
                             If Not cDb.Connect(GetDBFilename("dbc"), True) Then
                                 Throw New Exception("Could not read comments database!")
@@ -4192,7 +4193,7 @@ Namespace Spotnet
 
                             If Not cDb.ExecuteNonQuery("PRAGMA temp_store = MEMORY;", "") = 0 Then Throw New Exception("PRAGMA temp_store")
 
-                            SS.Position = sModule.LastPosition(cDb, "comments")
+                            SS.Position = Utils.LastPosition(cDb, "comments")
 
                             cDb.Close()
 

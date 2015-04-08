@@ -4,8 +4,9 @@ Imports System.Threading
 Imports System.ComponentModel
 Imports System.Windows.Threading
 
-Imports Spotnet.Spotnet
 Imports Spotlib
+Imports Spotnet.Spotnet
+Imports Spotbase.Spotbase
 
 Public Class Status
 
@@ -308,7 +309,7 @@ Public Class Status
 
         Try
 
-            Dim Saver As New SpotSaver
+            Dim Saver As New Storage
             Dim SaveRes As rSaveSpots = Nothing
             Dim Ret As SpotsCompletedEventArgs = CType(e.Argument, SpotsCompletedEventArgs)
 
@@ -317,7 +318,7 @@ Public Class Status
             AddHandler Saver.ProgressChanged, AddressOf SaveProgressChanged
 
             If Saver.Connect(Ret.DbFile, zError) Then
-                If Saver.InsertSpots(Ret.Spots, Ret.Deletes, SaveRes, zError) Then
+                If Saver.InsertSpots(New Parameters(), Ret.Spots, Ret.Deletes, SaveRes, zError) Then
                     e.Result = SaveRes
                     Exit Sub
                 End If
@@ -427,7 +428,7 @@ Public Class Status
 
         Try
 
-            Dim Saver As New SpotSaver
+            Dim Saver As New Storage
             Dim SaveRes As rSaveComments = Nothing
             Dim Ret As CommentsCompletedEventArgs = CType(e.Argument, CommentsCompletedEventArgs)
 
@@ -436,7 +437,7 @@ Public Class Status
             AddHandler Saver.ProgressChanged, AddressOf SaveProgressChanged
 
             If Saver.Connect(Ret.DbFile, zError) Then
-                If Saver.AddComments(Ret.Comments, SaveRes, zError) Then
+                If Saver.AddComments(New Parameters(), Ret.Comments, SaveRes, zError) Then
                     e.Result = SaveRes
                     Exit Sub
                 End If
