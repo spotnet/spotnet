@@ -1,4 +1,5 @@
 ﻿Imports System.Runtime.InteropServices
+Imports Spotlib
 
 Class Application
 
@@ -18,12 +19,12 @@ Class Application
             Dim bCreated As Boolean = False
 
             Try
-                MutX = New System.Threading.Mutex(False, "Global\" & Spotname, bCreated)
+                MutX = New System.Threading.Mutex(False, "Global\" & Spotz.Spotname, bCreated)
             Catch
             End Try
 
             If Not bCreated Then
-                Foutje("Er loopt al een instantie van Spotnet!", "Fout")
+                Tools.Foutje("Er loopt al een instantie van Spotnet!", "Fout")
                 End
             End If
 
@@ -37,7 +38,7 @@ Class Application
 
         Catch ex As Exception
 
-            Foutje("App_Startup: " & ex.Message)
+            Tools.Foutje("App_Startup: " & ex.Message)
             End
 
         End Try

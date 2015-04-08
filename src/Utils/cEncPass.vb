@@ -84,7 +84,7 @@ Friend Class cEncPass
 
         Catch ex As Exception
 
-            Foutje(ex.Message)
+            Tools.Foutje(ex.Message)
             Return vbNullString
         End Try
 

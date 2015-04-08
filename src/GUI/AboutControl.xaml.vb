@@ -1,4 +1,5 @@
 ﻿Imports System.Windows.Media.Animation
+Imports Spotlib
 
 Public Class AboutControl
 
@@ -78,7 +79,7 @@ Public Class AboutControl
 
     Private Sub Linkje_Click(ByVal sender As Object, ByVal e As System.Windows.RoutedEventArgs) Handles Linkje.Click
 
-        LaunchBrowser("http://www.github.com/spotnet/spotnet/wiki")
+        Common.LaunchBrowser("http://www.github.com/spotnet/spotnet/wiki")
 
     End Sub
 

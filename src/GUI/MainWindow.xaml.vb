@@ -1,14 +1,10 @@
 ﻿Imports System.IO
 Imports System.Xml
 Imports System.Net
-Imports System.Text
 Imports System.Threading
 Imports System.ComponentModel
-Imports System.Windows.Interop
 Imports System.Windows.Threading
 Imports System.Windows.Controls.Primitives
-Imports System.Windows.Media.Effects
-Imports System.Security.Cryptography
 
 Imports Spotlib
 Imports DataVirtualization
@@ -43,6 +39,10 @@ Namespace Spotnet
 
         Private PageSize As Integer = 250
 
+        Public Fuze As New ServerList()
+        Public xWhiteList As HashSet(Of String)
+        Public xBlackList As HashSet(Of String)
+
         Private WithEvents SpotSource As SpotProvider
         Private WithEvents SpotOpener As BackgroundWorker
 
@@ -61,9 +61,9 @@ Namespace Spotnet
             Catch ex As Exception
 
                 If Not (ex.InnerException Is Nothing) Then
-                    Foutje(ex.InnerException.Message)
+                    Tools.Foutje(ex.InnerException.Message)
                 Else
-                    Foutje(ex.Message)
+                    Tools.Foutje(ex.Message)
                 End If
 
                 Windows.Application.Current.Shutdown()
@@ -106,9 +106,9 @@ Namespace Spotnet
 
             ClearFilter()
 
-            If (SpotSource.RowFilter <> sModule.DefaultFilter) Or (bForce) Then
+            If (SpotSource.RowFilter <> Spotz.DefaultFilter) Or (bForce) Then
 
-                SetFilter(sModule.DefaultFilter, sModule.DefaultFilter, WaitString, True, True, BlockUI)
+                SetFilter(Spotz.DefaultFilter, Spotz.DefaultFilter, WaitString, True, True, BlockUI)
 
             End If
 
@@ -232,14 +232,14 @@ Namespace Spotnet
 
         Private Sub HasFilter(ByVal sName As String, Optional ByVal BlockUI As Boolean = True)
 
-            If Not FilterSelected() Then Foutje("Filter Err")
+            If Not FilterSelected() Then Tools.Foutje("Filter Err")
 
             Dim TheFil As FilterCat
 
             LastSel = sName
             TheFil = GetFilter(sName)
 
-            If Len(TheFil.Name) = 0 Or Len(TheFil.Query) = 0 Then Foutje("Filter Err2")
+            If Len(TheFil.Name) = 0 Or Len(TheFil.Query) = 0 Then Tools.Foutje("Filter Err2")
 
             If SpotSource.RowFilter <> TheFil.Query Then
 
@@ -370,7 +370,7 @@ Namespace Spotnet
                 .Header = "Verwijderen"
                 .Tag = "DELETE " & sFilter
                 .IsEnabled = Len(sFilter) > 0
-                .Icon = GetIcon("delete")
+                .Icon = Common.GetIcon("delete")
                 If Not .IsEnabled Then .Opacity = 0.5
                 .AddHandler(MenuItem.ClickEvent, New RoutedEventHandler(AddressOf DoFilterMenu))
             End With
@@ -380,7 +380,7 @@ Namespace Spotnet
                 .Header = "Bewerken"
                 .Tag = "EDIT " & sFilter
                 .IsEnabled = False
-                .Icon = GetIcon("settings")
+                .Icon = Common.GetIcon("settings")
                 If Not .IsEnabled Then .Opacity = 0.5
                 .AddHandler(MenuItem.ClickEvent, New RoutedEventHandler(AddressOf DoFilterMenu))
             End With
@@ -389,7 +389,7 @@ Namespace Spotnet
             With mS
                 .Header = "Omhoog"
                 .Tag = "UP " & sFilter
-                .Icon = GetIcon("up")
+                .Icon = Common.GetIcon("up")
                 .IsEnabled = Not bFirst
                 If Not .IsEnabled Then .Opacity = 0.5
                 .AddHandler(MenuItem.ClickEvent, New RoutedEventHandler(AddressOf DoFilterMenu))
@@ -399,7 +399,7 @@ Namespace Spotnet
             With mS2
                 .Header = "Omlaag"
                 .Tag = "DOWN " & sFilter
-                .Icon = GetIcon("down")
+                .Icon = Common.GetIcon("down")
                 .IsEnabled = Not bLast
                 If Not .IsEnabled Then .Opacity = 0.5
                 .AddHandler(MenuItem.ClickEvent, New RoutedEventHandler(AddressOf DoFilterMenu))
@@ -409,7 +409,7 @@ Namespace Spotnet
             With mReset
                 .Header = "Standaard"
                 .Tag = "RESET"
-                .Icon = GetIcon("gear")
+                .Icon = Common.GetIcon("gear")
                 If Not .IsEnabled Then .Opacity = 0.5
                 .AddHandler(MenuItem.ClickEvent, New RoutedEventHandler(AddressOf DoFilterMenu))
             End With
@@ -538,7 +538,7 @@ Namespace Spotnet
                 FilterList.Items.Add(FilterDB.FilterOverview.Item(FilterDB.FilterOverview.Count - 1))
                 Return True
             Else
-                If ShowErr Then Foutje("Kan filter niet toevoegen: " & sErr)
+                If ShowErr Then Tools.Foutje("Kan filter niet toevoegen: " & sErr)
                 Return False
             End If
 
@@ -573,7 +573,7 @@ Namespace Spotnet
 
             SearchBox.Text = ""
             ClearFilter()
-            SetFilter(SearchM & sName, zQuery, "Zoeken naar: " & sName & "..", True, True, True)
+            SetFilter(Spotz.SearchM & sName, zQuery, "Zoeken naar: " & sName & "..", True, True, True)
 
         End Sub
 
@@ -673,11 +673,11 @@ Namespace Spotnet
 
                     PositionIndex = 13
 
-                    If (Not SpotSource.Connected) Or (Len(Trim$(ServersDB.oDown.Server)) = 0) Then
+                    If (Not SpotSource.Connected) Or (Len(Trim$(Fuze.ServersDB.oDown.Server)) = 0) Then
 
                         PositionIndex = 8
 
-                        CS(250)
+                        Tools.CS(250)
                         Mouse.OverrideCursor = Nothing
 
                         If Not SelecteerProvider() Then
@@ -689,9 +689,9 @@ Namespace Spotnet
 
                         Mouse.OverrideCursor = Cursors.Wait
 
-                        If Not OpenDB(xErr) Then
+                        If Not OpenDB(xErr, New WorkParams()) Then
 
-                            Foutje(xErr)
+                            Tools.Foutje(xErr)
                             Me.Close()
                             Exit Sub
 
@@ -706,7 +706,7 @@ Namespace Spotnet
 
                     If Not SpotSource.Connected Then
 
-                        Foutje("Geen verbinding met database")
+                        Tools.Foutje("Geen verbinding met database")
 
                         Me.Close()
                         Exit Sub
@@ -723,13 +723,13 @@ Namespace Spotnet
                     If My.Settings.DownloadAction < 2 Then
                         If SAB.External() Or SAB.IsProcessRunning() Then
                             Dim zErr As String = ""
-                            If Not SAB.StartSab(GetServer(ServerType.Download), True, zErr) Then
-                                Foutje("Fout tijdens het starten van SABnzbd: " & zErr)
+                            If Not SAB.StartSab(Fuze.GetServer(ServerType.Download), True, zErr) Then
+                                Tools.Foutje("Fout tijdens het starten van SABnzbd: " & zErr)
                             End If
                         Else
                             Dim zErr As String = ""
-                            If Not SAB.LoadSab(GetServer(ServerType.Download), zErr) Then
-                                Foutje("Fout tijdens het starten van SABnzbd: " & zErr)
+                            If Not SAB.LoadSab(Fuze.GetServer(ServerType.Download), Fuze, zErr) Then
+                                Tools.Foutje("Fout tijdens het starten van SABnzbd: " & zErr)
                             End If
                         End If
                     End If
@@ -738,24 +738,24 @@ Namespace Spotnet
 
                     If My.Settings.AutoUpdate Or (My.Settings.DatabaseCount < 1) Then
 
-                        CS(250)
+                        Tools.CS(250)
 
                         If DoUpdate(xErr) Then Exit Sub
 
-                        If (Len(xErr) > 0) And (xErr <> CancelMSG) Then
-                            Foutje(xErr, "Fout")
+                        If (Len(xErr) > 0) And (xErr <> Spotz.CancelMSG) Then
+                            Tools.Foutje(xErr, "Fout")
                         End If
 
                     End If
 
                     EndWait(False)
-                    CS()
+                    Tools.CS()
 
                 End If
 
             Catch ex As Exception
 
-                Foutje("Load: Code #" & PositionIndex & ": " & ex.Message)
+                Tools.Foutje("Load: Code #" & PositionIndex & ": " & ex.Message)
                 Me.Close()
 
             End Try
@@ -782,7 +782,7 @@ Namespace Spotnet
 
                 CancelSuggest()
                 TrayNotify = Nothing
-                ClearPhuses()
+                Fuze.ClearPhuses()
 
                 Me.Visibility = Windows.Visibility.Hidden
 
@@ -790,7 +790,7 @@ Namespace Spotnet
                 SAB = Nothing
 
             Catch ex As Exception
-                Foutje("Closed: " & ex.Message)
+                Tools.Foutje("Closed: " & ex.Message)
 
             End Try
 
@@ -801,12 +801,12 @@ Namespace Spotnet
             Dim zErr As String = ""
 
             If Not SAB Is Nothing Then
-                If Not SAB.CloseSab(zErr) Then Foutje("Fout tijdens het afsluiten van SABnzbd: " & zErr)
+                If Not SAB.CloseSab(zErr) Then Tools.Foutje("Fout tijdens het afsluiten van SABnzbd: " & zErr)
             End If
 
         End Sub
 
-        Private Function OpenDB(ByRef zErr As String) As Boolean
+        Private Function OpenDB(ByRef zErr As String, ByRef Param As iWorkParams) As Boolean
 
             Try
 
@@ -815,7 +815,7 @@ Namespace Spotnet
 
                 SpotSource.Close()
 
-                If Not SpotSource.Connect(GetDBFilename("dbs"), New Spotlib.Parameters(), zErr) Then
+                If Not SpotSource.Connect(GetDBFilename("dbs"), New WorkParams, zErr) Then
                     Return False
                 End If
 
@@ -847,7 +847,7 @@ Namespace Spotnet
                 My.Settings.SortColumn = "rowid"
                 My.Settings.SortDirection = "DESC"
 
-                Dim ZK() As Byte = MakeLatin(My.Settings.Columns)
+                Dim ZK() As Byte = Utils.MakeLatin(My.Settings.Columns)
                 Dim OneVisible As Boolean = False
 
                 For ZL As Integer = 0 To UBound(ZK)
@@ -860,7 +860,7 @@ Namespace Spotnet
                 Next
 
                 If Not OneVisible Then
-                    ZK = MakeLatin("1234005000")
+                    ZK = Utils.MakeLatin("1234005000")
                 End If
 
                 For ZL As Integer = 0 To UBound(ZK)
@@ -931,8 +931,8 @@ Namespace Spotnet
 
                 lPosIndex = 4
 
-                If Not ServersDB.LoadServers() Then
-                    Foutje("Kan servers.xml niet laden!")
+                If Not Fuze.ServersDB.LoadServers() Then
+                    Tools.Foutje("Kan servers.xml niet laden!")
                     Me.Close()
                     Exit Sub
                 End If
@@ -940,7 +940,7 @@ Namespace Spotnet
                 lPosIndex = 5
 
                 If Not FilterDB.LoadFilters() Then
-                    Foutje("Kan filters.xml niet laden!")
+                    Tools.Foutje("Kan filters.xml niet laden!")
                     Me.Close()
                     Exit Sub
                 End If
@@ -972,9 +972,9 @@ Namespace Spotnet
 
                 SpotSource = New SpotProvider()
 
-                If (Len(Trim$(ServersDB.oDown.Server)) > 0) Then
+                If (Len(Trim$(Fuze.ServersDB.oDown.Server)) > 0) Then
 
-                    If Not SpotSource.Connect(GetDBFilename("dbs"), New Spotlib.Parameters(), sErr) Then
+                    If Not SpotSource.Connect(GetDBFilename("dbs"), New WorkParams(), sErr) Then
 
                         If SpotSource.Corrupted Then
                             Try
@@ -983,7 +983,7 @@ Namespace Spotnet
                             End Try
                         End If
 
-                        Foutje(sErr)
+                        Tools.Foutje(sErr)
                         Me.Close()
 
                         Exit Sub
@@ -994,8 +994,8 @@ Namespace Spotnet
 
                 Zoeken(True, False)
 
-                SpotSource.QueryName = sModule.DefaultFilter
-                SpotSource.RowFilter = sModule.DefaultFilter
+                SpotSource.QueryName = Spotz.DefaultFilter
+                SpotSource.RowFilter = Spotz.DefaultFilter
 
                 lPosIndex = 14
 
@@ -1027,11 +1027,11 @@ Namespace Spotnet
 
                 End If
 
-                Foutje("Initialized: Code# " & lPosIndex & ": " & ex2.Message)
+                Tools.Foutje("Initialized: Code# " & lPosIndex & ": " & ex2.Message)
 
             Catch ex As Exception
 
-                Foutje("Initialized: Code# " & lPosIndex & ": " & ex.Message)
+                Tools.Foutje("Initialized: Code# " & lPosIndex & ": " & ex.Message)
 
             End Try
 
@@ -1055,7 +1055,7 @@ Namespace Spotnet
                 End If
             Next
 
-            If Not bFound Then Foutje("Column " & My.Settings.SortColumn & " not found?")
+            If Not bFound Then Tools.Foutje("Column " & My.Settings.SortColumn & " not found?")
 
         End Sub
 
@@ -1063,11 +1063,11 @@ Namespace Spotnet
 
             Try
 
-                Dim sFile As String = SafeName(Trim$(ServersDB.oDown.Server)).ToLower
+                Dim sFile As String = Utils.SafeName(Trim$(Fuze.ServersDB.oDown.Server)).ToLower
 
                 If Len(sFile) = 0 Then Return vbNullString
 
-                Return SettingsFolder() & "\" & sFile & "." & sExtension
+                Return Tools.SettingsFolder() & "\" & sFile & "." & sExtension
 
             Catch ex As Exception
             End Try
@@ -1144,7 +1144,7 @@ Namespace Spotnet
 
                         Me.Cursor = Nothing
                         Mouse.OverrideCursor = Nothing
-                        Foutje(StatusEvents.LastError, "Fout")
+                        Tools.Foutje(StatusEvents.LastError, "Fout")
 
                     End If
                 End If
@@ -1274,7 +1274,7 @@ Namespace Spotnet
 
                         tk.Tag = "report"
                         tk.Header = "Melding versturen"
-                        tk.Icon = GetIcon("warning")
+                        tk.Icon = Common.GetIcon("warning")
 
                         SpotMenu.Items.Add(tk)
                         SpotMenu.Items.Add(New Separator)
@@ -1291,7 +1291,7 @@ Namespace Spotnet
                             tk.Header = "Toevoegen aan witte lijst"
                         End If
 
-                        tk.Icon = GetIcon("favorite")
+                        tk.Icon = Common.GetIcon("favorite")
 
                         If tk.IsEnabled Then
                             tk.Icon.Opacity = 1
@@ -1303,7 +1303,7 @@ Namespace Spotnet
 
                         tk = New MenuItem
                         tk.Tag = "black"
-                        tk.IsEnabled = (Len(SelectedSpot.Modulus) > 0) And (Not WhiteList.Contains(SelectedSpot.Modulus)) And (SelectedSpot.Modulus <> GetModulus())
+                        tk.IsEnabled = (Len(SelectedSpot.Modulus) > 0) And (Not WhiteList.Contains(SelectedSpot.Modulus)) And (SelectedSpot.Modulus <> Spotz.GetModulus())
 
                         If BlackList.Contains(SelectedSpot.Modulus) Then
                             tk.Header = "Verwijderen van zwarte lijst"
@@ -1311,7 +1311,7 @@ Namespace Spotnet
                             tk.Header = "Toevoegen aan zwarte lijst"
                         End If
 
-                        tk.Icon = GetIcon("trash")
+                        tk.Icon = Common.GetIcon("trash")
 
                         If tk.IsEnabled Then
                             tk.Icon.Opacity = 1
@@ -1327,7 +1327,7 @@ Namespace Spotnet
 
                 tk = New MenuItem
                 tk.Header = "Zoekopdracht opslaan"
-                tk.Icon = GetIcon("save")
+                tk.Icon = Common.GetIcon("save")
                 tk.IsEnabled = IsSearching()
 
                 If tk.IsEnabled Then
@@ -1374,7 +1374,7 @@ Namespace Spotnet
 
             Dim newTab As New CloseableTabItem
 
-            newTab.Header = CreateHeader("Over", "about.ico")
+            newTab.Header = Tools.CreateHeader("Over", "about.ico")
 
             Dim KL As New AboutControl
             newTab.Content = KL
@@ -1391,7 +1391,7 @@ Namespace Spotnet
 
             Dim newTab As New CloseableTabItem
 
-            newTab.Header = CreateHeader("Toevoegen", "addspot.ico")
+            newTab.Header = Tools.CreateHeader("Toevoegen", "addspot.ico")
 
             Dim KL As New Toevoegen
 
@@ -1413,7 +1413,7 @@ Namespace Spotnet
             End If
 
             If Not SAB.AddNZB(sLoc, sTitle, zErr) Then
-                Foutje(zErr)
+                Tools.Foutje(zErr)
                 EndWait(True)
                 Return False
             End If
@@ -1433,7 +1433,7 @@ Namespace Spotnet
                 newTab = New CloseableTabItem
             End If
 
-            If ExTab Is Nothing Then newTab.Header = CreateHeader(sTitle, "url.ico")
+            If ExTab Is Nothing Then newTab.Header = Tools.CreateHeader(sTitle, "url.ico")
 
             Dim zx As New HTMLView
 
@@ -1445,13 +1445,13 @@ Namespace Spotnet
 
             With tW
 
-                .Navigate(AddHttp(sUrl), False)
+                .Navigate(Utils.AddHttp(sUrl), False)
 
             End With
 
             Dim Kl As New UrlInfo
             Kl.Title = sTitle
-            Kl.URL = AddHttp(sUrl)
+            Kl.URL = Utils.AddHttp(sUrl)
             Kl.TabLoaded = True
 
             newTab.Tag = Kl
@@ -1473,7 +1473,7 @@ Namespace Spotnet
                 Dim newTab As New CloseableTabItem
 
                 newTab.AutoSelect = False
-                newTab.Header = CreateHeader(System.Net.WebUtility.HtmlDecode(sTitle), "smallspotnet.ico")
+                newTab.Header = Tools.CreateHeader(System.Net.WebUtility.HtmlDecode(sTitle), "smallspotnet.ico")
 
                 If sLoc.StartsWith("<") Then
 
@@ -1481,7 +1481,7 @@ Namespace Spotnet
 
                     DK.Spot = New Spotlib.SpotEx
                     DK.Spot.Title = sTitle
-                    DK.Spot.MessageID = MakeMsg(sLoc, False)
+                    DK.Spot.MessageID = Spotz.MakeMsg(sLoc, False)
                     DK.TabLoaded = False
 
                     newTab.Tag = DK
@@ -1501,7 +1501,7 @@ Namespace Spotnet
                 TabControl1.Items.Add(newTab)
 
             Catch ex As Exception
-                Foutje("PrepareTab: " & ex.Message)
+                Tools.Foutje("PrepareTab: " & ex.Message)
             End Try
 
         End Sub
@@ -1514,7 +1514,7 @@ Namespace Spotnet
 
                 If Len(xMsgID) = 0 Then Exit Sub
 
-                xMsgID = MakeMsg(xMsgID)
+                xMsgID = Spotz.MakeMsg(xMsgID)
 
                 If ExTab Is Nothing Then
                     If Not GetTab(xMsgID) Is Nothing Then
@@ -1540,7 +1540,7 @@ Namespace Spotnet
                 Exit Sub
 
             Catch ex As Exception
-                Foutje("OpenSpot: " & ex.Message)
+                Tools.Foutje("OpenSpot: " & ex.Message)
             End Try
 
         End Sub
@@ -1563,7 +1563,7 @@ Namespace Spotnet
                     zx.Visibility = Visibility.Hidden
                 Else
                     newTab = New CloseableTabItem
-                    newTab.Header = CreateHeader(System.Net.WebUtility.HtmlDecode(xSpot.Title), "smallspotnet.ico")
+                    newTab.Header = Tools.CreateHeader(System.Net.WebUtility.HtmlDecode(xSpot.Title), "smallspotnet.ico")
                 End If
 
                 newTab.Content = zx
@@ -1593,7 +1593,7 @@ Namespace Spotnet
 
             Catch ex As Exception
 
-                Foutje(ex.Message, "Fout")
+                Tools.Foutje(ex.Message, "Fout")
 
                 If Not ExTab Is Nothing Then
                     TabControl1.Items.Remove(ExTab)
@@ -1607,7 +1607,7 @@ Namespace Spotnet
             Try
 
                 If ExTab Is Nothing Then
-                    If My.Settings.SaveTabs Then SaveTabs(MakeMsg(xSpot.MessageID) & vbTab & xSpot.Title.Replace(vbTab, ""))
+                    If My.Settings.SaveTabs Then SaveTabs(Spotz.MakeMsg(xSpot.MessageID) & vbTab & xSpot.Title.Replace(vbTab, ""))
                     TabControl1.Items.Add(newTab)
                 Else
                     zx.Visibility = Visibility.Visible
@@ -1615,7 +1615,7 @@ Namespace Spotnet
 
             Catch ex As Exception
 
-                Foutje("OpenSpot: " & ex.Message)
+                Tools.Foutje("OpenSpot: " & ex.Message)
 
             End Try
 
@@ -1639,7 +1639,7 @@ Namespace Spotnet
 
             Try
 
-                If Spotlib.Spots.CreatReport(UploadPhuse, StripNonAlphaNumericCharacters(My.Settings.Nickname), zDesc, My.Settings.ReportGroup, sMsgID, sTitle, zErr) Then
+                If Spotlib.Spots.CreatReport(Fuze.UploadPhuse, Utils.StripChars(My.Settings.Nickname), zDesc, My.Settings.ReportGroup, sMsgID, sTitle, zErr) Then
 
                     EndWait(True)
                     MsgBox("Je melding is verzonden, bedankt voor de moeite.", MsgBoxStyle.Information, "Verzonden")
@@ -1651,7 +1651,7 @@ Namespace Spotnet
                 zErr = ex.Message
             End Try
 
-            Foutje(zErr)
+            Tools.Foutje(zErr)
             EndWait(True)
 
         End Sub
@@ -1690,11 +1690,11 @@ Namespace Spotnet
 
                 Try
 
-                    OpenSpot(Zk.ID, MakeMsg(SpotSource.GetMessageID("spots", Zk.ID)), Nothing)
+                    OpenSpot(Zk.ID, Spotz.MakeMsg(SpotSource.GetMessageID("spots", Zk.ID)), Nothing)
 
                 Catch ex As Exception
 
-                    Foutje("OpenTab: " & ex.Message)
+                    Tools.Foutje("OpenTab: " & ex.Message)
 
                 End Try
 
@@ -1727,7 +1727,7 @@ Namespace Spotnet
                 If TypeOf zx2.Tag Is SpotInfo Then
                     Try
                         DK = CType(zx2.Tag, SpotInfo)
-                        If MakeMsg(DK.Spot.MessageID).Trim.ToLower = MakeMsg(sMes).Trim.ToLower Then
+                        If Spotz.MakeMsg(DK.Spot.MessageID).Trim.ToLower = Spotz.MakeMsg(sMes).Trim.ToLower Then
                             Return zx2
                         End If
                     Catch
@@ -1751,7 +1751,7 @@ Namespace Spotnet
                     Try
                         DK = CType(zx2.Tag, SpotInfo)
                         If Len(DK.Spot.MessageID) > 0 Then
-                            THeTabs.Add(MakeMsg(DK.Spot.MessageID) & vbTab & DK.Spot.Title.Replace(vbTab, ""))
+                            THeTabs.Add(Spotz.MakeMsg(DK.Spot.MessageID) & vbTab & DK.Spot.Title.Replace(vbTab, ""))
                         End If
                     Catch
 
@@ -1790,7 +1790,7 @@ Namespace Spotnet
 
                 Else
 
-                    If (SpotSource.QueryCount = TotalSpots) Or (SpotSource.RowFilter = sModule.DefaultFilter) Or (Len(SpotSource.RowFilter) = 0) Then
+                    If (SpotSource.QueryCount = TotalSpots) Or (SpotSource.RowFilter = Spotz.DefaultFilter) Or (Len(SpotSource.RowFilter) = 0) Then
 
                         Select Case TotalSpots
                             Case Is < 1
@@ -1820,7 +1820,7 @@ Namespace Spotnet
                 End If
 
             Catch ex As Exception
-                Foutje("UpdateStatus: " & ex.Message)
+                Tools.Foutje("UpdateStatus: " & ex.Message)
             End Try
 
         End Sub
@@ -1831,11 +1831,11 @@ Namespace Spotnet
             dk = CType(TabControl1.Items(0), TabItem)
             If dk Is Nothing Then Exit Sub
 
-            If GetHeader(dk.Header).Trim <> sHeader.Trim Then
+            If Tools.GetHeader(dk.Header).Trim <> sHeader.Trim Then
                 If Len(sIcon) > 0 Then
-                    dk.Header = CreateHeader(sHeader, sIcon, Nothing)
+                    dk.Header = Tools.CreateHeader(sHeader, sIcon, Nothing)
                 Else
-                    dk.Header = CreateHeader(sHeader, sIcon, GetHeaderIcon(dk.Header))
+                    dk.Header = Tools.CreateHeader(sHeader, sIcon, Tools.GetHeaderIcon(dk.Header))
                 End If
             End If
 
@@ -1918,7 +1918,7 @@ Namespace Spotnet
                 If Not UpdateDB(xErr, bRes) Then
 
                     If Not SpotSource.Connected Then
-                        OpenDB("")
+                        OpenDB("", New WorkParams())
                         SpotSource.RowNew = OldNew
                     End If
 
@@ -1933,7 +1933,7 @@ Namespace Spotnet
 
                     StatusChanged("Database openen...", 0)
 
-                    If Not OpenDB(xErr) Then
+                    If Not OpenDB(xErr, New WorkParams) Then
 
                         EnableBijwerken()
                         EndWait(True)
@@ -2017,7 +2017,7 @@ Namespace Spotnet
             Bijwerken.IsEnabled = False
             Bijwerken.Opacity = 0.5
 
-            Bij.Source = GetImage("refresh2.png")
+            Bij.Source = Common.GetImage("refresh2.png")
             Bij.Opacity = 0.8
             Bij.IsEnabled = False
             Bij.ToolTip = ""
@@ -2037,7 +2037,7 @@ Namespace Spotnet
             Bijwerken.IsEnabled = True
             Bijwerken.Opacity = 1
 
-            Bij.Source = GetImage("refresh.png")
+            Bij.Source = Common.GetImage("refresh.png")
             Bij.Opacity = 1
             Bij.IsEnabled = True
             Bij.ToolTip = "Bijwerken"
@@ -2115,7 +2115,7 @@ Namespace Spotnet
 
                     Dim tQuery As String = RewriteQuery(TheFil.Query)
 
-                    If IsSearchQuery(tQuery) Then
+                    If Spotlib.Spots.IsSearchQuery(tQuery) Then
 
                         sExtra = tQuery & " AND docid IN (SELECT docid FROM search WHERE "
                         sExtra2 = ")"
@@ -2148,7 +2148,7 @@ Namespace Spotnet
 
                 If Not (Uitgebreid.IsEnabled And Uitgebreid.IsChecked) Then
 
-                    If xVal = StripNonAlphaNumericCharacters(xVal) Then
+                    If xVal = Utils.StripChars(xVal) Then
                         Sq = (sExtra & "subject MATCH '" & xVal.ToLower & "'" & sExtra2)
                     Else
                         Sq = (sExtra & "subject MATCH '" & Chr(34) & xVal.ToLower.Replace(Chr(34), "") & Chr(34) & "'" & sExtra2)
@@ -2195,12 +2195,12 @@ Namespace Spotnet
 
                 ClearFilter()
 
-                SetFilter(SearchM & sVal, SearchString(sVal), "Zoeken naar: " & sVal & "..", True, True, True)
+                SetFilter(Spotz.SearchM & sVal, SearchString(sVal), "Zoeken naar: " & sVal & "..", True, True, True)
 
                 Return True
 
             Catch ex As Exception
-                Foutje("DoSearch: " & ex.Message)
+                Tools.Foutje("DoSearch: " & ex.Message)
                 Return False
 
             End Try
@@ -2276,12 +2276,12 @@ Namespace Spotnet
 
                 End If
 
-                Foutje("SetFilter: " & ex2.Message & " (" & CStr(lPos) & ")")
+                Tools.Foutje("SetFilter: " & ex2.Message & " (" & CStr(lPos) & ")")
                 Return False
 
             Catch ex As Exception
 
-                Foutje("SetFilter: " & ex.Message & " (" & CStr(lPos) & ")")
+                Tools.Foutje("SetFilter: " & ex.Message & " (" & CStr(lPos) & ")")
                 Return False
 
             End Try
@@ -2300,8 +2300,8 @@ Namespace Spotnet
 
             If bUpdateStatus Then UpdateStatus()
 
-            If SpotSource.RowFilter = sModule.DefaultFilter Or Len(SpotSource.RowFilter) = 0 Then sIcon = "nofilter.ico"
-            If SpotSource.QueryName.StartsWith(SearchM) Then sIcon = "search.ico"
+            If SpotSource.RowFilter = Spotz.DefaultFilter Or Len(SpotSource.RowFilter) = 0 Then sIcon = "nofilter.ico"
+            If SpotSource.QueryName.StartsWith(Spotz.SearchM) Then sIcon = "search.ico"
 
             ChangeName(SpotSource.QueryName, sIcon)
             FirstTab(SpotSource.QueryName, sIcon)
@@ -2383,7 +2383,7 @@ Namespace Spotnet
                         CancelSuggest()
                         UpdateSuggestions()
 
-                        Dim sU As String = "http://www.google.nl/complete/search?hl=nl&output=toolbar&q=" & HtmlEncode(sSearch)
+                        Dim sU As String = "http://www.google.nl/complete/search?hl=nl&output=toolbar&q=" & Utils.HtmlEncode(sSearch)
                         Suggest.DownloadStringAsync(New Uri(sU))
 
                     Catch
@@ -2491,7 +2491,7 @@ Namespace Spotnet
 
                 If Not ShowOnce Then
                     ShowOnce = True
-                    Foutje("StatusChanged:: " & ex.Message)
+                    Tools.Foutje("StatusChanged:: " & ex.Message)
                 End If
 
             End Try
@@ -2507,7 +2507,7 @@ Namespace Spotnet
             If TabControl1.Items.Count = 0 Then Exit Sub
             dk = CType(TabControl1.Items(0), TabItem)
 
-            If GetHeader(dk.Header).Trim = SearchM & Trim$(SearchBox.Text) Then ' Ugly hack
+            If Tools.GetHeader(dk.Header).Trim = Spotz.SearchM & Trim$(SearchBox.Text) Then ' Ugly hack
                 DoSearch() 'Repeat search 
             End If
 
@@ -2521,7 +2521,7 @@ Namespace Spotnet
             dk = CType(TabControl1.Items(0), TabItem)
 
             'hack
-            Return GetHeader(dk.Header).StartsWith(SearchM)
+            Return Tools.GetHeader(dk.Header).StartsWith(Spotz.SearchM)
 
         End Function
 
@@ -2532,10 +2532,10 @@ Namespace Spotnet
             If TabControl1.Items.Count = 0 Then Return ""
             dk = CType(TabControl1.Items(0), TabItem)
 
-            If Not GetHeader(dk.Header).StartsWith(SearchM) Then Return ""
+            If Not Tools.GetHeader(dk.Header).StartsWith(Spotz.SearchM) Then Return ""
 
             'hack
-            Return GetHeader(dk.Header).Substring(Len(SearchM))
+            Return Tools.GetHeader(dk.Header).Substring(Len(Spotz.SearchM))
 
         End Function
 
@@ -2578,10 +2578,10 @@ Namespace Spotnet
                 KL.Owner = Me
                 KL.ShowDialog()
 
-                Return (Len(Trim$(ServersDB.oDown.Server)) > 0) And KL.bSuc
+                Return (Len(Trim$(Fuze.ServersDB.oDown.Server)) > 0) And KL.bSuc
 
             Catch
-                Foutje("SelecteerProvider::" & Err.Description)
+                Tools.Foutje("SelecteerProvider::" & Err.Description)
             End Try
 
             Return False
@@ -2655,11 +2655,11 @@ Namespace Spotnet
 
                     End If
 
-                    Me.Title = GetHeader(XX.Header) & " - " & Spotname
+                    Me.Title = Tools.GetHeader(XX.Header) & " - " & Spotz.Spotname
                     TrayNotify.Text = Microsoft.VisualBasic.Left(Me.Title, 63)
 
                     If DoLoad Then
-                        OpenSpot(-1, MakeMsg(Xs.Spot.MessageID), XX)
+                        OpenSpot(-1, Spotz.MakeMsg(Xs.Spot.MessageID), XX)
                     End If
 
                     Exit Sub
@@ -2668,8 +2668,8 @@ Namespace Spotnet
 
             End If
 
-            If Me.Title <> Spotname Then
-                Me.Title = Spotname
+            If Me.Title <> Spotz.Spotname Then
+                Me.Title = Spotz.Spotname
                 TrayNotify.Text = Me.Title
             End If
 
@@ -2700,7 +2700,7 @@ Namespace Spotnet
 
                 If (TrayNotify.Visible) Then
 
-                    TrayNotify.ShowBalloonTip(1000, Spotname, sTooltip, System.Windows.Forms.ToolTipIcon.Info)
+                    TrayNotify.ShowBalloonTip(1000, Spotz.Spotname, sTooltip, System.Windows.Forms.ToolTipIcon.Info)
 
                 End If
 
@@ -2866,7 +2866,7 @@ Namespace Spotnet
 
             If Not Bijwerken.IsEnabled Then Exit Sub
 
-            If (Len(Trim$(ServersDB.oDown.Server)) = 0) Then
+            If (Len(Trim$(Fuze.ServersDB.oDown.Server)) = 0) Then
                 Provider_Click(Nothing, Nothing)
                 Exit Sub
             End If
@@ -2874,8 +2874,8 @@ Namespace Spotnet
             Dim zErr As String = ""
 
             If Not DoUpdate(zErr) Then
-                If (Len(zErr) > 0) And (zErr <> CancelMSG) Then
-                    Foutje(zErr, "Fout")
+                If (Len(zErr) > 0) And (zErr <> Spotz.CancelMSG) Then
+                    Tools.Foutje(zErr, "Fout")
                 End If
             End If
 
@@ -2891,7 +2891,7 @@ Namespace Spotnet
         Private Sub Provider_Click(ByVal sender As Object, ByVal e As System.Windows.RoutedEventArgs) Handles Provider.Click
 
             Dim zErr As String = ""
-            Dim PrevDB As String = SafeName(ServersDB.oDown.Server)
+            Dim PrevDB As String = Utils.SafeName(Fuze.ServersDB.oDown.Server)
 
             Try
 
@@ -2901,17 +2901,17 @@ Namespace Spotnet
 
                     If SAB.SabStarted Then
 
-                        If Not SAB.UpdateSetting(GetServer(ServerType.Download), zErr) Then Foutje(zErr)
+                        If Not SAB.UpdateSetting(Fuze.GetServer(ServerType.Download), Fuze, zErr) Then Tools.Foutje(zErr)
 
                     End If
 
-                    If PrevDB <> SafeName(ServersDB.oDown.Server) Then
+                    If PrevDB <> Utils.SafeName(Fuze.ServersDB.oDown.Server) Then
 
-                        If (Len(Trim$(ServersDB.oDown.Server)) > 0) Then
+                        If (Len(Trim$(Fuze.ServersDB.oDown.Server)) > 0) Then
 
-                            If Not OpenDB(zErr) Then
+                            If Not OpenDB(zErr, New WorkParams) Then
 
-                                Foutje(zErr)
+                                Tools.Foutje(zErr)
                                 Me.Close()
                                 Exit Sub
 
@@ -2925,8 +2925,8 @@ Namespace Spotnet
                             Me.UpdateLayout()
 
                             If Not DoUpdate(zErr) Then
-                                If (Len(zErr) > 0) And (zErr <> CancelMSG) Then
-                                    Foutje(zErr, "Fout")
+                                If (Len(zErr) > 0) And (zErr <> Spotz.CancelMSG) Then
+                                    Tools.Foutje(zErr, "Fout")
                                 End If
                             End If
 
@@ -2939,7 +2939,7 @@ Namespace Spotnet
 
             Catch ex As Exception
 
-                Foutje("Provider_Click: " & ex.Message)
+                Tools.Foutje("Provider_Click: " & ex.Message)
                 Me.Close()
                 Exit Sub
 
@@ -2970,14 +2970,14 @@ Namespace Spotnet
 
             ew.Description = "Selecteer de map waar je downloads wilt opslaan"
             ew.ShowNewFolderButton = True
-            ew.SelectedPath = DownDir()
+            ew.SelectedPath = Tools.DownDir()
 
             DoBlur()
             Dim dr As System.Windows.Forms.DialogResult = ew.ShowDialog()
 
             If dr = System.Windows.Forms.DialogResult.OK Then
 
-                If DownDir.ToLower <> ew.SelectedPath.ToLower Then
+                If Tools.DownDir.ToLower <> ew.SelectedPath.ToLower Then
 
                     My.Settings.DownloadFolder = ew.SelectedPath
                     My.Settings.Save()
@@ -2985,7 +2985,7 @@ Namespace Spotnet
                     If SAB.SabStarted Then
 
                         Dim zErr As String = ""
-                        If Not SAB.UpdateFolder(zErr) Then Foutje(zErr)
+                        If Not SAB.UpdateFolder(zErr) Then Tools.Foutje(zErr)
 
                     End If
 
@@ -3019,7 +3019,7 @@ Namespace Spotnet
             ew.OverwritePrompt = True
             ew.RestoreDirectory = True
             ew.Title = "NZB Opslaan"
-            ew.FileName = MakeFilename(sFile)
+            ew.FileName = Utils.MakeFilename(sFile)
 
             Dim dr As System.Windows.Forms.DialogResult = ew.ShowDialog()
 
@@ -3190,7 +3190,7 @@ Namespace Spotnet
             Dim zQuery As String = GetFilterString(SubCats)
 
             If Not SaveFilter(zQuery, Trim$(Filterbox.Text), sError) Then
-                Foutje(sError, "Fout")
+                Tools.Foutje(sError, "Fout")
                 Exit Sub
             End If
 
@@ -3406,7 +3406,7 @@ Namespace Spotnet
                     Me.ShowInTaskbar = False
 
                     If Not DidOnce Then
-                        TrayNotify.ShowBalloonTip(500, Spotname, "Klik straks hier om " & Spotname & " weer te openen.", System.Windows.Forms.ToolTipIcon.Info)
+                        TrayNotify.ShowBalloonTip(500, Spotz.Spotname, "Klik straks hier om " & Spotz.Spotname & " weer te openen.", System.Windows.Forms.ToolTipIcon.Info)
                         DidOnce = True
                     End If
                     Exit Sub
@@ -3685,7 +3685,7 @@ Namespace Spotnet
 
             Catch ex As Exception
 
-                Foutje("LoadingRow: " & ex.Message)
+                Tools.Foutje("LoadingRow: " & ex.Message)
                 Exit Sub
 
             End Try
@@ -3739,7 +3739,7 @@ Namespace Spotnet
                 If Lx(XS.DisplayIndex) Is Nothing Then
                     Lx(XS.DisplayIndex) = tk
                 Else
-                    Foutje("ColErr")
+                    Tools.Foutje("ColErr")
                 End If
             Next
 
@@ -3910,7 +3910,7 @@ Namespace Spotnet
                 Select Case CStr(e.Source.Tag).ToLower
                     Case "report"
 
-                        AddReport(MakeMsg(SpotSource.GetMessageID("spots", SelectedSpot.ID)), SelectedSpot.Titel)
+                        AddReport(Spotz.MakeMsg(SpotSource.GetMessageID("spots", SelectedSpot.ID)), SelectedSpot.Titel)
 
                         Exit Sub
 
@@ -3931,7 +3931,7 @@ Namespace Spotnet
 
                         Else
 
-                            AddWhite(StripNonAlphaNumericCharacters(SelectedSpot.Afzender), SelectedSpot.Modulus)
+                            AddWhite(Utils.StripChars(SelectedSpot.Afzender), SelectedSpot.Modulus)
 
                         End If
 
@@ -3948,13 +3948,13 @@ Namespace Spotnet
 
                             RemoveBlack(SelectedSpot.Modulus)
                             ReloadFilter(False, False)
-                            ShowOnce("Je zult weer spots/reacties van deze afzender gaan ontvangen.", "Zwarte lijst")
+                            Tools.ShowOnce("Je zult weer spots/reacties van deze afzender gaan ontvangen.", "Zwarte lijst")
 
                         Else
 
-                            AddBlack(StripNonAlphaNumericCharacters(SelectedSpot.Afzender), SelectedSpot.Modulus)
+                            AddBlack(Utils.StripChars(SelectedSpot.Afzender), SelectedSpot.Modulus)
                             ReloadFilter(False, False)
-                            ShowOnce("Je zult geen spots/reacties van deze afzender meer ontvangen.", "Zwarte lijst")
+                            Tools.ShowOnce("Je zult geen spots/reacties van deze afzender meer ontvangen.", "Zwarte lijst")
 
                         End If
 
@@ -3963,14 +3963,14 @@ Namespace Spotnet
                         Dim sError As String = Nothing
 
                         If Not SaveFilter(SpotSource.RowFilter, TabSearchText, sError) Then
-                            Foutje(sError, "Fout")
+                            Tools.Foutje(sError, "Fout")
                         End If
 
                 End Select
 
             Catch ex As Exception
 
-                Foutje(ex.Message)
+                Tools.Foutje(ex.Message)
 
             End Try
 
@@ -4085,7 +4085,7 @@ Namespace Spotnet
                 Next
 
             Catch ex As Exception
-                Foutje("UpdateCats: " & ex.Message)
+                Tools.Foutje("UpdateCats: " & ex.Message)
             End Try
 
         End Sub
@@ -4132,15 +4132,15 @@ Namespace Spotnet
             Try
 
                 If bUpdateLists Then
-                    UpdateWhitelist()
-                    UpdateBlacklist()
+                    XmlList.UpdateWhitelist(WhiteList)
+                    XmlList.UpdateBlacklist(BlackList)
                 End If
 
                 Dim SS As New Spotlib.NNTPSettings
 
-                SS.BlackList = BlackList()
-                SS.WhiteList = WhiteList()
-                SS.TrustedKeys = LoadKeys()
+                SS.BlackList = BlackList
+                SS.WhiteList = WhiteList
+                SS.TrustedKeys = XmlList.LoadKeys()
 
                 If bIncludeLast Then
                     Try
@@ -4168,21 +4168,21 @@ Namespace Spotnet
             Try
 
                 If bUpdateLists Then
-                    UpdateWhitelist()
-                    UpdateBlacklist()
+                    XmlList.UpdateWhitelist(WhiteList)
+                    XmlList.UpdateBlacklist(BlackList)
                 End If
 
                 Dim SS As New Spotlib.NNTPSettings
 
-                SS.BlackList = BlackList()
-                SS.WhiteList = WhiteList()
-                SS.TrustedKeys = LoadKeys()
+                SS.BlackList = BlackList
+                SS.WhiteList = WhiteList
+                SS.TrustedKeys = XmlList.LoadKeys()
 
                 If bIncludeLast Then
 
                     Try
 
-                        If FileExists(GetDBFilename("dbc")) Then
+                        If Utils.FileExists(GetDBFilename("dbc")) Then
 
                             Dim cDb As New Database
 
@@ -4192,7 +4192,7 @@ Namespace Spotnet
 
                             If Not cDb.ExecuteNonQuery("PRAGMA temp_store = MEMORY;", "") = 0 Then Throw New Exception("PRAGMA temp_store")
 
-                            SS.Position = Utils.LastPosition(cDb, "comments")
+                            SS.Position = Spotlib.Spots.LastPosition(cDb, "comments")
 
                             cDb.Close()
 
@@ -4239,7 +4239,7 @@ Namespace Spotnet
 
             Try
 
-                eRes = Spotlib.Spots.GetSpot(HeaderPhuse, My.Settings.HeaderGroup, lID, sM, zReturn, xSpot, HeaderSettings(False, False), zErr)
+                eRes = Spotlib.Spots.GetSpot(Fuze.HeaderPhuse, My.Settings.HeaderGroup, lID, sM, zReturn, xSpot, HeaderSettings(False, False), zErr)
 
                 If eRes Then
                     xRes(1) = zReturn
@@ -4272,7 +4272,7 @@ Namespace Spotnet
 
             If Not x0 Then
 
-                Foutje(x4, "Fout")
+                Tools.Foutje(x4, "Fout")
 
                 If Not x3 Is Nothing Then
                     TabControl1.Items.Remove(x3)
@@ -4387,7 +4387,7 @@ Namespace Spotnet
                 StopWait(True)
 
             Catch ex As Exception
-                Foutje("DoFinish: " & ex.Message)
+                Tools.Foutje("DoFinish: " & ex.Message)
             End Try
 
         End Sub
@@ -4403,6 +4403,120 @@ Namespace Spotnet
             If Not Downloads.IsFocused Then Downloads.Focus()
 
         End Sub
+
+        Friend Function AddWhite(ByVal sName As String, ByVal sKey As String) As Boolean
+
+            WhiteList().Add(sKey)
+
+            Return XmlList.AddToList(sName, sKey, "whitelist.xml")
+
+        End Function
+
+        Friend Function AddBlack(ByVal sName As String, ByVal sKey As String) As Boolean
+
+            BlackList().Add(sKey)
+
+            Return XmlList.AddToList(sName, sKey, "blacklist.xml")
+
+        End Function
+
+        Friend Function RemoveWhite(ByVal sKey As String) As Boolean
+
+            WhiteList().Remove(sKey)
+
+            XmlList.RemoveFromList(sKey, "whitelist.server.xml")
+            Return XmlList.RemoveFromList(sKey, "whitelist.xml")
+
+        End Function
+
+        Friend Function RemoveBlack(ByVal sKey As String) As Boolean
+
+            BlackList().Remove(sKey)
+
+            XmlList.RemoveFromList(sKey, "blacklist.server.xml")
+            Return XmlList.RemoveFromList(sKey, "blacklist.xml")
+
+        End Function
+
+
+        Friend Function BlackList() As HashSet(Of String)
+
+            Dim sLocal As String = "blacklist.xml"
+
+            If xBlackList Is Nothing Then
+
+                If Not System.IO.File.Exists(Tools.SettingsFolder() & "\" & sLocal) Then
+
+                    XmlList.CreateList(sLocal, New List(Of ListItem))
+
+                End If
+
+                xBlackList = New HashSet(Of String)
+
+                XmlList.LoadList(sLocal, xBlackList)
+                XmlList.UpdateBlacklist(xBlackList)
+
+            End If
+
+            Return xBlackList
+
+        End Function
+
+        Friend Function WhiteList() As HashSet(Of String)
+
+            Dim sLocal As String = "whitelist.xml"
+
+            If xWhiteList Is Nothing Then
+
+                If Not System.IO.File.Exists(Tools.SettingsFolder() & "\" & sLocal) Then
+
+                    Dim dList As New List(Of ListItem)
+
+                    dList.Add(New ListItem("1wt6jlePL/IADm4wL8lMqHaGVznPTiUvcovAtj3eCgvt3wTyM9Fd8ptx8+xzmAHL", "Albertina"))
+                    dList.Add(New ListItem("ynakBYOJnwLBuXQZvglD1N/uZ0mZqYad9dKX9KxyOe2mPoEZIE8Y/x93U8VL4tnv", "Bacoben1"))
+                    dList.Add(New ListItem("6ibY+eDYDwXOjV992fdCqhE0V0B2rRwqvxmoodPlpgjSshPCUgVjTHqpoC1AzbqR", "Boaz"))
+                    dList.Add(New ListItem("vaaHp9taPnRVbYZaa5etSK6y4Caft5aOrnzqfjPljgD2UE/89TBz6JbA/NeJpK+p", "BOB1961"))
+                    dList.Add(New ListItem("s7xw10e0wq6dZgrkD59T9F/lj0zSaht0Zv0gYVvS2gR7I4VPjo/TrqxhwSP3by//", "Biky"))
+                    dList.Add(New ListItem("zNOkGYubV87uJaL1KIqqHHs+nKWNwhD0yNEu0Mz4TKBVkDkxdTB8RvcAa79tMyaL", "Blowan"))
+                    dList.Add(New ListItem("0pGKk73HQkkj1waqHSjuMtpqAuAhItXNYXOQXHQL+rqORxzqMMoQeg523iJKUbvf", "Bradje"))
+                    dList.Add(New ListItem("snmypn4sZq+N4tn+UT6IFPn9Ii67iteD/T/weYVVQbQWvui4M1SSUxaqvIFQtQ8l", "CaptainSalvo"))
+                    dList.Add(New ListItem("58UoKbJ7JgNbRFJJqpdwO3MYKexHlkkUt6KfZvP7lykUNHRm/sZssM4o2jUm6TUh", "CaptainSalvo"))
+                    dList.Add(New ListItem("rCpFxtuo9ijYWTg4WpDnQQO2dVQGSlhGamuUmWCrpilfEbWKNLap+EFnNEqCHdbF", "Dick42"))
+                    dList.Add(New ListItem("z+U5teGdCtU0MVePPPZu1APEJfpSAPNh/RR1EyBXRD1G8d73M+qJZJqfJUL9smUF", "Falang01"))
+                    dList.Add(New ListItem("ru3rhWGBsx4dCglEwjE3bL9nVfH2gJVS0kb0OrXQTceeMXLDVb4rsuA+ty85M3If", "Hagenees1978"))
+                    dList.Add(New ListItem("xC2V+4i7J07fm6+ND+Mr5hvD359l2R/bkeOt2cGUpeFznxhItdMEVJKDNthKFNIb", "Hagenees1978"))
+                    dList.Add(New ListItem("ySv0wJaY8WQPb1KUkJeOVr4dGqR2UoxaOxsnqYmcgkbiPhigkb235eVvoIj4AVM7", "Hannes3"))
+                    dList.Add(New ListItem("z/4mkqzLE27ur8iNOTerBbFK37//itkNa5APDIRLTQ3gBJZORgOcqT+51lw2qnQx", "HendrikjeStoffel"))
+                    dList.Add(New ListItem("twJLKIJYDQvTGhk3hnLSWdgE9oXkH/RypTAI7Bo2rBHkH5FfL/FOJEvOp/MVRWFP", "Inge2222"))
+                    dList.Add(New ListItem("reZxfDPBE/Bxqa63PW4LFiDTh6xl7w1Sh3eoYmUbYbiI8AbmtWNmWAWjC6mHef+b", "Kaj7"))
+                    dList.Add(New ListItem("szsAIT5lVEzonnwg81DoU/44KTXkdIYrAdAFpoB/99Fw0VC6QVad7PRKgDPFeDW5", "kww"))
+                    dList.Add(New ListItem("qIxm7gFn8z6eIheHbstSa0vEhciwEMzNMjYlvBXJEBmivtcfrTXXz57VMfIDtKZB", "kww"))
+                    dList.Add(New ListItem("4ci3BuoC+JHlHVTxYacoEmk7rXGnrRlmgp1zuNO/wrtX0M0ixhK1MUlMMZIaVJ39", "Oldtimer"))
+                    dList.Add(New ListItem("rla55FY/Gm1DgPFwo4+HgMq8bElbjW9W8dIBUFun3ujfujp89p07LAQkS32FWQNb", "Ricardoo"))
+                    dList.Add(New ListItem("qp1ja8wjPDlh7aEssytHTflMCeKLF1TDoZlA41Qp9rkifx+qz9oY21FqZxgOiQgN", "Ricardoo"))
+                    dList.Add(New ListItem("+QIm6ZjUIY8Jgn0venbvGoik2hZyPZpNlXJrGlCbQgRndiN4apVb9awMsp2YGY5j", "SubmarinesSpot"))
+                    dList.Add(New ListItem("p2T1o0E6djKXSBqv8sRPLVsKxZnZOzuQgzY25QBdF5l5+5El81ziGD+5RBuUXSkT", "SubmarinesSpot"))
+                    dList.Add(New ListItem("0mqEBWp/z9l8W15lwntuXNxpcY04o96/MxGe4OCg6dFCjzQ6g8kSej/QoL9tkhB/", "Sophia1949"))
+                    dList.Add(New ListItem("9lfEiCusAUMTMqCOi6sc6P2IYoDslFbGEIYZ16ku6Nqrclc5oyLE7wz2fUI0RJvx", "Trein1600"))
+                    dList.Add(New ListItem("yf0oZC/mJLo0iHunzKn1YyvPCyI6r/ACTNAG3K53BzF4efYWe37EC9P4nRmHEDPJ", "xxxwebwatchers"))
+                    dList.Add(New ListItem("zxCiZ9F9yZ7DdEPj+1Ta/nQl679amRgc+BcmFuRpWvt9VjnHzY7dUTMPUavB8jUN", "Y0os"))
+                    dList.Add(New ListItem("u9bdM+NQl4OPvhi4GHiRvyvDRuTVBemAeAh70lpIWGRqiv03hDvI7W53FuQk3rDX", "Zoutoplossing"))
+                    dList.Add(New ListItem("uH19iDBeTjye6rhOi4uLR+T59MThUBQNL0ZgQhsX6BQqQxZNYflwccud9ZN64Rb5", "Zoutoplossing"))
+
+                    XmlList.CreateList(sLocal, dList)
+
+                End If
+
+                xWhiteList = New HashSet(Of String)
+
+                XmlList.LoadList(sLocal, xWhiteList)
+                XmlList.UpdateWhitelist(xWhiteList)
+
+            End If
+
+            Return xWhiteList
+
+        End Function
 
     End Class
 

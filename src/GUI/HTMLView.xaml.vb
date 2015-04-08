@@ -83,7 +83,7 @@ Public Class HTMLView
         Try
             Unload()
         Catch ex As Exception
-            Foutje("Browser_Disposed: " & ex.Message)
+            Tools.Foutje("Browser_Disposed: " & ex.Message)
         End Try
 
     End Sub
@@ -162,7 +162,7 @@ Public Class HTMLView
             xDoStart()
 
         Catch ex As Exception
-            Foutje("DocumentCompleted: " & ex.Message)
+            Tools.Foutje("DocumentCompleted: " & ex.Message)
 
         End Try
 
@@ -226,7 +226,7 @@ Public Class HTMLView
 
         Catch ex As Exception
 
-            Foutje("GetSpot: " & ex.Message)
+            Tools.Foutje("GetSpot: " & ex.Message)
             Return Nothing
 
         End Try
@@ -257,10 +257,10 @@ Public Class HTMLView
                     _document = Brows.Document
                     If Not _document Is Nothing Then
 
-                        If GetHeader(zx2.Header) <> _document.Title Then
+                        If Tools.GetHeader(zx2.Header) <> _document.Title Then
 
                             Dim Ref As MainWindow = CType(Application.Current.MainWindow, MainWindow)
-                            If Len(_document.Title) > 0 Then zx2.Header = CreateHeader(_document.Title, "url.ico")
+                            If Len(_document.Title) > 0 Then zx2.Header = Tools.CreateHeader(_document.Title, "url.ico")
                             Ref.UpdateTab(CType(Me.Parent, TabItem), _document.Title, _document.Url.AbsoluteUri)
 
                             Exit Sub
@@ -300,14 +300,14 @@ Public Class HTMLView
                         sTitle = sUrl.Substring(5)
                         If sTitle.IndexOf("q=") > 0 Then sTitle = sTitle.Substring(sTitle.IndexOf("q=") + 2)
                         If sTitle.IndexOf("&") > 0 Then sTitle = sTitle.Substring(0, sTitle.IndexOf("&"))
-                        sTitle = URLDecode(sTitle)
+                        sTitle = Utils.URLDecode(sTitle)
                     Else
-                        sTitle = AddHttp(sUrl.Substring(5)).Split("/"c)(2)
+                        sTitle = Utils.AddHttp(sUrl.Substring(5)).Split("/"c)(2)
                         Dim XS() As String = sTitle.Split("."c)
                         sTitle = XS(UBound(XS) - 1) & "." & XS(UBound(XS))
                     End If
                     If My.Settings.ExternalBrowser Then
-                        LaunchBrowser(sUrl.Substring(5))
+                        Common.LaunchBrowser(sUrl.Substring(5))
                     Else
                         Ref.OpenURL(sUrl.Substring(5), sTitle, Nothing)
                     End If
@@ -318,14 +318,14 @@ Public Class HTMLView
 
                     Dim sError As String = Nothing
 
-                    Ref.SearchFilter(URLDecode(sUrl.Substring(6).Split("_"c)(1)), URLDecode(sUrl.Substring(6).Split("_"c)(0)))
+                    Ref.SearchFilter(Utils.URLDecode(sUrl.Substring(6).Split("_"c)(1)), Utils.URLDecode(sUrl.Substring(6).Split("_"c)(0)))
 
                     Exit Sub
 
                 End If
 
                 If sUrl.ToLower.StartsWith("menu:") Then
-                    Dim sFrom As String = URLDecode(sUrl.Substring(5).Split("_"c)(1))
+                    Dim sFrom As String = Utils.URLDecode(sUrl.Substring(5).Split("_"c)(1))
                     CreateMenu(sFrom, sUrl.Substring(5).Split("_"c)(0), "sender MATCH '" & sFrom.ToLower & "'", sFrom)
                     Exit Sub
                 End If
@@ -333,7 +333,7 @@ Public Class HTMLView
                 If sUrl.ToLower.StartsWith("spotnet:reload") Then
                     Dim sErr As String = ""
                     If Not StartUpdate(GetSpot.MessageID, sErr) Then
-                        Foutje(sErr)
+                        Tools.Foutje(sErr)
                     End If
                     Exit Sub
                 End If
@@ -341,7 +341,7 @@ Public Class HTMLView
             End If
 
         Catch ex As Exception
-            Foutje("Navigating: " & ex.Message)
+            Tools.Foutje("Navigating: " & ex.Message)
 
         End Try
 
@@ -358,9 +358,9 @@ Public Class HTMLView
         If zUrl.Length < 6 Then Exit Sub
 
         If zUrl.Substring(0, 5).ToLower = "link:" Then
-            LaunchBrowser(AddHttp(zUrl.Substring(5)))
+            Common.LaunchBrowser(Utils.AddHttp(zUrl.Substring(5)))
         Else
-            If HasHttp(zUrl) Then LaunchBrowser(zUrl)
+            If Utils.HasHttp(zUrl) Then Common.LaunchBrowser(zUrl)
         End If
 
     End Sub
@@ -384,7 +384,7 @@ Public Class HTMLView
             DownloadButton.Enabled = False
 
             If DownloadButton.GetAttribute("src").ToLower.Contains("download.png") Or DownloadButton.GetAttribute("src").ToLower.Contains("download3.png") Then
-                DownloadButton.SetAttribute("src", SettingsFolder() & "\Images\download2.png")
+                DownloadButton.SetAttribute("src", Tools.SettingsFolder() & "\Images\download2.png")
             End If
 
             DownloadButton.Style = Replace(DownloadButton.Style, "hand", "wait", , , CompareMethod.Text)
@@ -400,7 +400,7 @@ Public Class HTMLView
             DownloadButton.Enabled = True
 
             If DownloadButton.GetAttribute("src").ToLower.Contains("download2.png") Or DownloadButton.GetAttribute("src").ToLower.Contains("download3.png") Then
-                DownloadButton.SetAttribute("src", SettingsFolder() & "\Images\download.png")
+                DownloadButton.SetAttribute("src", Tools.SettingsFolder() & "\Images\download.png")
             End If
 
             DownloadButton.Style = Replace(DownloadButton.Style, "wait", "hand", , , CompareMethod.Text)
@@ -416,12 +416,12 @@ Public Class HTMLView
 
         Try
 
-            Dim HashMsg As String = Utils.CreateMsgID(GetSpot.MessageID.Split("@"c)(0).Replace(".", "").Replace("<", ""))
+            Dim HashMsg As String = Spotz.CreateMsgID(GetSpot.MessageID.Split("@"c)(0).Replace(".", "").Replace("<", ""))
 
-            My.Settings.Nickname = StripNonAlphaNumericCharacters(CStr(_document.GetElementById("Nickname").DomElement.Value))
+            My.Settings.Nickname = Utils.StripChars(CStr(_document.GetElementById("Nickname").DomElement.Value))
             My.Settings.Save()
 
-            If Spotlib.Spots.CreateComment(UploadPhuse, CStr(_document.GetElementById("Nickname").DomElement.Value), CStr(_document.GetElementById("CommentBody").DomElement.Value), My.Settings.ReplyGroup, GetSpot.MessageID, GetSpot.Title, GetAvatar, GetKey, HashMsg, zErr) Then
+            If Spotlib.Spots.CreateComment(Ref.Fuze.UploadPhuse, CStr(_document.GetElementById("Nickname").DomElement.Value), CStr(_document.GetElementById("CommentBody").DomElement.Value), My.Settings.ReplyGroup, GetSpot.MessageID, GetSpot.Title, Tools.GetAvatar, Spotz.GetKey, HashMsg, zErr) Then
 
                 LastBody = CStr(_document.GetElementById("CommentBody").DomElement.Value)
                 LastTime = Now
@@ -433,19 +433,19 @@ Public Class HTMLView
                 PL.Created = Now
                 PL.From = My.Settings.Nickname
                 PL.Body = LastBody
-                PL.MessageID = MakeMsg(HashMsg, False)
+                PL.MessageID = Spotz.MakeMsg(HashMsg, False)
                 PL.User = New UserInfo
 
-                If Not GetAvatar() Is Nothing Then
+                If Not Tools.GetAvatar() Is Nothing Then
                     PL.User.Avatar = My.Settings.Avatar
                 End If
 
                 PL.User.Signature = PL.MessageID
-                PL.User.Modulus = GetModulus()
+                PL.User.Modulus = Spotz.GetModulus()
                 PL.User.ValidSignature = True
 
                 NewComment(PL, True)
-                SkipMessages.Add(MakeMsg(HashMsg, True))
+                SkipMessages.Add(Spotz.MakeMsg(HashMsg, True))
 
                 Ref.EndWait(True)
                 EnableAdd()
@@ -459,7 +459,7 @@ Public Class HTMLView
         End Try
 
         Ref.EndWait(True)
-        Foutje(zErr)
+        Tools.Foutje(zErr)
         EnableAdd()
 
     End Sub
@@ -532,7 +532,7 @@ Public Class HTMLView
 
         Catch ex As Exception
 
-            Foutje(ex.Message)
+            Tools.Foutje(ex.Message)
 
         End Try
 
@@ -572,7 +572,7 @@ Public Class HTMLView
 
         Catch ex As Exception
 
-            Foutje("HTMLView_Unload: " & ex.Message)
+            Tools.Foutje("HTMLView_Unload: " & ex.Message)
             Return False
 
         End Try
@@ -583,12 +583,12 @@ Public Class HTMLView
 
         If Not AddButton.Enabled Then Exit Sub
 
-        If StripNonAlphaNumericCharacters(CStr(_document.GetElementById("CommentBody").DomElement.Value)).Trim.Length = 0 Then
+        If Utils.StripChars(CStr(_document.GetElementById("CommentBody").DomElement.Value)).Trim.Length = 0 Then
             MsgBox("Je kunt geen leeg bericht plaatsen.", MsgBoxStyle.Information, "Fout")
             Exit Sub
         End If
 
-        If StripNonAlphaNumericCharacters(CStr(_document.GetElementById("CommentBody").DomElement.Value)).ToLower = StripNonAlphaNumericCharacters(LastBody).ToLower Then
+        If Utils.StripChars(CStr(_document.GetElementById("CommentBody").DomElement.Value)).ToLower = Utils.StripChars(LastBody).ToLower Then
             MsgBox("Je kunt niet twee keer achter elkaar hetzelfde bericht plaatsen.", MsgBoxStyle.Information, "Fout")
             Exit Sub
         End If
@@ -656,7 +656,7 @@ Public Class HTMLView
             If NewList.Count > 0 Then
                 FetchNewComments = bCheckNewComments
                 Dim Ref As MainWindow = CType(Application.Current.MainWindow, MainWindow)
-                CommentLoader = Spots.GetComments(sModule.HeaderPhuse, NewList, Ref.CommentSettings(False, False))
+                CommentLoader = Spots.GetComments(Ref.Fuze.HeaderPhuse, NewList, Ref.CommentSettings(False, False))
             Else
                 If bCheckNewComments Then
                     CheckNewComments()
@@ -710,11 +710,11 @@ Public Class HTMLView
 
             If AskUnload Then Exit Sub
 
-            Dim xReload As String = "<p><A onfocus='this.blur()' HREF='spotnet:reload'><IMG id='reload' onfocus='this.blur()' title='Vernieuwen' style='border: 0px; cursor:hand; width: 32px; height:32px;' SRC=" & Chr(34) & SettingsFolder() & "\Images\refresh.png" & Chr(34) & "></A>"
+            Dim xReload As String = "<p><A onfocus='this.blur()' HREF='spotnet:reload'><IMG id='reload' onfocus='this.blur()' title='Vernieuwen' style='border: 0px; cursor:hand; width: 32px; height:32px;' SRC=" & Chr(34) & Tools.SettingsFolder() & "\Images\refresh.png" & Chr(34) & "></A>"
 
             If Not CommentProgress Is Nothing Then
                 If Len(sError) > 0 Then
-                    CommentProgress.InnerHtml = "<center>" & HtmlEncode(sError) & "<br></center>" & xReload
+                    CommentProgress.InnerHtml = "<center>" & Utils.HtmlEncode(sError) & "<br></center>" & xReload
                 Else
                     If CommentIDCache.Count = 0 Then
                         If Not NotFetched Then
@@ -730,7 +730,7 @@ Public Class HTMLView
 
         Catch ex As Exception
 
-            Foutje("CommentsDone: " & ex.Message)
+            Tools.Foutje("CommentsDone: " & ex.Message)
 
         End Try
 
@@ -743,7 +743,7 @@ Public Class HTMLView
             AddButton.Enabled = False
 
             If AddButton.GetAttribute("src").ToLower.Contains("reply.png") Then
-                AddButton.SetAttribute("src", SettingsFolder() & "\Images\reply2.png")
+                AddButton.SetAttribute("src", Tools.SettingsFolder() & "\Images\reply2.png")
             End If
 
             AddButton.Style = Replace(AddButton.Style, "hand", "wait", , , CompareMethod.Text)
@@ -756,7 +756,7 @@ Public Class HTMLView
 
         If Not AddButton Is Nothing Then
             If AddButton.GetAttribute("src").ToLower.Contains("reply2.png") Then
-                AddButton.SetAttribute("src", SettingsFolder() & "\Images\reply.png")
+                AddButton.SetAttribute("src", Tools.SettingsFolder() & "\Images\reply.png")
             End If
 
             AddButton.Style = Replace(AddButton.Style, "wait", "hand", , , CompareMethod.Text)
@@ -772,12 +772,14 @@ Public Class HTMLView
         If Len(z.MessageID) = 0 Then Exit Sub
         If CommentIDCache.Contains(z.Article) Then Exit Sub
 
-        If BlackList.Contains(z.User.Modulus) Then
+        Dim Ref As MainWindow = CType(Application.Current.MainWindow, MainWindow)
+
+        If Ref.BlackList.Contains(z.User.Modulus) Then
             CommentIDCache.Add(z.Article)
             Exit Sub
         End If
 
-        If SkipMessages.Contains(MakeMsg(z.MessageID, True)) Then
+        If SkipMessages.Contains(Spotz.MakeMsg(z.MessageID, True)) Then
             Exit Sub
         End If
 
@@ -793,11 +795,11 @@ Public Class HTMLView
                 UniqueCache.Add(GS.Poster.ToUpper, GS.User.Modulus)
             End If
 
-            z.From = StripNonAlphaNumericCharacters(z.From)
+            z.From = Utils.StripChars(z.From)
 
             If bVirtual Then
 
-                sTooltip = HtmlEncode(MakeUnique(GetModulus))
+                sTooltip = Utils.HtmlEncode(Spotz.MakeUnique(Spotz.GetModulus))
 
             Else
 
@@ -805,8 +807,8 @@ Public Class HTMLView
 
                     sTooltip = "Onbekend"
 
-                    If Len(z.User.Organisation) > 0 Then sTooltip += vbCrLf & HtmlEncode(z.User.Organisation)
-                    If Len(z.User.Trace) > 3 Then sTooltip += vbCrLf & HtmlEncode(z.User.Trace)
+                    If Len(z.User.Organisation) > 0 Then sTooltip += vbCrLf & Utils.HtmlEncode(z.User.Organisation)
+                    If Len(z.User.Trace) > 3 Then sTooltip += vbCrLf & Utils.HtmlEncode(z.User.Trace)
 
                 Else
 
@@ -814,10 +816,10 @@ Public Class HTMLView
                         UniqueCache.Add(z.From.ToUpper, z.User.Modulus)
                     End If
 
-                    sTooltip = HtmlEncode(MakeUnique(z.User.Modulus))
-                    If Len(z.User.Organisation) > 0 Then sTooltip += vbCrLf & HtmlEncode(z.User.Organisation)
+                    sTooltip = Utils.HtmlEncode(Spotz.MakeUnique(z.User.Modulus))
+                    If Len(z.User.Organisation) > 0 Then sTooltip += vbCrLf & Utils.HtmlEncode(z.User.Organisation)
 
-                    If WhiteList.Contains(z.User.Modulus) Then
+                    If Ref.WhiteList.Contains(z.User.Modulus) Then
 
                         sClass = "trusted"
 
@@ -829,7 +831,7 @@ Public Class HTMLView
 
                         Else
 
-                            If Len(z.User.Trace) > 3 Then sTooltip += vbCrLf & HtmlEncode(z.User.Trace)
+                            If Len(z.User.Trace) > 3 Then sTooltip += vbCrLf & Utils.HtmlEncode(z.User.Trace)
 
                             If UniqueCache.Item(z.From.ToUpper) <> z.User.Modulus Then
 
@@ -860,7 +862,7 @@ Public Class HTMLView
 
         Catch ex As Exception
 
-            Foutje("NewComment: " & ex.Message)
+            Tools.Foutje("NewComment: " & ex.Message)
 
         End Try
 
@@ -1038,7 +1040,7 @@ Public Class HTMLView
     Private Sub DownloadButton_MouseEnter(ByVal sender As Object, ByVal e As System.Windows.Forms.HtmlElementEventArgs) Handles DownloadButton.MouseEnter
 
         If DownloadButton.GetAttribute("src").ToLower.Contains("download.png") Then
-            DownloadButton.SetAttribute("src", SettingsFolder() & "\Images\download3.png")
+            DownloadButton.SetAttribute("src", Tools.SettingsFolder() & "\Images\download3.png")
         End If
 
     End Sub
@@ -1046,7 +1048,7 @@ Public Class HTMLView
     Private Sub DownloadButton_MouseLeave(ByVal sender As Object, ByVal e As System.Windows.Forms.HtmlElementEventArgs) Handles DownloadButton.MouseLeave
 
         If DownloadButton.GetAttribute("src").ToLower.Contains("download3.png") Then
-            DownloadButton.SetAttribute("src", SettingsFolder() & "\Images\download.png")
+            DownloadButton.SetAttribute("src", Tools.SettingsFolder() & "\Images\download.png")
         End If
 
     End Sub
@@ -1084,7 +1086,7 @@ Public Class HTMLView
             Exit Sub
         End If
 
-        xMessageID = MakeMsg(GetSpot.MessageID, False)
+        xMessageID = Spotz.MakeMsg(GetSpot.MessageID, False)
 
         Dim bDidSome As Boolean = False
 
@@ -1134,7 +1136,7 @@ Public Class HTMLView
         Dim sParts() As String = Split(sLoc, " ")
 
         For i As Integer = 0 To UBound(sParts)
-            TheParts.Add(MakeMsg(sParts(i)))
+            TheParts.Add(Spotz.MakeMsg(sParts(i)))
         Next
 
         If TheParts.Count = 0 Then
@@ -1143,8 +1145,9 @@ Public Class HTMLView
         End If
 
         Dim zxOut As String = ""
+        Dim Ref As MainWindow = CType(Application.Current.MainWindow, MainWindow)
 
-        If Not Spots.GetNZB(DownloadPhuse, My.Settings.NZBGroup, TheParts, zxOut, zErr) Then GoTo Failz
+        If Not Spots.GetNZB(Ref.Fuze.DownloadPhuse, My.Settings.NZBGroup, TheParts, zxOut, zErr) Then GoTo Failz
 
         Dim m_xmld As XmlDocument
 
@@ -1162,7 +1165,7 @@ Public Class HTMLView
         Dim TmpFile As String
         Dim objReader As StreamWriter
 
-        Dim sFile As String = Trim(MakeFilename(sTitle))
+        Dim sFile As String = Trim(Utils.MakeFilename(sTitle))
 
         If sFile.Length > 0 Then
             TmpFile = (System.IO.Path.GetTempPath & sFile & ".nzb")
@@ -1172,7 +1175,7 @@ Public Class HTMLView
 
         Try
 
-            objReader = New StreamWriter(TmpFile, False, LatinEnc)
+            objReader = New StreamWriter(TmpFile, False, Utils.LatinEnc)
             objReader.Write(zxOut)
             objReader.Close()
 
@@ -1184,7 +1187,7 @@ Public Class HTMLView
         Return TmpFile
 
 Failz:
-        Foutje(zErr)
+        Tools.Foutje(zErr)
         Return vbNullString
 
     End Function
@@ -1196,7 +1199,7 @@ Failz:
         Dim sParts() As String = Split(sLoc, " ")
 
         For i As Integer = 0 To UBound(sParts)
-            TheParts.Add(MakeMsg(sParts(i), True))
+            TheParts.Add(Spotz.MakeMsg(sParts(i), True))
         Next
 
         If TheParts.Count = 0 Then
@@ -1205,15 +1208,17 @@ Failz:
         End If
 
         Dim zxOut() As Byte = Nothing
-        If Not Spots.GetImage(DownloadPhuse, My.Settings.NZBGroup, TheParts, zxOut, zErr) Then Return vbNullString
+        Dim Ref As MainWindow = CType(Application.Current.MainWindow, MainWindow)
+
+        If Not Spots.GetImage(Ref.Fuze.DownloadPhuse, My.Settings.NZBGroup, TheParts, zxOut, zErr) Then Return vbNullString
 
         Dim TmpFile As String = (System.IO.Path.GetTempFileName)
         Dim objReader As StreamWriter
 
         Try
 
-            objReader = New StreamWriter(TmpFile, False, LatinEnc)
-            Dim t As New BinaryWriter(objReader.BaseStream, LatinEnc)
+            objReader = New StreamWriter(TmpFile, False, Utils.LatinEnc)
+            Dim t As New BinaryWriter(objReader.BaseStream, Utils.LatinEnc)
 
             t.Write(zxOut)
             objReader.Close()
@@ -1226,7 +1231,7 @@ Failz:
         Return TmpFile
 
 Failz:
-        Foutje(zErr)
+        Tools.Foutje(zErr)
         Return vbNullString
 
     End Function
@@ -1238,13 +1243,13 @@ Failz:
             e.Result = Nothing
             If AskUnload Then Exit Sub
 
-            e.Result = Spots.DoComments(e.Argument.ToString(), DatabaseFile, New Spotlib.Parameters(), FC)
+            e.Result = Spots.DoComments(e.Argument.ToString(), DatabaseFile, FC, New WorkParams())
 
             If e.Result Is Nothing Then Throw New Exception("DoComments")
 
         Catch ex As Exception
 
-            Foutje("CommentStarter: " & ex.Message)
+            Tools.Foutje("CommentStarter: " & ex.Message)
 
         End Try
 
@@ -1283,7 +1288,7 @@ Failz:
             cSet.Position = CacheXoverID
         End If
 
-        CommentUpdater = Spots.FindComments(HeaderPhuse, cSet)
+        CommentUpdater = Spots.FindComments(Ref.Fuze.HeaderPhuse, cSet)
 
     End Sub
 
@@ -1328,7 +1333,7 @@ Failz:
 
         Catch ex As Exception
 
-            Foutje("ImageStarter: " & ex.Message)
+            Tools.Foutje("ImageStarter: " & ex.Message)
             Exit Sub
 
         End Try
@@ -1371,7 +1376,7 @@ Failz:
     Private Sub SpotImage_Click(ByVal sender As Object, ByVal e As System.Windows.Forms.HtmlElementEventArgs) Handles SpotImage.Click
 
         If Not SpotImage.Style Is Nothing Then
-            If SpotImage.Style.Contains("hand") Then Brows.Navigate("link:" & SafeHref(GetSpot.Web))
+            If SpotImage.Style.Contains("hand") Then Brows.Navigate("link:" & Utils.SafeHref(GetSpot.Web))
         End If
 
     End Sub
@@ -1411,7 +1416,7 @@ Failz:
             MenuModulus = sModulus
         End If
 
-        If (sModulus = GetModulus()) Then
+        If (sModulus = Spotz.GetModulus()) Then
 
             tk = New MenuItem
             tk.Tag = "ava"
@@ -1419,7 +1424,7 @@ Failz:
             tk.IsEnabled = True
             tk.Header = "Avatar wijzigen"
 
-            tk.Icon = GetIcon("settings")
+            tk.Icon = Common.GetIcon("settings")
 
             SpotMenu.Items.Add(tk)
 
@@ -1428,7 +1433,7 @@ Failz:
             tk = New MenuItem
 
             tk.Header = "Zoeken"
-            tk.Icon = GetIcon("search")
+            tk.Icon = Common.GetIcon("search")
             tk.IsEnabled = True
 
             If tk.IsEnabled Then
@@ -1451,15 +1456,15 @@ Failz:
 
             tk.Tag = "fav"
 
-            tk.IsEnabled = (Len(sModulus) > 0) And (Not BlackList.Contains(sModulus))
+            tk.IsEnabled = (Len(sModulus) > 0) And (Not Ref.BlackList.Contains(sModulus))
 
-            If WhiteList.Contains(sModulus) Then
+            If Ref.WhiteList.Contains(sModulus) Then
                 tk.Header = "Verwijderen van witte lijst"
             Else
                 tk.Header = "Toevoegen aan witte lijst"
             End If
 
-            tk.Icon = GetIcon("favorite")
+            tk.Icon = Common.GetIcon("favorite")
 
             If tk.IsEnabled Then
                 tk.Icon.Opacity = 1
@@ -1472,15 +1477,15 @@ Failz:
             tk = New MenuItem
             tk.Tag = "black"
 
-            tk.IsEnabled = (Len(sModulus) > 0) And (Not WhiteList.Contains(sModulus)) And (sModulus <> GetModulus())
+            tk.IsEnabled = (Len(sModulus) > 0) And (Not Ref.WhiteList.Contains(sModulus)) And (sModulus <> Spotz.GetModulus())
 
-            If BlackList.Contains(sModulus) Then
+            If Ref.BlackList.Contains(sModulus) Then
                 tk.Header = "Verwijderen van zwarte lijst"
             Else
                 tk.Header = "Toevoegen aan zwarte lijst"
             End If
 
-            tk.Icon = GetIcon("trash")
+            tk.Icon = Common.GetIcon("trash")
 
             If tk.IsEnabled Then
                 tk.Icon.Opacity = 1
@@ -1548,12 +1553,14 @@ Failz:
 
                 Case "fav"
 
-                    If BlackList.Contains(MenuModulus) Then Exit Sub
+                    Dim Ref As MainWindow = CType(Application.Current.MainWindow, MainWindow)
+
+                    If Ref.BlackList.Contains(MenuModulus) Then Exit Sub
                     If Len(MenuModulus) = 0 Then Exit Sub
 
-                    If WhiteList.Contains(MenuModulus) Then
+                    If Ref.WhiteList.Contains(MenuModulus) Then
 
-                        RemoveWhite(MenuModulus)
+                        Ref.RemoveWhite(MenuModulus)
 
                         LastClick = FindHref(LastClick)
 
@@ -1573,7 +1580,7 @@ Failz:
 
                     Else
 
-                        AddWhite(StripNonAlphaNumericCharacters(MenuFrom), MenuModulus)
+                        Ref.AddWhite(Utils.StripChars(MenuFrom), MenuModulus)
 
                         LastClick = FindHref(LastClick)
 
@@ -1587,12 +1594,14 @@ Failz:
 
                 Case "black"
 
-                    If WhiteList.Contains(MenuModulus) Then Exit Sub
+                    Dim Ref As MainWindow = CType(Application.Current.MainWindow, MainWindow)
+
+                    If Ref.WhiteList.Contains(MenuModulus) Then Exit Sub
                     If Len(MenuModulus) = 0 Then Exit Sub
 
-                    If BlackList.Contains(MenuModulus) Then
+                    If Ref.BlackList.Contains(MenuModulus) Then
 
-                        RemoveBlack(MenuModulus)
+                        Ref.RemoveBlack(MenuModulus)
 
                         LastClick = FindHref(LastClick)
 
@@ -1610,11 +1619,11 @@ Failz:
 
                         End If
 
-                        ShowOnce("Je zult weer spots/reacties van deze afzender gaan ontvangen.", "Zwarte lijst")
+                        Tools.ShowOnce("Je zult weer spots/reacties van deze afzender gaan ontvangen.", "Zwarte lijst")
 
                     Else
 
-                        AddBlack(StripNonAlphaNumericCharacters(MenuFrom), MenuModulus)
+                        Ref.AddBlack(Utils.StripChars(MenuFrom), MenuModulus)
 
                         LastClick = FindHref(LastClick)
 
@@ -1623,7 +1632,7 @@ Failz:
 
                         End If
 
-                        ShowOnce("Je zult geen spots/reacties van deze afzender meer ontvangen.", "Zwarte lijst")
+                        Tools.ShowOnce("Je zult geen spots/reacties van deze afzender meer ontvangen.", "Zwarte lijst")
 
                     End If
 
@@ -1641,7 +1650,7 @@ Failz:
                     Dim Ref As MainWindow = CType(Application.Current.MainWindow, MainWindow)
 
                     If Not Ref.SaveFilter(MenuQuery, MenuQueryName, sError) Then
-                        Foutje(sError, "Fout")
+                        Tools.Foutje(sError, "Fout")
                     End If
 
                 Case "ava"
@@ -1652,7 +1661,7 @@ Failz:
 
         Catch ex As Exception
 
-            Foutje("SpotMenu: " & ex.Message)
+            Tools.Foutje("SpotMenu: " & ex.Message)
 
         End Try
 
@@ -1692,7 +1701,7 @@ Failz:
 
             If bNew.Length > 4000 Then
 
-                Foutje("Je avatar mag maximaal 4000 bytes groot zijn.", "Avatar wijzigen")
+                Tools.Foutje("Je avatar mag maximaal 4000 bytes groot zijn.", "Avatar wijzigen")
                 Exit Sub
 
             End If

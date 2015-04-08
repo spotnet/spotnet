@@ -9,7 +9,7 @@ Friend Class cTabs
 
         Try
 
-            Dim SK As New StreamWriter(SettingsFolder() & sFile, False, System.Text.Encoding.UTF8)
+            Dim SK As New StreamWriter(Tools.SettingsFolder() & sFile, False, System.Text.Encoding.UTF8)
 
             For Each xx As String In zTab
                 If Len(xx) > 0 Then
@@ -34,7 +34,7 @@ Friend Class cTabs
 
         Try
 
-            System.IO.File.Delete(SettingsFolder() & sFile)
+            System.IO.File.Delete(Tools.SettingsFolder() & sFile)
             Return True
 
         Catch ex As Exception
@@ -47,9 +47,9 @@ Friend Class cTabs
 
     Private Sub LT()
 
-        If System.IO.File.Exists(SettingsFolder() & sFile) Then
+        If System.IO.File.Exists(Tools.SettingsFolder() & sFile) Then
 
-            Dim SK As New StreamReader(SettingsFolder() & sFile, System.Text.Encoding.UTF8)
+            Dim SK As New StreamReader(Tools.SettingsFolder() & sFile, System.Text.Encoding.UTF8)
 
             Dim zS As String = ""
 

@@ -220,9 +220,9 @@ Namespace Spotnet
 
             With NewCat.Children
 
-                .Add(GetSubCat(Utils.CatDesc(1), "0"), Utils.CatDesc(1))
+                .Add(GetSubCat(Spotz.CatDesc(1), "0"), Spotz.CatDesc(1))
 
-                With CType(.Item(Utils.CatDesc(1)), Spotlib.SpotCat).Children
+                With CType(.Item(Spotz.CatDesc(1)), Spotlib.SpotCat).Children
 
                     .Add(GetSubCat("Bron", "0b"), "Bron")
                     With CType(.Item("Bron"), Spotlib.SpotCat).Children
@@ -298,9 +298,9 @@ Namespace Spotnet
 
                 End With
 
-                .Add(GetSubCat(Utils.CatDesc(6), "5"), Utils.CatDesc(6))
+                .Add(GetSubCat(Spotz.CatDesc(6), "5"), Spotz.CatDesc(6))
 
-                With CType(.Item(Utils.CatDesc(6)), Spotlib.SpotCat).Children
+                With CType(.Item(Spotz.CatDesc(6)), Spotlib.SpotCat).Children
 
                     .Add(GetSubCat("Bron", "5b"), "Bron")
                     With CType(.Item("Bron"), Spotlib.SpotCat).Children
@@ -375,9 +375,9 @@ Namespace Spotnet
 
                 End With
 
-                .Add(GetSubCat(Utils.CatDesc(5), "4"), Utils.CatDesc(5))
+                .Add(GetSubCat(Spotz.CatDesc(5), "4"), Spotz.CatDesc(5))
 
-                With CType(.Item(Utils.CatDesc(5)), Spotlib.SpotCat).Children
+                With CType(.Item(Spotz.CatDesc(5)), Spotlib.SpotCat).Children
 
                     .Add(GetSubCat("Taal", "4c"), "Taal")
                     With CType(.Item("Taal"), Spotlib.SpotCat).Children
@@ -438,9 +438,9 @@ Namespace Spotnet
 
                 End With
 
-                .Add(GetSubCat(Utils.CatDesc(2), "1"), Utils.CatDesc(2))
+                .Add(GetSubCat(Spotz.CatDesc(2), "1"), Spotz.CatDesc(2))
 
-                With CType(.Item(Utils.CatDesc(2)), Spotlib.SpotCat).Children
+                With CType(.Item(Spotz.CatDesc(2)), Spotlib.SpotCat).Children
 
                     .Add(GetSubCat("Bron", "1b"), "Bron")
                     With CType(.Item("Bron"), Spotlib.SpotCat).Children
@@ -535,9 +535,9 @@ Namespace Spotnet
 
                 End With
 
-                .Add(GetSubCat(Utils.CatDesc(3), "2"), Utils.CatDesc(3))
+                .Add(GetSubCat(Spotz.CatDesc(3), "2"), Spotz.CatDesc(3))
 
-                With CType(.Item(Utils.CatDesc(3)), Spotlib.SpotCat).Children
+                With CType(.Item(Spotz.CatDesc(3)), Spotlib.SpotCat).Children
 
                     .Add(GetSubCat("Genre", "2c"), "Genre")
                     With CType(.Item("Genre"), Spotlib.SpotCat).Children
@@ -597,9 +597,9 @@ Namespace Spotnet
                     End With
                 End With
 
-                .Add(GetSubCat(Utils.CatDesc(4), "3"), Utils.CatDesc(4))
+                .Add(GetSubCat(Spotz.CatDesc(4), "3"), Spotz.CatDesc(4))
 
-                With CType(.Item(Utils.CatDesc(4)), Spotlib.SpotCat).Children
+                With CType(.Item(Spotz.CatDesc(4)), Spotlib.SpotCat).Children
 
                     .Add(GetSubCat("Genre", "3b"), "Genre")
                     With CType(.Item("Genre"), Spotlib.SpotCat).Children
@@ -697,7 +697,7 @@ Namespace Spotnet
             For Each xSpotCat In NewCat.Children
                 TempModel = New FooViewModel(xSpotCat.Name)
                 TempModel.CatLink = xSpotCat
-                TempModel.IsExpanded = xSpotCat.Name = Utils.CatDesc(1) ' Hack
+                TempModel.IsExpanded = xSpotCat.Name = Spotz.CatDesc(1) ' Hack
                 With TempModel.Children
                     For Each xSpotCat2 In xSpotCat.Children
                         TempModel2 = New FooViewModel(xSpotCat2.Name)
