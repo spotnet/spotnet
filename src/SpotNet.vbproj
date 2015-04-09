@@ -99,7 +99,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Core\Tools.vb" />
-    <Compile Include="GUI\AboutControl.xaml.vb">
+    <Compile Include="Forms\AboutControl.xaml.vb">
       <DependentUpon>AboutControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="My Project\AssemblyInfo.vb" />
@@ -109,51 +109,51 @@
     <Compile Include="Core\Servers.vb" />
     <Compile Include="Core\Tabs.vb" />
     <Compile Include="Utils\Settings.vb" />
-    <Compile Include="GUI\ProviderSelectie.xaml.vb">
+    <Compile Include="Forms\ProviderSelectie.xaml.vb">
       <DependentUpon>ProviderSelectie.xaml</DependentUpon>
     </Compile>
     <Compile Include="SABnzbd\SabHelper.vb" />
     <Compile Include="SABnzbd\SabItem.vb" />
     <Compile Include="Utils\Common.vb" />
-    <Compile Include="GUI\HTMLView.xaml.vb">
+    <Compile Include="Forms\HTMLView.xaml.vb">
       <DependentUpon>HTMLView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Core\Parser.vb" />
-    <Compile Include="GUI\Status.xaml.vb">
+    <Compile Include="Forms\Status.xaml.vb">
       <DependentUpon>Status.xaml</DependentUpon>
     </Compile>
-    <Page Include="GUI\AboutControl.xaml">
+    <Page Include="Forms\AboutControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="GUI\HTMLView.xaml">
+    <Page Include="Forms\HTMLView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="GUI\MainWindow.xaml">
+    <Page Include="Forms\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
     <Compile Include="Core\Filter.vb" />
     <Compile Include="Core\View.vb" />
     <Compile Include="Core\Tab.vb" />
-    <Compile Include="GUI\Toevoegen.xaml.vb">
+    <Compile Include="Forms\Toevoegen.xaml.vb">
       <DependentUpon>Toevoegen.xaml</DependentUpon>
     </Compile>
-    <Compile Include="GUI\VirtualToggleButton.vb" />
-    <Compile Include="GUI\MainWindow.xaml.vb">
+    <Compile Include="Forms\VirtualToggleButton.vb" />
+    <Compile Include="Forms\MainWindow.xaml.vb">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="GUI\ProviderSelectie.xaml">
+    <Page Include="Forms\ProviderSelectie.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="GUI\Status.xaml">
+    <Page Include="Forms\Status.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="GUI\Toevoegen.xaml">
+    <Page Include="Forms\Toevoegen.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
