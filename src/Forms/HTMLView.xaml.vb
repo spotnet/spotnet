@@ -9,6 +9,7 @@ Imports System.Drawing.Drawing2D
 Imports Spotlib
 Imports Spotnet.Spotnet
 
+
 Public Class HTMLView
 
     Private bAllowNavi As Boolean
@@ -51,6 +52,9 @@ Public Class HTMLView
 
     Private FC As New FetchCache()
     Private SkipMessages As New HashSet(Of String)
+    Public MyFuze As ServerList
+
+
 
     Public Sub New()
 
@@ -1208,9 +1212,8 @@ Failz:
         End If
 
         Dim zxOut() As Byte = Nothing
-        Dim Ref As MainWindow = CType(Application.Current.MainWindow, MainWindow)
 
-        If Not Spots.GetImage(Ref.Fuze.DownloadPhuse, My.Settings.NZBGroup, TheParts, zxOut, zErr) Then Return vbNullString
+        If Not Spots.GetImage(MyFuze.DownloadPhuse, My.Settings.NZBGroup, TheParts, zxOut, zErr) Then Return vbNullString
 
         Dim TmpFile As String = (System.IO.Path.GetTempFileName)
         Dim objReader As StreamWriter
