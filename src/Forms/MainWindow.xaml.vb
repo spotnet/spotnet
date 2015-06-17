@@ -971,6 +971,12 @@ Namespace Spotnet
                 Dim sErr As String = ""
 
                 SpotSource = New SpotProvider()
+                SpotSource.SortOrder = My.Settings.SortDirection
+                SpotSource.SortCol = My.Settings.SortColumn
+                SpotSource.Parms = New WorkParams
+
+
+
 
                 If (Len(Trim$(Fuze.ServersDB.oDown.Server)) > 0) Then
 
@@ -1051,6 +1057,7 @@ Namespace Spotnet
                     Else
                         Spots.Columns(ZL).SortDirection = ComponentModel.ListSortDirection.Descending
                     End If
+
                     Exit For
                 End If
             Next
@@ -1553,6 +1560,7 @@ Namespace Spotnet
             Dim tW As System.Windows.Forms.WebBrowser
 
             Try
+                zx.MyFuze = Fuze
 
                 If BlackList.Contains(xSpot.User.Modulus) Then
                     Throw New Exception("Afzender staat op de blacklist!")
@@ -3873,7 +3881,8 @@ Namespace Spotnet
             Dim lCol As System.Windows.Controls.DataGridTextColumn = CType(e.Column, DataGridTextColumn)
 
             Static LastCol As String = TranslateCol2(My.Settings.SortColumn)
-
+            Debug.Print("lastcol=" + LastCol)
+            ' Flip sort order if clicked on same column
             If LastCol = CStr(lCol.Header).ToLower Then
                 If SpotSource.SortOrder.ToUpper = "DESC" Then
                     SpotSource.SortOrder = "ASC"
@@ -3886,6 +3895,10 @@ Namespace Spotnet
 
             LastCol = CStr(lCol.Header).ToLower
             SpotSource.SortCol = TranslateCol(LastCol)
+            ' Update sort column and direction in settings
+            My.Settings.SortColumn = SpotSource.SortCol
+            My.Settings.SortDirection = SpotSource.SortOrder
+            My.Settings.Save()
 
             ReloadFilter(False, True, "Sorteren...")
 
@@ -3894,7 +3907,7 @@ Namespace Spotnet
             Else
                 lCol.SortDirection = ComponentModel.ListSortDirection.Descending
             End If
-
+            
             e.Handled = True
 
         End Sub
